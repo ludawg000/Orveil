@@ -894,8 +894,7 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: {
     detectSessionInUrl: true,
     persistSession: true,
-    autoRefreshToken: true,
-    flowType: 'pkce'
+    autoRefreshToken: true
   }
 });
 
@@ -1309,11 +1308,25 @@ async function signOut() {
 let appStarted = false;
 
 sb.auth.onAuthStateChange(async (event, session) => {
-  console.log('[Orveil] auth event:', event, 'hasSession:', !!session, 'isGallery:', isGalleryMode, 'appStarted:', appStarted);
   if (isGalleryMode) return;
   try {
     if (session?.user) {
-      currentUser = session.user;
+      // Validate session — if token expired, try refresh
+      const expiresAt = session.expires_at ? session.expires_at * 1000 : 0;
+      if (expiresAt && expiresAt < Date.now()) {
+        const { data: refreshed, error: refreshErr } = await sb.auth.refreshSession();
+        if (refreshErr || !refreshed?.session) {
+          await sb.auth.signOut();
+          localStorage.clear();
+          currentUser = null;
+          appStarted = false;
+          showScreen('login-screen');
+          return;
+        }
+        currentUser = refreshed.session.user;
+      } else {
+        currentUser = session.user;
+      }
       window.history.replaceState(null, '', window.location.pathname);
       if (!appStarted) {
         appStarted = true;
@@ -1328,6 +1341,7 @@ sb.auth.onAuthStateChange(async (event, session) => {
     console.error('Auth state change error:', err);
     appStarted = false;
     currentUser = null;
+    localStorage.clear();
     showScreen('login-screen');
   }
 });
