@@ -201,14 +201,34 @@
 
   /* DROP ZONE */
   .drop-zone {
-    border: 1.5px dashed var(--g200);
-    padding: 3.5rem; text-align: center; margin-bottom: 2rem;
-    transition: all 0.3s ease; cursor: pointer;
+    border: 1px solid var(--g200);
+    padding: 3.5rem 2rem; text-align: center; margin-bottom: 2rem;
+    transition: all 0.4s ease; cursor: pointer;
+    background: rgba(0,0,0,0.01);
   }
-  .drop-zone:hover { border-color: var(--g400); }
-  .drop-zone.dragover { border-color: var(--black); background: rgba(0,0,0,0.02); }
-  .drop-zone-text { font-size: 0.78rem; color: var(--g400); letter-spacing: 0.02em; }
-  .drop-zone-text strong { color: var(--black); font-weight: 500; }
+  .drop-zone:hover { border-color: var(--black); background: rgba(0,0,0,0.03); }
+  .drop-zone:hover .drop-zone-icon { transform: translateY(-2px); }
+  .drop-zone:hover .drop-zone-btn { background: var(--black); color: var(--white); }
+  .drop-zone.dragover { border-color: var(--black); background: rgba(0,0,0,0.04); }
+  .drop-zone-icon {
+    font-size: 1.6rem; color: var(--g400); margin-bottom: 1rem;
+    transition: transform 0.3s ease;
+  }
+  .drop-zone-sub {
+    font-size: 0.7rem; color: var(--g400); letter-spacing: 0.06em;
+    margin-bottom: 1.2rem;
+  }
+  .drop-zone-btn {
+    display: inline-block; font-family: var(--sans); font-size: 0.68rem;
+    font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.7rem 2rem; border: 1px solid var(--black);
+    color: var(--black); background: none; cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .drop-zone-hint {
+    font-size: 0.6rem; color: var(--g400); letter-spacing: 0.04em;
+    margin-top: 1rem; opacity: 0.7;
+  }
   #file-input { display: none; }
 
   /* UPLOAD PROGRESS */
@@ -722,7 +742,10 @@
   </nav>
   <div class="project-main">
     <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
-      <div class="drop-zone-text"><strong>Click to upload</strong> or drag and drop files here</div>
+      <div class="drop-zone-icon">&#8593;</div>
+      <div class="drop-zone-sub">Photos &amp; videos</div>
+      <div class="drop-zone-btn">Select Files</div>
+      <div class="drop-zone-hint">or drag and drop here</div>
     </div>
     <input type="file" id="file-input" multiple accept="image/*,video/*" onchange="handleFileSelect(this.files)">
     <div class="upload-progress" id="upload-progress">
