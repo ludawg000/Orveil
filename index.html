@@ -746,9 +746,7 @@ async function loadGallery(token) {
   }
 
   galleryFiles = files.map(f => {
-    const { data } = sb.storage.from('projects').getPublicUrl(f.path);
-    const publicUrl = data?.publicUrl || '';
-    console.log('File:', f.name, 'URL:', publicUrl);
+    const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/projects/${f.path}`;
     return { ...f, publicUrl };
   });
 
@@ -982,8 +980,8 @@ async function loadProjects() {
       const { data: files } = await sb.from('files').select('path,type').eq('project_id', p.id).limit(1);
       let thumbHtml = `<div class="project-thumb-placeholder">${p.file_count || 0} files</div>`;
       if (files?.[0]?.type?.startsWith('image/')) {
-        const { data: url } = sb.storage.from('projects').getPublicUrl(files[0].path);
-        if (url) thumbHtml = `<img src="${url.publicUrl}" alt="" loading="lazy">`;
+        const thumbUrl = `${SUPABASE_URL}/storage/v1/object/public/projects/${files[0].path}`;
+        thumbHtml = `<img src="${thumbUrl}" alt="" loading="lazy">`;
       }
       return `<div class="project-card" onclick="openProject('${p.id}','${escHtml(p.name)}')">
         <div class="project-thumb">${thumbHtml}</div>
@@ -1050,8 +1048,7 @@ async function loadFiles() {
     const isImage = f.type?.startsWith('image/');
     let thumb = `<div class="file-thumb-placeholder">${f.type?.split('/')[1]?.toUpperCase() || 'FILE'}</div>`;
     if (isImage) {
-      const { data: url } = sb.storage.from('projects').getPublicUrl(f.path);
-      if (url) thumb = `<img src="${url.publicUrl}" alt="" loading="lazy">`;
+      thumb = `<img src="${SUPABASE_URL}/storage/v1/object/public/projects/${f.path}" alt="" loading="lazy">`;
     }
     return `<div class="file-card">
       <div class="file-thumb">${thumb}</div>
