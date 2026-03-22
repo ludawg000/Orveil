@@ -488,36 +488,48 @@
   /* =========================================
      DESK — the centerpiece, 3D angled
      ========================================= */
-  /* Desk sits on the floor against the wall.
-     The SURFACE is at the top of this container.
-     Legs hang down. Computer sits ON TOP. */
+  /* Desk — solid wood, retro/nostalgic feel.
+     Surface at top, chunky legs hang down. */
   .room-desk {
     top: 58%; left: 30%; right: 30%; z-index: 8;
     height: 14%;
   }
-  /* Desk surface — the flat top */
+  /* Desk surface — thick solid wood slab */
   .desk-top {
-    position: absolute; top: 0; left: 0; right: 0; height: 8px;
-    background: linear-gradient(180deg, #3a3028 0%, #342a22 100%);
+    position: absolute; top: 0; left: -3%; right: -3%; height: 10px;
+    background:
+      repeating-linear-gradient(90deg, transparent 0px, transparent 18px, rgba(0,0,0,0.04) 18px, rgba(0,0,0,0.04) 19px),
+      linear-gradient(180deg, #5a4a38 0%, #4a3c2e 50%, #3e3226 100%);
     border-radius: 2px;
     box-shadow:
-      0 2px 8px rgba(0,0,0,0.6),
-      inset 0 1px 0 rgba(255,255,255,0.06);
+      0 3px 10px rgba(0,0,0,0.7),
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      inset 0 -1px 0 rgba(0,0,0,0.2);
   }
-  /* Desk front edge */
+  /* Desk front edge — thick visible apron */
   .desk-top::after {
-    content: ''; position: absolute; top: 100%; left: 0; right: 0; height: 6px;
-    background: linear-gradient(180deg, #2e2620 0%, #261e18 100%);
-    box-shadow: 0 3px 8px rgba(0,0,0,0.5);
+    content: ''; position: absolute; top: 100%; left: 0; right: 0; height: 10px;
+    background:
+      repeating-linear-gradient(90deg, transparent 0px, transparent 18px, rgba(0,0,0,0.03) 18px, rgba(0,0,0,0.03) 19px),
+      linear-gradient(180deg, #3e3226 0%, #342a20 40%, #2e241c 100%);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
   }
-  /* Desk legs — hang down from surface to floor */
+  /* Desk legs — chunky solid wood */
   .desk-leg {
-    position: absolute; width: 5px; top: 14px; bottom: 0;
-    background: linear-gradient(90deg, #1e1a14, #28221c, #1e1a14);
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+    position: absolute; width: 12px; top: 20px; bottom: 0;
+    background:
+      linear-gradient(90deg, #2e261e 0%, #3e3428 30%, #4a3e32 50%, #3e3428 70%, #2e261e 100%);
+    border-radius: 0 0 2px 2px;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.6);
   }
-  .desk-leg.dl { left: 5%; }
-  .desk-leg.dr { right: 5%; }
+  /* Wood grain on legs */
+  .desk-leg::after {
+    content: ''; position: absolute; inset: 0;
+    background: repeating-linear-gradient(180deg, transparent 0px, transparent 6px, rgba(0,0,0,0.06) 6px, rgba(0,0,0,0.06) 7px);
+    border-radius: inherit;
+  }
+  .desk-leg.dl { left: 6%; }
+  .desk-leg.dr { right: 6%; }
 
   /* Desk stains */
   .desk-stain { position: absolute; border-radius: 50%; pointer-events: none; z-index: 3; }
@@ -681,30 +693,41 @@
     border-radius: 1px; opacity: 0.3;
   }
 
-  /* Keyboard in front of computer on desk */
-  .desk-keyboard {
+  /* Desk lamp — classic brass banker's lamp */
+  .desk-lamp {
     position: absolute; z-index: 11;
-    width: 35%; max-width: 120px;
-    left: 50%; bottom: 100%;
-    transform: translateX(-50%);
-    margin-bottom: 2px;
-    background: linear-gradient(180deg, #c8bca8, #b8aa94);
-    border-radius: 3px; padding: 5px 7px 7px;
-    box-shadow: 2px 3px 10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+    left: 12%; bottom: 100%;
   }
-  .kb-row {
-    height: 5px; margin-bottom: 2px; border-radius: 1px;
-    background: repeating-linear-gradient(90deg, #a09888 0px, #a09888 9px, #b0a898 9px, #b0a898 10px);
-    box-shadow: inset 0 1px 1px rgba(0,0,0,0.12);
+  /* Shade — classic rectangular banker's shade with warm glow */
+  .lamp-shade {
+    width: 36px; height: 16px;
+    background: linear-gradient(180deg, #1a3a1a 0%, #2a5a28 30%, #1a4a1a 100%);
+    border-radius: 2px 2px 0 0;
+    box-shadow:
+      0 -2px 8px rgba(180,160,80,0.06),
+      inset 0 -3px 6px rgba(180,160,80,0.08),
+      0 2px 6px rgba(0,0,0,0.5);
+    border-bottom: 2px solid #8a7a50;
+    position: relative;
   }
-  .kb-row.r1 { width: 96%; }
-  .kb-row.r2 { width: 93%; margin-left: 2.5%; }
-  .kb-row.r3 { width: 89%; margin-left: 4.5%; }
-  .kb-row.r4 { width: 85%; margin-left: 6.5%; }
-  .kb-spacebar {
-    width: 48%; height: 5px; margin: 2px auto 0;
-    background: #a09888; border-radius: 2px;
-    box-shadow: inset 0 1px 1px rgba(0,0,0,0.12);
+  /* Warm light spill from bottom of shade */
+  .lamp-shade::after {
+    content: ''; position: absolute; bottom: -12px; left: -30%; right: -30%; height: 12px;
+    background: radial-gradient(ellipse, rgba(200,170,80,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  /* Neck — thin brass stem */
+  .lamp-neck {
+    width: 3px; height: 22px; margin: 0 auto;
+    background: linear-gradient(90deg, #6a5a38, #9a8a58 50%, #6a5a38);
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+  }
+  /* Base — heavy brass oval */
+  .lamp-base {
+    width: 24px; height: 6px; margin: 0 auto;
+    background: linear-gradient(180deg, #8a7a50 0%, #6a5a38 100%);
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15);
   }
 
   /* === DESK CHAIR === */
@@ -1709,13 +1732,11 @@
             <div class="bottle-body"></div>
             <div class="bottle-label"></div>
           </div>
-          <!-- Keyboard in front -->
-          <div class="desk-keyboard">
-            <div class="kb-row r1"></div>
-            <div class="kb-row r2"></div>
-            <div class="kb-row r3"></div>
-            <div class="kb-row r4"></div>
-            <div class="kb-spacebar"></div>
+          <!-- Desk lamp -->
+          <div class="desk-lamp">
+            <div class="lamp-shade"></div>
+            <div class="lamp-neck"></div>
+            <div class="lamp-base"></div>
           </div>
         </div>
         <!-- Desk chair -->
