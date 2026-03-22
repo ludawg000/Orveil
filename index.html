@@ -168,15 +168,42 @@
     overflow: hidden;
   }
 
-  /* Zoom-in: far away → full room view and stop */
+  /* 3-phase zoom: far away → full room (hold) → centered on computer */
   @keyframes roomZoomIn {
-    0% { transform: scale(0.3); opacity: 0; filter: blur(4px) brightness(0.2); }
-    15% { opacity: 1; filter: blur(2px) brightness(0.4); }
-    100% { transform: scale(1); filter: blur(0) brightness(1); }
+    0% { transform: scale(0.3); opacity: 0; filter: blur(4px) brightness(0.2); transform-origin: 50% 50%; }
+    15% { opacity: 1; filter: blur(2px) brightness(0.4); transform-origin: 50% 50%; }
+    35% { transform: scale(1); filter: blur(0) brightness(1); transform-origin: 50% 50%; }
+    55% { transform: scale(1); filter: blur(0) brightness(1); transform-origin: 50% 50%; }
+    100% { transform: scale(2.2); filter: blur(0) brightness(1); transform-origin: 50% 48%; }
   }
   .tv-frame.zooming-in {
-    animation: roomZoomIn 3s cubic-bezier(0.22, 0.9, 0.36, 1) forwards;
+    animation: roomZoomIn 5s cubic-bezier(0.22, 0.9, 0.36, 1) forwards;
   }
+  .tv-frame.zoomed-in {
+    transform: scale(2.2);
+    transform-origin: 50% 48%;
+  }
+
+  /* Exit button — appears after zoom completes */
+  .room-exit-btn {
+    display: none;
+    position: fixed; top: 1.5rem; right: 1.5rem;
+    z-index: 100;
+    background: none; border: 1px solid rgba(250,250,250,0.15);
+    color: rgba(250,250,250,0.5);
+    font-family: var(--serif);
+    font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 0.5rem 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(4px);
+  }
+  .room-exit-btn:hover {
+    color: #fafafa;
+    border-color: rgba(250,250,250,0.4);
+    background: rgba(250,250,250,0.05);
+  }
+  .room-exit-btn.visible { display: block; }
 
   /* === 3D ROOM — straight-on view from doorway === */
   .room-scene {
@@ -1581,6 +1608,7 @@
         <button class="new-project-btn" onclick="openNewProject()">+ New Project</button>
       </div>
     </div>
+    <button class="room-exit-btn" id="room-exit-btn" onclick="toggleManageMode()">Leave Room</button>
     <div class="tv-frame" id="tv-frame" style="display:none">
       <!-- Full bedroom scene -->
       <div class="room-scene">
@@ -3398,22 +3426,29 @@ function toggleManageMode() {
   const main = document.querySelector('.app-main');
   const btn = document.getElementById('manage-btn');
   const tvFrame = document.getElementById('tv-frame');
+  const exitBtn = document.getElementById('room-exit-btn');
   if (manageMode) {
     main.classList.add('retro-tv');
     btn.classList.add('active');
     btn.textContent = 'Done';
     if (tvFrame) {
       tvFrame.style.display = 'block';
-      tvFrame.classList.remove('zooming-in');
+      tvFrame.classList.remove('zooming-in', 'zoomed-in');
       void tvFrame.offsetWidth;
       tvFrame.classList.add('zooming-in');
+      tvFrame.addEventListener('animationend', () => {
+        tvFrame.classList.remove('zooming-in');
+        tvFrame.classList.add('zoomed-in');
+        if (exitBtn) exitBtn.classList.add('visible');
+      }, { once: true });
     }
   } else {
     main.classList.remove('retro-tv');
     btn.classList.remove('active');
     btn.textContent = 'Manage';
+    if (exitBtn) exitBtn.classList.remove('visible');
     if (tvFrame) {
-      tvFrame.classList.remove('zooming-in');
+      tvFrame.classList.remove('zooming-in', 'zoomed-in');
       tvFrame.style.display = 'none';
     }
   }
