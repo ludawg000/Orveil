@@ -268,7 +268,8 @@
   .room-scene {
     position: absolute; inset: 0;
     overflow: hidden;
-    /* No perspective tilt — straight-on like looking through a doorway */
+    perspective: 800px;
+    perspective-origin: 50% 55%;
   }
 
   .room-scene > * { position: absolute; }
@@ -284,8 +285,9 @@
   .room-wall::before {
     content: ''; position: absolute; inset: 0;
     background:
-      radial-gradient(ellipse at 50% 70%, rgba(100,140,255,0.07) 0%, transparent 25%),
-      radial-gradient(ellipse at 50% 75%, rgba(100,140,255,0.03) 0%, transparent 45%);
+      radial-gradient(ellipse at 50% 70%, rgba(100,140,255,0.1) 0%, transparent 30%),
+      radial-gradient(ellipse at 50% 75%, rgba(100,140,255,0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 80%, rgba(80,120,255,0.03) 0%, transparent 65%);
     pointer-events: none;
   }
   /* Baseboard */
@@ -313,6 +315,7 @@
     position: absolute; top: 10%; right: 12%; width: 9%; height: 20%;
     z-index: 1;
   }
+  .room-window.w2 { right: auto; left: 15%; top: 8%; width: 8%; height: 18%; }
   /* Window frame */
   .window-frame {
     position: absolute; inset: 0;
@@ -407,10 +410,10 @@
 
   /* === POSTERS on wall behind computer === */
   .room-poster {
-    top: 30%; left: 32%; width: 75px; height: 95px;
+    top: 30%; left: 32%; width: 55px; height: 70px;
     background: #1a1a1a; z-index: 2;
-    transform: rotate(-1.5deg);
-    box-shadow: 2px 3px 10px rgba(0,0,0,0.7);
+    transform: rotate(-1.5deg) perspective(200px) rotateY(-2deg);
+    box-shadow: 2px 3px 8px rgba(0,0,0,0.5);
     border: 1px solid #2a2620;
   }
   /* Nirvana poster — yellow smiley on black */
@@ -446,8 +449,8 @@
 
   /* Sublime poster — sun logo on blue */
   .room-poster.p2 {
-    left: auto; right: 32%; top: 29%; width: 68px; height: 88px;
-    transform: rotate(1deg); background: #0a0a0a;
+    left: auto; right: 32%; top: 29%; width: 50px; height: 65px;
+    transform: rotate(1deg) perspective(200px) rotateY(2deg); background: #0a0a0a;
   }
   .room-poster.p2 .room-poster-art {
     background: linear-gradient(180deg, #0c1830 0%, #0a1228 50%, #080e20 100%);
@@ -474,7 +477,7 @@
 
   /* Small wall shelf — right side, above window */
   .room-shelf {
-    top: 2%; left: 55%; width: 80px; height: 6px;
+    top: 8%; left: 52%; width: 80px; height: 6px;
     background: linear-gradient(180deg, #3a3228, #2a2420);
     z-index: 2; box-shadow: 0 3px 8px rgba(0,0,0,0.6);
     display: flex; align-items: flex-end; gap: 3px; padding: 0 4px;
@@ -489,7 +492,7 @@
   .room-floor {
     top: 72%; left: 0; right: 0; bottom: 0;
     background:
-      linear-gradient(180deg, #0e0d0a 0%, #0a0908 30%, #060605 100%);
+      linear-gradient(180deg, #0e0d0a 0%, #0a0908 20%, #080807 50%, #050504 100%);
     z-index: 0;
   }
   /* Shadow line where wall meets floor */
@@ -506,7 +509,7 @@
 
   /* === BOOKSHELF (left of desk, against back wall, on floor) === */
   .room-bookshelf {
-    top: 32%; left: 12%; z-index: 3;
+    top: 32%; left: 12%; z-index: 4;
     width: 10%; bottom: 28%;
   }
   /* Bookshelf body — tall wooden unit against wall */
@@ -567,10 +570,10 @@
   /* Bean bag on the floor */
   .bean-bag {
     bottom: 28%; right: 12%; z-index: 4;
-    width: 100px; height: 75px;
+    width: 70px; height: 50px;
     background: radial-gradient(ellipse at 45% 40%, #3a2828 0%, #2e1e1e 40%, #221414 100%);
     border-radius: 55% 50% 48% 52% / 60% 55% 50% 45%;
-    box-shadow: 4px 5px 14px rgba(0,0,0,0.7), inset 0 -3px 8px rgba(0,0,0,0.3);
+    box-shadow: 4px 6px 18px rgba(0,0,0,0.7), inset 0 -3px 8px rgba(0,0,0,0.3);
   }
   /* Top crease/fold */
   .bean-bag::before {
@@ -616,6 +619,8 @@
     height: 14%;
     transform-style: preserve-3d;
     perspective: 400px;
+    transform: rotateX(2deg);
+    transform-origin: bottom center;
   }
   /* Desk surface — 3D tilted slab, you see the top */
   .desk-top {
@@ -966,6 +971,10 @@
   .room-scene[data-wall="rose"] .room-wall { background: linear-gradient(180deg, #120a0c 0%, #1e1216 20%, #24161a 50%, #2a1a20 80%, #301e24 100%); }
   .room-scene[data-wall="navy"] .room-wall { background: linear-gradient(180deg, #080a12 0%, #0c1020 20%, #101428 50%, #141830 80%, #181c36 100%); }
   .room-scene[data-wall="cream"] .room-wall { background: linear-gradient(180deg, #14120e 0%, #1e1c16 20%, #24221a 50%, #2a2820 80%, #302e24 100%); }
+  .room-scene[data-wall="blush"] .room-wall { background: linear-gradient(180deg, #1a1018 0%, #261820 20%, #301e28 50%, #3a2430 80%, #422a38 100%); }
+  .room-scene[data-wall="lilac-wall"] .room-wall { background: linear-gradient(180deg, #141020 0%, #1c1828 20%, #241e32 50%, #2c2438 80%, #342a40 100%); }
+  .room-scene[data-wall="sky"] .room-wall { background: linear-gradient(180deg, #0c1420 0%, #141c2a 20%, #1a2434 50%, #202c3e 80%, #263448 100%); }
+  .room-scene[data-wall="moss"] .room-wall { background: linear-gradient(180deg, #0e1410 0%, #141c14 20%, #1a241a 50%, #202c20 80%, #263426 100%); }
 
   /* Computer colors */
   .room-scene[data-computer="space-gray"] .mac-case { background: linear-gradient(180deg, #5a5a5e 0%, #4a4a4e 40%, #3e3e42 100%); }
@@ -1047,7 +1056,7 @@
   .room-scene[data-poster2="none"] .room-poster.p2 { display: none; }
 
   /* Bean bag colors */
-  .room-scene[data-beanbag="pink"] .bean-bag { background: radial-gradient(ellipse at 45% 40%, #3a2830 0%, #2e1e28 40%, #221420 100%); }
+  .room-scene[data-beanbag="pink"] .bean-bag { background: radial-gradient(ellipse at 45% 40%, #4a2838 0%, #3a1e30 40%, #2e1428 100%); }
   .room-scene[data-beanbag="green"] .bean-bag { background: radial-gradient(ellipse at 45% 40%, #1e3a28 0%, #163020 40%, #0e2418 100%); }
   .room-scene[data-beanbag="navy"] .bean-bag { background: radial-gradient(ellipse at 45% 40%, #1e2238 0%, #161a30 40%, #0e1228 100%); }
   .room-scene[data-beanbag="cream"] .bean-bag { background: radial-gradient(ellipse at 45% 40%, #3a3428 0%, #302c20 40%, #26221a 100%); }
@@ -2001,8 +2010,8 @@
   @media(max-width:1024px) {
     .mac-computer { width: 22%; }
     .tv-screen { height: 120px; }
-    .room-poster { width: 55px; height: 72px; }
-    .room-poster.p2 { width: 50px; height: 66px; }
+    .room-poster { width: 45px; height: 58px; }
+    .room-poster.p2 { width: 40px; height: 52px; }
     .lamp-shade { width: 60px; height: 28px; }
     .lamp-neck { height: 40px; }
     .lamp-base { width: 40px; height: 10px; }
@@ -2019,11 +2028,11 @@
     .mac-computer { width: 24%; }
     .tv-screen { height: 110px; }
     .mac-power-btn { width: 20px; height: 20px; bottom: 6px; right: 8px; }
-    .room-poster { width: 48px; height: 62px; }
-    .room-poster .room-poster-art::after { font-size: 4px; }
-    .room-poster.p2 { width: 42px; height: 56px; }
-    .room-poster.p2 .room-poster-art::after { font-size: 4px; }
-    .bean-bag { width: 80px; height: 60px; }
+    .room-poster { width: 38px; height: 48px; }
+    .room-poster .room-poster-art::after { font-size: 3.5px; }
+    .room-poster.p2 { width: 34px; height: 44px; }
+    .room-poster.p2 .room-poster-art::after { font-size: 3.5px; }
+    .bean-bag { width: 55px; height: 40px; }
     .room-bookshelf { width: 15%; }
     .lamp-shade { width: 50px; height: 24px; }
     .lamp-neck { height: 34px; }
@@ -2110,11 +2119,16 @@
           <div class="shelf-book b3"></div>
           <div class="shelf-book b4"></div>
         </div>
-        <!-- Window on wall -->
+        <!-- Window on wall (right) -->
         <div class="room-window">
           <div class="window-glass" id="room-window-glass"></div>
           <div class="window-frame"></div>
           <button class="window-toggle" id="window-toggle" onclick="toggleDayNight()" title="Toggle day/night">☽</button>
+        </div>
+        <!-- Window on wall (left, above bookshelf) -->
+        <div class="room-window w2">
+          <div class="window-glass" id="room-window-glass-2"></div>
+          <div class="window-frame"></div>
         </div>
         <!-- Floor -->
         <div class="room-floor"></div>
@@ -2149,12 +2163,12 @@
         <div class="floor-clothes fc2" data-draggable="clothes2"></div>
         <div class="floor-shirt" data-draggable="shirt"></div>
         <!-- Desk (center) -->
-        <div class="room-desk">
+        <div class="room-desk" data-draggable="desk">
           <div class="desk-top"></div>
           <div class="desk-leg dl"></div>
           <div class="desk-leg dr"></div>
           <!-- Computer sits ON the desk -->
-          <div class="mac-computer">
+          <div class="mac-computer" data-draggable="computer">
             <div class="mac-case">
               <div class="mac-top-vent"></div>
               <div class="mac-screen-well">
@@ -2172,11 +2186,11 @@
           </div>
         </div>
         <!-- Soda cans — room-scene children for free positioning -->
-        <div class="soda-can sc1" data-draggable="can-green">
+        <div class="soda-can sc1" data-draggable="can-green" data-gravity="true">
           <div class="can-top"></div>
           <div class="can-body"></div>
         </div>
-        <div class="soda-can sc2" data-draggable="can-red">
+        <div class="soda-can sc2" data-draggable="can-red" data-gravity="true">
           <div class="can-top"></div>
           <div class="can-body"></div>
         </div>
@@ -2193,10 +2207,10 @@
           <div class="chair-leg"></div>
         </div>
         <!-- Sneakers on floor -->
-        <div class="floor-shoe s1" data-draggable="shoe1"></div>
-        <div class="floor-shoe s2" data-draggable="shoe2"></div>
+        <div class="floor-shoe s1" data-draggable="shoe1" data-gravity="true"></div>
+        <div class="floor-shoe s2" data-draggable="shoe2" data-gravity="true"></div>
         <!-- Soda can on floor -->
-        <div class="floor-can" data-draggable="floor-can"></div>
+        <div class="floor-can" data-draggable="floor-can" data-gravity="true"></div>
       </div>
     </div>
     <!-- Room control buttons (fixed position, outside tv-frame) -->
@@ -2223,9 +2237,9 @@
             <div class="rc-theme-name">Cozy</div>
             <div class="rc-theme-desc">Warm &amp; inviting</div>
           </div>
-          <div class="rc-theme" data-theme="pastel" onclick="applyRoomTheme('pastel')">
-            <div class="rc-theme-name">Pastel</div>
-            <div class="rc-theme-desc">Soft &amp; pretty</div>
+          <div class="rc-theme" data-theme="girly" onclick="applyRoomTheme('girly')">
+            <div class="rc-theme-name">Girly</div>
+            <div class="rc-theme-desc">Pink &amp; pretty</div>
           </div>
         </div>
       </div>
@@ -2239,6 +2253,10 @@
           <div class="rc-swatch" data-value="rose" data-label="Rose" style="background:#231a1e" onclick="setRoomOption('wall','rose')"></div>
           <div class="rc-swatch" data-value="navy" data-label="Navy" style="background:#141828" onclick="setRoomOption('wall','navy')"></div>
           <div class="rc-swatch" data-value="cream" data-label="Cream" style="background:#2a2820" onclick="setRoomOption('wall','cream')"></div>
+          <div class="rc-swatch" data-value="blush" data-label="Blush" style="background:#3a2430" onclick="setRoomOption('wall','blush')"></div>
+          <div class="rc-swatch" data-value="lilac-wall" data-label="Lilac" style="background:#2c2438" onclick="setRoomOption('wall','lilac-wall')"></div>
+          <div class="rc-swatch" data-value="sky" data-label="Sky" style="background:#1a2434" onclick="setRoomOption('wall','sky')"></div>
+          <div class="rc-swatch" data-value="moss" data-label="Moss" style="background:#1a241a" onclick="setRoomOption('wall','moss')"></div>
         </div>
       </div>
 
@@ -3996,9 +4014,11 @@ let pendingInviteId = null;
 
 function toggleDayNight() {
   const glass = document.getElementById('room-window-glass');
+  const glass2 = document.getElementById('room-window-glass-2');
   const btn = document.getElementById('window-toggle');
   if (!glass || !btn) return;
   glass.classList.toggle('daytime');
+  if (glass2) glass2.classList.toggle('daytime');
   const isDay = glass.classList.contains('daytime');
   btn.textContent = isDay ? '☀' : '☽';
   localStorage.setItem('orveil-room-daytime', isDay ? '1' : '0');
@@ -4036,7 +4056,8 @@ function toggleManageMode() {
     const isDay = localStorage.getItem('orveil-room-daytime') === '1';
     const glass = document.getElementById('room-window-glass');
     const wBtn = document.getElementById('window-toggle');
-    if (glass && isDay) { glass.classList.add('daytime'); if (wBtn) wBtn.textContent = '☀'; }
+    const glass2 = document.getElementById('room-window-glass-2');
+    if (glass && isDay) { glass.classList.add('daytime'); if (glass2) glass2.classList.add('daytime'); if (wBtn) wBtn.textContent = '☀'; }
     if (tvFrame) {
       tvFrame.style.display = 'block';
       tvFrame.classList.remove('zooming-in', 'zoomed-in');
@@ -4072,7 +4093,7 @@ const ROOM_THEMES = {
   grunge: { wall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on' },
   minimal: { wall: 'charcoal', computer: 'silver', poster1: 'quote', poster2: 'none', beanbag: 'cream', clutter: 'off' },
   cozy: { wall: 'cream', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'green', clutter: 'off' },
-  pastel: { wall: 'rose', computer: 'lilac', poster1: 'matisse', poster2: 'floral', beanbag: 'pink', clutter: 'off' }
+  girly: { wall: 'blush', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'pink', clutter: 'off' }
 };
 
 function getRoomConfig() {
@@ -4222,6 +4243,7 @@ function initRoomDrag() {
       el.style.top = saved[id].top;
       el.style.right = 'auto';
       el.style.bottom = 'auto';
+      el.style.transform = 'none';
     }
   });
 
@@ -4249,15 +4271,40 @@ function initRoomDrag() {
     dragging.style.top = top + '%';
     dragging.style.right = 'auto';
     dragging.style.bottom = 'auto';
+    dragging.style.transform = 'none';
   }
 
   function endDrag() {
     if (!dragging) return;
-    const id = dragging.dataset.draggable;
-    const saved = JSON.parse(localStorage.getItem('orveil-room-positions') || '{}');
-    saved[id] = { left: dragging.style.left, top: dragging.style.top };
-    localStorage.setItem('orveil-room-positions', JSON.stringify(saved));
+    const el = dragging;
+    const id = el.dataset.draggable;
+
+    // Apply gravity to small objects
+    if (el.dataset.gravity === 'true') {
+      const top = parseFloat(el.style.top);
+      const left = parseFloat(el.style.left);
+      const floorTop = 72;
+      const deskTop = 55;
+      const deskBottom = 62;
+      const deskLeft = 25;
+      const deskRight = 70;
+      const onDesk = top >= deskTop && top <= deskBottom && left >= deskLeft && left <= deskRight;
+
+      if (!onDesk && top < floorTop) {
+        el.style.transition = 'top 0.4s cubic-bezier(0.6, 0, 1, 1)';
+        el.style.top = (floorTop + 2 + Math.random() * 6) + '%';
+        setTimeout(() => { el.style.transition = ''; }, 500);
+      }
+    }
+
     dragging = null;
+
+    // Save position (after gravity settles)
+    setTimeout(() => {
+      const saved = JSON.parse(localStorage.getItem('orveil-room-positions') || '{}');
+      saved[id] = { left: el.style.left, top: el.style.top };
+      localStorage.setItem('orveil-room-positions', JSON.stringify(saved));
+    }, 550);
   }
 
   // Mouse events
