@@ -367,6 +367,14 @@
   }
   .gallery-video-item video.loaded { opacity: 1; transform: translateY(0); }
   .gallery-video-item:hover video.loaded { transform: scale(1.02); transition: transform 0.5s ease; }
+  .video-placeholder {
+    width: 100%; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.3);
+    font-size: 0.72rem; letter-spacing: 0.05em; padding: 1rem;
+    word-break: break-all; text-align: center;
+    opacity: 0; transition: opacity 0.8s ease;
+  }
+  .video-placeholder.loaded { opacity: 1; }
   .gallery-video-badge {
     position: absolute; top: 0.8rem; left: 0.8rem;
     font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase;
@@ -753,7 +761,7 @@ function renderGalleryGrid() {
   grid.innerHTML = galleryFiles.map((f, i) => {
     if (f.type?.startsWith('video/')) {
       return `<div class="gallery-item gallery-video-item" onclick="openLightbox(${i})">
-        <video src="${f.publicUrl}" muted preload="metadata" onloadeddata="this.classList.add('loaded')"></video>
+        <video src="${f.publicUrl}" muted playsinline preload="metadata" onloadeddata="this.currentTime=0.5;this.classList.add('loaded')" onerror="this.outerHTML='<div class=\\'video-placeholder loaded\\'>${escHtml(f.name)}</div>'"></video>
         <div class="gallery-video-badge">Video</div>
         <div class="gallery-item-overlay">
           <div class="gallery-item-name">${escHtml(f.name)}</div>
