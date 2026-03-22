@@ -223,10 +223,11 @@
   /* CRT shutdown animation overlay */
   .crt-shutdown {
     display: none;
-    position: fixed; inset: 0;
-    z-index: 200;
+    position: absolute; inset: 0;
+    z-index: 50;
     background: #000;
     pointer-events: none;
+    border-radius: 3px;
   }
   @keyframes crtOff {
     0% { opacity: 0; }
@@ -359,6 +360,39 @@
     pointer-events: none; z-index: 0;
   }
 
+  /* Day/night toggle button on window */
+  .window-toggle {
+    position: absolute; top: 4px; right: 4px; z-index: 10;
+    width: 16px; height: 16px; border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(0,0,0,0.4);
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 8px; line-height: 1; padding: 0;
+    transition: background 0.3s, border-color 0.3s;
+    color: #c8d4e8;
+  }
+  .window-toggle:hover { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.3); }
+
+  /* Daytime overrides */
+  .window-glass.daytime {
+    background: linear-gradient(180deg, #4a8ac4 0%, #6aade8 40%, #88c8f0 70%, #a8daf8 100%);
+  }
+  .window-glass.daytime::before {
+    background: radial-gradient(circle, rgba(255,240,180,0.9) 0%, rgba(255,220,120,0.3) 50%, transparent 70%);
+    width: 12px; height: 12px; top: 18%; right: 22%;
+    box-shadow: 0 0 12px rgba(255,220,120,0.5);
+  }
+  .window-glass.daytime::after {
+    background: transparent; box-shadow: none;
+  }
+  .room-window:has(.daytime)::after {
+    background: radial-gradient(ellipse, rgba(255,240,200,0.06) 0%, transparent 60%);
+  }
+  .window-glass.daytime + .window-toggle,
+  .window-glass.daytime ~ .window-toggle {
+    color: #f0c040; background: rgba(255,255,255,0.2); border-color: rgba(255,240,180,0.3);
+  }
+
   /* Ceiling light */
   .ceiling-light {
     top: 0; left: 50%; transform: translateX(-50%);
@@ -438,18 +472,7 @@
   }
   .room-poster.p2 .room-poster-tape::before { display: none; }
 
-  /* Shelf */
-  .room-shelf {
-    top: 10%; left: 35%; width: 100px; height: 6px;
-    background: linear-gradient(180deg, #3a3228, #2a2420);
-    z-index: 1; box-shadow: 0 3px 8px rgba(0,0,0,0.6);
-    display: flex; align-items: flex-end; gap: 3px; padding: 0 4px;
-  }
-  .shelf-book { width: 13px; border-radius: 1px 1px 0 0; transform-origin: bottom; }
-  .shelf-book.b1 { height: 24px; background: #6a4a28; transform: rotate(-2deg); }
-  .shelf-book.b2 { height: 18px; background: #3a5a3a; }
-  .shelf-book.b3 { height: 28px; background: #3a3a6a; transform: rotate(3deg); }
-  .shelf-book.b4 { height: 20px; background: #6a3a3a; transform: rotate(-1deg); }
+  /* Shelf removed — bookshelf covers this */
 
   /* === FLOOR — ground plane below back wall === */
   .room-floor {
@@ -530,35 +553,25 @@
   .bk-book.b15 { width: 7px; height: 55%; background: #6a3a3a; transform: rotate(5deg); }
 
   /* === LAUNDRY HAMPER === */
-  .laundry-hamper {
-    top: 48%; right: 14%; z-index: 4;
-    width: 35px; bottom: 28%;
+  /* Bean bag on the floor */
+  .bean-bag {
+    bottom: 28%; right: 12%; z-index: 4;
+    width: 55px; height: 42px;
+    background: radial-gradient(ellipse at 45% 40%, #3a2828 0%, #2e1e1e 40%, #221414 100%);
+    border-radius: 55% 50% 48% 52% / 60% 55% 50% 45%;
+    box-shadow: 4px 5px 14px rgba(0,0,0,0.7), inset 0 -3px 8px rgba(0,0,0,0.3);
   }
-  .hamper-body {
-    position: absolute; bottom: 0; left: 0; right: 0; height: 85%;
-    background:
-      repeating-linear-gradient(0deg, transparent 0px, transparent 4px, rgba(0,0,0,0.06) 4px, rgba(0,0,0,0.06) 5px),
-      linear-gradient(180deg, #5a5040, #4a4030 50%, #3a3020);
-    border-radius: 3px 3px 5px 5px;
-    box-shadow: 4px 4px 12px rgba(0,0,0,0.6);
+  /* Top crease/fold */
+  .bean-bag::before {
+    content: ''; position: absolute; top: 8px; left: 15%; right: 20%; height: 6px;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.2) 0%, transparent 70%);
+    border-radius: 50%;
   }
-  .hamper-rim {
-    position: absolute; top: 10%; left: -2px; right: -2px; height: 5px;
-    background: #5a5040; border-radius: 3px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-  }
-  .hamper-clothes { position: absolute; z-index: 4; }
-  .hamper-clothes.c1 {
-    top: -6px; left: 4px; width: 18px; height: 10px;
-    background: #c84040; border-radius: 30% 60% 40% 50%; transform: rotate(-8deg);
-  }
-  .hamper-clothes.c2 {
-    top: -3px; right: 2px; width: 14px; height: 9px;
-    background: #4080c0; border-radius: 50% 30% 50% 40%; transform: rotate(12deg);
-  }
-  .hamper-clothes.c3 {
-    top: 4px; left: -5px; width: 12px; height: 7px;
-    background: #e8e0d0; border-radius: 40% 50% 50% 40%; transform: rotate(-20deg);
+  /* Subtle leather texture highlight */
+  .bean-bag::after {
+    content: ''; position: absolute; top: 20%; left: 25%; width: 35%; height: 30%;
+    background: radial-gradient(ellipse, rgba(80,50,50,0.15) 0%, transparent 70%);
+    border-radius: 50%;
   }
 
   /* Floor clothes */
@@ -702,9 +715,9 @@
      =========================== */
   .mac-computer {
     position: absolute; z-index: 10;
-    width: 27%;
-    /* Sits on the desk surface */
-    left: 50%; bottom: calc(100% - 20px);
+    width: 18%;
+    /* Sits on desk, pushed back against wall */
+    left: 50%; bottom: calc(100% + 2px);
     transform: translateX(-50%);
   }
   /* Glow from screen on the desk surface */
@@ -716,8 +729,8 @@
 
   .mac-case {
     background: linear-gradient(180deg, #e8dcc8 0%, #d9ccb4 40%, #cfc0a6 100%);
-    border-radius: 8px 8px 3px 3px;
-    padding: 0.9rem 1.1rem 0.7rem;
+    border-radius: 6px 6px 2px 2px;
+    padding: 0.5rem 0.6rem 0.4rem;
     position: relative;
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,0.5),
@@ -734,19 +747,19 @@
     background: radial-gradient(ellipse at 50% 40%, rgba(100,140,255,0.025) 0%, transparent 60%);
   }
   .mac-top-vent {
-    height: 5px; margin-bottom: 0.5rem;
+    height: 3px; margin-bottom: 0.3rem;
     background: repeating-linear-gradient(90deg, transparent 0px, transparent 5px, #c4b59e 5px, #c4b59e 6px);
     opacity: 0.3; border-radius: 2px;
   }
   .mac-screen-well {
     background: #2a2520; border-radius: 4px; padding: 5px;
-    position: relative;
+    position: relative; overflow: hidden;
     box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.1);
   }
 
   /* The screen — FIXED height, scrollable */
   .tv-screen {
-    width: 100%; height: 200px;
+    width: 100%; height: 130px;
     background: #0a0e1a; border-radius: 3px;
     overflow-y: auto; overflow-x: hidden;
     position: relative;
@@ -769,20 +782,20 @@
     pointer-events: none; z-index: 6;
   }
   .mac-label {
-    text-align: center; margin: 0.5rem 0 0.3rem;
-    font-family: var(--serif); font-size: 0.6rem; font-weight: 400;
+    text-align: center; margin: 0.25rem 0 0.15rem;
+    font-family: var(--serif); font-size: 0.45rem; font-weight: 400;
     letter-spacing: 0.06em; color: #8a7d6b;
   }
-  .mac-floppy { display: flex; justify-content: center; padding: 0.1rem 0 0.15rem; }
+  .mac-floppy { display: flex; justify-content: center; padding: 0.05rem 0 0.1rem; }
   .mac-floppy-slot {
-    width: 55px; height: 4px;
+    width: 35px; height: 3px;
     background: linear-gradient(180deg, #a89880, #b8a890 50%, #a89880);
     border-radius: 2px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
   }
   .mac-base {
     background: linear-gradient(180deg, #c8baa4, #b8a890);
-    border-radius: 0 0 5px 5px;
-    padding: 0.15rem 0.8rem 0.3rem;
+    border-radius: 0 0 4px 4px;
+    padding: 0.1rem 0.5rem 0.2rem;
     box-shadow: 0 3px 10px rgba(0,0,0,0.5);
   }
   .mac-base-ridge {
@@ -802,23 +815,24 @@
     background: linear-gradient(180deg, #2a2018 0%, #3a2a1a 40%, #2a2018 100%);
     border-radius: 4px 4px 0 0;
     box-shadow:
-      0 10px 35px rgba(220,140,40,0.15),
-      0 5px 15px rgba(220,140,40,0.1),
-      inset 0 -6px 12px rgba(220,140,40,0.18),
+      0 10px 50px rgba(220,140,40,0.45),
+      0 5px 25px rgba(220,140,40,0.3),
+      0 20px 80px rgba(220,140,40,0.2),
+      inset 0 -8px 16px rgba(220,140,40,0.5),
       0 2px 8px rgba(0,0,0,0.5);
-    border-bottom: 2px solid #8a6a30;
+    border-bottom: 2px solid #c89030;
     position: relative;
   }
   /* Warm orange light cone from bottom of shade */
   .lamp-shade::after {
-    content: ''; position: absolute; bottom: -28px; left: -60%; right: -60%; height: 28px;
-    background: radial-gradient(ellipse, rgba(220,140,40,0.12) 0%, rgba(220,140,40,0.05) 40%, transparent 70%);
+    content: ''; position: absolute; bottom: -50px; left: -80%; right: -80%; height: 50px;
+    background: radial-gradient(ellipse, rgba(220,140,40,0.35) 0%, rgba(220,140,40,0.15) 40%, transparent 70%);
     pointer-events: none;
   }
   /* Orange glow on wall behind lamp */
   .lamp-shade::before {
-    content: ''; position: absolute; top: -60px; left: -80px; width: 220px; height: 120px;
-    background: radial-gradient(ellipse, rgba(220,140,40,0.05) 0%, transparent 55%);
+    content: ''; position: absolute; top: -80px; left: -120px; width: 320px; height: 200px;
+    background: radial-gradient(ellipse, rgba(220,140,40,0.2) 0%, rgba(220,140,40,0.08) 40%, transparent 65%);
     pointer-events: none; z-index: -1;
   }
   /* Neck — brass stem */
@@ -832,7 +846,7 @@
     width: 48px; height: 12px; margin: 0 auto;
     background: linear-gradient(180deg, #8a7a48 0%, #6a5a30 100%);
     border-radius: 50%;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.5), 0 2px 12px rgba(220,140,40,0.06), inset 0 1px 0 rgba(255,255,255,0.12);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.5), 0 4px 20px rgba(220,140,40,0.2), inset 0 1px 0 rgba(255,255,255,0.12);
   }
 
   /* === DESK CHAIR === */
@@ -901,49 +915,49 @@
 
   /* Cards inside the screen — blue CRT look */
   .tv-screen .project-card {
-    background: #0c1028; padding: 1.2rem;
+    background: #0c1028; padding: 0.5rem;
     cursor: pointer; transition: background 0.2s;
-    display: flex; flex-direction: column; gap: 0.6rem;
+    display: flex; flex-direction: column; gap: 0.35rem;
     position: relative; border-bottom: 1px solid #1a2440;
   }
   .tv-screen .project-card:hover { background: #141c38; }
   .tv-screen .project-name {
     font-family: 'Courier New', monospace; color: #6090ff;
-    font-size: 0.85rem; font-weight: 700;
+    font-size: 0.6rem; font-weight: 700;
     text-shadow: 0 0 6px rgba(96,144,255,0.3);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .tv-screen .project-meta {
     font-family: 'Courier New', monospace;
-    font-size: 0.65rem; color: #6090ff; opacity: 0.5;
+    font-size: 0.5rem; color: #6090ff; opacity: 0.5;
   }
   .tv-screen .project-thumb {
     width: 100%; aspect-ratio: 16/9;
     background: #080c1a; border-radius: 2px;
     display: flex; align-items: center; justify-content: center;
     overflow: hidden;
-    filter: saturate(0) brightness(0.7) contrast(1.1);
+    filter: saturate(1.3) brightness(0.85) contrast(1.1);
     border: 1px solid #1a2440;
   }
   .tv-screen .project-thumb img {
     width: 100%; height: 100%; object-fit: cover;
-    mix-blend-mode: luminosity;
-    filter: brightness(1.2) contrast(1.1);
+    filter: brightness(1.1) contrast(1.1);
   }
   /* Blue tint overlay on thumbnails */
   .tv-screen .project-thumb::after {
     content: ''; position: absolute; inset: 0;
-    background: rgba(100,140,255,0.06); pointer-events: none;
+    background: rgba(100,140,255,0.08); pointer-events: none;
   }
   .tv-screen .project-thumb-placeholder {
     font-family: 'Courier New', monospace;
-    font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase;
+    font-size: 0.45rem; letter-spacing: 0.08em; text-transform: uppercase;
     color: #6090ff; opacity: 0.35;
   }
   .tv-screen .project-card:hover .manage-actions { display: flex; }
   .tv-screen .empty-state {
     grid-column: 1/-1; display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    padding: 4rem 2rem; gap: 1rem; background: #0c1028;
+    padding: 2rem 1rem; gap: 0.5rem; background: #0c1028;
   }
   .tv-screen .empty-title {
     font-family: 'Courier New', monospace; color: #6090ff;
@@ -1700,6 +1714,60 @@
     .dash-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
     .project-nav-actions { gap: 0.5rem; }
   }
+
+  /* === ROOM SCENE RESPONSIVE === */
+  @media(max-width:1024px) {
+    .mac-computer { width: 22%; }
+    .tv-screen { height: 120px; }
+    .room-poster { width: 55px; height: 72px; }
+    .room-poster.p2 { width: 50px; height: 66px; }
+    .lamp-shade { width: 60px; height: 28px; }
+    .lamp-neck { height: 40px; }
+    .lamp-base { width: 40px; height: 10px; }
+  }
+  @media(max-width:768px) {
+    .tv-frame.zoomed-in { transform: scale(2.8); }
+    @keyframes roomZoomIn {
+      0% { transform: scale(0.3); opacity: 0; filter: blur(4px) brightness(0.2); transform-origin: 50% 50%; }
+      15% { opacity: 1; filter: blur(2px) brightness(0.4); transform-origin: 50% 50%; }
+      35% { transform: scale(1); filter: blur(0) brightness(1); transform-origin: 50% 50%; }
+      55% { transform: scale(1); filter: blur(0) brightness(1); transform-origin: 50% 50%; }
+      100% { transform: scale(2.8); filter: blur(0) brightness(1); transform-origin: 50% 44%; }
+    }
+    .mac-computer { width: 24%; }
+    .tv-screen { height: 110px; }
+    .mac-power-btn { width: 20px; height: 20px; bottom: 6px; right: 8px; }
+    .room-poster { width: 48px; height: 62px; }
+    .room-poster .room-poster-art::after { font-size: 4px; }
+    .room-poster.p2 { width: 42px; height: 56px; }
+    .room-poster.p2 .room-poster-art::after { font-size: 4px; }
+    .bean-bag { width: 45px; height: 34px; }
+    .room-bookshelf { width: 15%; }
+    .lamp-shade { width: 50px; height: 24px; }
+    .lamp-neck { height: 34px; }
+    .lamp-base { width: 36px; height: 9px; }
+    .window-toggle { width: 20px; height: 20px; font-size: 10px; }
+    .tv-screen .project-card { padding: 0.4rem; gap: 0.3rem; }
+    .tv-screen .project-name { font-size: 0.5rem; }
+    .tv-screen .project-meta { font-size: 0.4rem; }
+  }
+  @media(max-width:480px) {
+    .tv-frame.zoomed-in { transform: scale(3.5); }
+    @keyframes roomZoomIn {
+      0% { transform: scale(0.3); opacity: 0; filter: blur(4px) brightness(0.2); transform-origin: 50% 50%; }
+      15% { opacity: 1; filter: blur(2px) brightness(0.4); transform-origin: 50% 50%; }
+      35% { transform: scale(1); filter: blur(0) brightness(1); transform-origin: 50% 50%; }
+      55% { transform: scale(1); filter: blur(0) brightness(1); transform-origin: 50% 50%; }
+      100% { transform: scale(3.5); filter: blur(0) brightness(1); transform-origin: 50% 44%; }
+    }
+    .mac-computer { width: 28%; }
+    .tv-screen { height: 90px; }
+    .mac-power-btn { width: 24px; height: 24px; }
+    .tv-screen .project-card { padding: 0.35rem; gap: 0.25rem; }
+    .tv-screen .project-name { font-size: 0.45rem; }
+    .tv-screen .project-meta { font-size: 0.35rem; }
+    .tv-screen .project-thumb { aspect-ratio: 16/10; }
+  }
 </style>
 </head>
 <body>
@@ -1737,8 +1805,6 @@
       </div>
     </div>
     <div class="tv-frame" id="tv-frame" style="display:none">
-      <!-- CRT shutdown overlay -->
-      <div class="crt-shutdown" id="crt-shutdown"></div>
       <!-- Full bedroom scene -->
       <div class="room-scene">
         <!-- Wall -->
@@ -1755,17 +1821,12 @@
           <div class="room-poster-tape"></div>
           <div class="room-poster-art"></div>
         </div>
-        <!-- Shelf on wall -->
-        <div class="room-shelf">
-          <div class="shelf-book b1"></div>
-          <div class="shelf-book b2"></div>
-          <div class="shelf-book b3"></div>
-          <div class="shelf-book b4"></div>
-        </div>
+        <!-- Shelf removed — bookshelf on left wall is enough -->
         <!-- Window on wall -->
         <div class="room-window">
-          <div class="window-glass"></div>
+          <div class="window-glass" id="room-window-glass"></div>
           <div class="window-frame"></div>
+          <button class="window-toggle" id="window-toggle" onclick="toggleDayNight()" title="Toggle day/night">☽</button>
         </div>
         <!-- Floor -->
         <div class="room-floor"></div>
@@ -1793,14 +1854,8 @@
             <div class="bk-book b15"></div>
           </div>
         </div>
-        <!-- Dirty laundry hamper -->
-        <div class="laundry-hamper">
-          <div class="hamper-body"></div>
-          <div class="hamper-rim"></div>
-          <div class="hamper-clothes c1"></div>
-          <div class="hamper-clothes c2"></div>
-          <div class="hamper-clothes c3"></div>
-        </div>
+        <!-- Bean bag -->
+        <div class="bean-bag"></div>
         <!-- Clothes on floor -->
         <div class="floor-clothes fc1"></div>
         <div class="floor-clothes fc2"></div>
@@ -1817,6 +1872,7 @@
               <div class="mac-screen-well">
                 <div class="tv-screen" id="tv-screen"></div>
                 <div class="mac-screen-glare"></div>
+                <div class="crt-shutdown" id="crt-shutdown"></div>
               </div>
               <div class="mac-label">Orveil</div>
               <div class="mac-floppy"><div class="mac-floppy-slot"></div></div>
@@ -3549,6 +3605,16 @@ let pendingDeleteId = null;
 let pendingDeleteName = '';
 let pendingInviteId = null;
 
+function toggleDayNight() {
+  const glass = document.getElementById('room-window-glass');
+  const btn = document.getElementById('window-toggle');
+  if (!glass || !btn) return;
+  glass.classList.toggle('daytime');
+  const isDay = glass.classList.contains('daytime');
+  btn.textContent = isDay ? '☀' : '☽';
+  localStorage.setItem('orveil-room-daytime', isDay ? '1' : '0');
+}
+
 function shutdownRoom() {
   const shutdown = document.getElementById('crt-shutdown');
   if (shutdown) {
@@ -3574,6 +3640,11 @@ function toggleManageMode() {
     main.classList.add('retro-tv');
     btn.classList.add('active');
     btn.textContent = 'Done';
+    // Restore day/night state
+    const isDay = localStorage.getItem('orveil-room-daytime') === '1';
+    const glass = document.getElementById('room-window-glass');
+    const wBtn = document.getElementById('window-toggle');
+    if (glass && isDay) { glass.classList.add('daytime'); if (wBtn) wBtn.textContent = '☀'; }
     if (tvFrame) {
       tvFrame.style.display = 'block';
       tvFrame.classList.remove('zooming-in', 'zoomed-in');
