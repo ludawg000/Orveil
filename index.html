@@ -435,10 +435,20 @@ sb.auth.onAuthStateChange(async (event, session) => {
   if (session?.user) {
     currentUser = session.user;
     await initApp();
-  } else {
+  } else if (event === 'SIGNED_OUT') {
     showScreen('login-screen');
   }
 });
+
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.user) {
+    currentUser = session.user;
+    await initApp();
+  } else {
+    showScreen('login-screen');
+  }
+})();
 
 async function initApp() {
   const meta = currentUser.user_metadata;
