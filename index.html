@@ -333,93 +333,64 @@
     background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
   }
 
-  /* === BED (left side, against wall) — 3D with visible legs === */
-  .room-bed {
-    bottom: 0; left: 0; z-index: 3;
-    width: 28%; height: 48%;
-    transform-style: preserve-3d;
+  /* === BOOKSHELF (left side, against wall) === */
+  .room-bookshelf {
+    bottom: 2%; left: 2%; z-index: 3;
+    width: 18%; height: 52%;
   }
-  /* Bed legs — visible underneath */
-  .bed-leg {
-    position: absolute; width: 8px; height: 28px;
-    background: linear-gradient(90deg, #2a2218, #3e3428, #2a2218);
+  /* Bookshelf body — tall wooden unit against wall */
+  .bookshelf-body {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, #2e2418 0%, #3e3228 15%, #3a2e22 85%, #2a2018 100%);
     border-radius: 2px;
-    box-shadow: 2px 3px 6px rgba(0,0,0,0.7);
+    box-shadow: 5px 5px 20px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.04);
   }
-  .bed-leg.bl1 { bottom: 2%; left: 4%; }
-  .bed-leg.bl2 { bottom: 2%; left: 26%; }
-  .bed-leg.bl3 { bottom: 2%; right: 4%; }
-  .bed-leg.bl4 { bottom: 2%; right: 26%; }
-  /* The bed platform sits above the legs */
-  .bed-frame {
-    position: absolute; left: 0; right: 0; top: 0; bottom: 14%;
-    background: linear-gradient(180deg, #3e3428 0%, #342a22 100%);
-    border-radius: 3px;
-    box-shadow: 5px 8px 24px rgba(0,0,0,0.7);
-    /* Slight 3D tilt — viewing from above at an angle */
-    transform: perspective(600px) rotateX(12deg);
-    transform-origin: top center;
-    transform-style: preserve-3d;
+  /* Top of bookshelf */
+  .bookshelf-body::before {
+    content: ''; position: absolute; top: -3px; left: -1px; right: -1px; height: 6px;
+    background: linear-gradient(180deg, #4a3e32, #3e3228);
+    border-radius: 2px 2px 0 0;
   }
-  /* Headboard — taller piece at the wall end (top) */
-  .bed-frame::before {
-    content: ''; position: absolute; top: -20px; left: -2px; right: -2px; height: 32px;
-    background: linear-gradient(180deg, #5a4e40 0%, #4a3e32 40%, #403428 100%);
-    border-radius: 4px 4px 0 0;
-    box-shadow: 0 -2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+  /* Shelves — horizontal dividers */
+  .bk-shelf {
+    position: absolute; left: 4%; right: 4%; height: 4px;
+    background: linear-gradient(180deg, #4a3e32, #3a2e22);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
   }
-  /* Side rail — visible edge of bed frame */
-  .bed-frame::after {
-    content: ''; position: absolute; bottom: -10px; left: 0; right: 0; height: 10px;
-    background: linear-gradient(180deg, #342a22, #2a2218);
-    border-radius: 0 0 3px 3px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  .bk-shelf.s1 { top: 24%; }
+  .bk-shelf.s2 { top: 49%; }
+  .bk-shelf.s3 { top: 74%; }
+  /* Books on shelves */
+  .bk-books {
+    position: absolute; left: 6%; right: 6%;
+    display: flex; align-items: flex-end; gap: 2px; padding: 0 2px;
   }
-  .bed-mattress {
-    position: absolute; top: 8%; left: 5%; right: 5%; bottom: 18%;
-    background: linear-gradient(180deg, #e8e0d0 0%, #dcd4c4 40%, #d0c8b8 100%);
-    border-radius: 3px;
-    box-shadow: inset 0 2px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.2);
-    transform: perspective(600px) rotateX(12deg);
-    transform-origin: top center;
+  .bk-books.row1 { top: 4%; height: 19%; }
+  .bk-books.row2 { top: 28%; height: 20%; }
+  .bk-books.row3 { top: 53%; height: 20%; }
+  .bk-books.row4 { top: 78%; height: 19%; }
+  .bk-book {
+    flex-shrink: 0; border-radius: 1px 1px 0 0; transform-origin: bottom;
   }
-  .bed-pillow {
-    position: absolute; top: 12%; left: 10%; width: 32%; height: 10%;
-    background: linear-gradient(135deg, #f0e8dc, #e4dcd0);
-    border-radius: 8px;
-    box-shadow: 1px 2px 5px rgba(0,0,0,0.2);
-    transform: perspective(600px) rotateX(12deg);
-    transform-origin: top center;
-  }
-  .bed-pillow::after {
-    content: ''; position: absolute; top: 2px; left: 110%; width: 80%; height: 90%;
-    background: linear-gradient(135deg, #ece4d8, #e0d8cc);
-    border-radius: 8px;
-    box-shadow: 1px 2px 5px rgba(0,0,0,0.15);
-  }
-  .bed-blanket {
-    position: absolute; top: 25%; left: 6%; right: 6%; bottom: 18%;
-    background: linear-gradient(180deg, #2a3a6a 0%, #1e2e5a 50%, #1a2850 100%);
-    border-radius: 3px;
-    box-shadow: 2px 4px 14px rgba(0,0,0,0.4);
-    transform: perspective(600px) rotateX(12deg);
-    transform-origin: top center;
-  }
-  /* Blanket messy fold */
-  .bed-blanket::after {
-    content: ''; position: absolute; top: -8px; right: 5%; width: 50%; height: 22%;
-    background: linear-gradient(135deg, #3a4e80, #2a3a6a);
-    border-radius: 10px 4px 14px 6px;
-    transform: rotate(2deg);
-    box-shadow: 1px 2px 6px rgba(0,0,0,0.3);
-  }
-  .bed-blanket-fold {
-    position: absolute; top: 22%; left: 6%; width: 50%; height: 6%;
-    background: linear-gradient(180deg, #3a4a7a, #2a3a6a);
-    border-radius: 2px 14px 2px 2px;
-    transform: perspective(600px) rotateX(12deg);
-    transform-origin: top center;
-  }
+  /* Row 1 books */
+  .bk-book.b1 { width: 10px; height: 80%; background: #7a4a28; transform: rotate(-1deg); }
+  .bk-book.b2 { width: 8px; height: 65%; background: #2a5a3a; }
+  .bk-book.b3 { width: 12px; height: 90%; background: #3a3a7a; transform: rotate(2deg); }
+  .bk-book.b4 { width: 7px; height: 55%; background: #8a3a3a; }
+  .bk-book.b5 { width: 10px; height: 75%; background: #5a5a2a; transform: rotate(-2deg); }
+  /* Row 2 books */
+  .bk-book.b6 { width: 12px; height: 85%; background: #4a2a5a; }
+  .bk-book.b7 { width: 8px; height: 60%; background: #6a5a3a; transform: rotate(3deg); }
+  .bk-book.b8 { width: 10px; height: 95%; background: #2a4a5a; transform: rotate(-1deg); }
+  .bk-book.b9 { width: 9px; height: 70%; background: #7a6a4a; }
+  /* Row 3 books — some leaning */
+  .bk-book.b10 { width: 11px; height: 88%; background: #5a3a2a; transform: rotate(-3deg); }
+  .bk-book.b11 { width: 8px; height: 50%; background: #3a6a3a; }
+  .bk-book.b12 { width: 14px; height: 78%; background: #8a7a5a; transform: rotate(1deg); }
+  /* Row 4 — fewer books, some space */
+  .bk-book.b13 { width: 10px; height: 70%; background: #5a2a4a; transform: rotate(-4deg); }
+  .bk-book.b14 { width: 12px; height: 85%; background: #3a4a2a; }
+  .bk-book.b15 { width: 7px; height: 55%; background: #6a3a3a; transform: rotate(5deg); }
 
   /* === LAUNDRY HAMPER === */
   .laundry-hamper {
@@ -480,8 +451,8 @@
      DESK — the centerpiece, 3D angled
      ========================================= */
   .room-desk {
-    top: 34%; right: 5%; z-index: 8;
-    width: 52%; height: 58%;
+    top: 38%; right: 10%; z-index: 8;
+    width: 38%; height: 52%;
     transform-style: preserve-3d;
   }
   /* Desk surface — you see the TOP of it (angled toward viewer) */
@@ -489,12 +460,10 @@
     position: absolute; top: 0; left: 0; right: 0; height: 48%;
     background:
       repeating-linear-gradient(90deg, transparent 0px, transparent 32px, rgba(255,255,255,0.012) 32px, rgba(255,255,255,0.012) 33px),
-      radial-gradient(ellipse at 50% 50%, rgba(51,255,51,0.012) 0%, transparent 35%),
       radial-gradient(ellipse at 25% 40%, rgba(120,80,40,0.08) 0%, transparent 12%),
       linear-gradient(180deg, #40362e 0%, #382e26 40%, #302820 100%);
     border-radius: 3px;
     padding: 10px;
-    /* KEY 3D: tilt desk surface toward viewer so you see the top */
     transform: perspective(700px) rotateX(18deg);
     transform-origin: top center;
     box-shadow:
@@ -505,21 +474,20 @@
   }
   /* Desk front face — the vertical edge */
   .desk-top::after {
-    content: ''; position: absolute; bottom: -16px; left: 0; right: 0; height: 16px;
+    content: ''; position: absolute; bottom: -14px; left: 0; right: 0; height: 14px;
     background: linear-gradient(180deg, #302820 0%, #28221a 50%, #201c16 100%);
     border-radius: 0 0 3px 3px;
     box-shadow: 0 6px 16px rgba(0,0,0,0.6);
-    transform: perspective(700px) rotateX(-5deg);
   }
   /* Desk legs */
   .desk-leg {
-    position: absolute; width: 10px;
+    position: absolute; width: 8px;
     background: linear-gradient(90deg, #221e18, #2e2820, #221e18);
     border-radius: 0 0 3px 3px;
     box-shadow: 3px 3px 8px rgba(0,0,0,0.6);
   }
-  .desk-leg.dl { left: 3%; top: 46%; bottom: 5%; }
-  .desk-leg.dr { right: 3%; top: 46%; bottom: 5%; }
+  .desk-leg.dl { left: 4%; top: 46%; bottom: 5%; }
+  .desk-leg.dr { right: 4%; top: 46%; bottom: 5%; }
 
   /* Desk stains */
   .desk-stain { position: absolute; border-radius: 50%; pointer-events: none; z-index: 3; }
@@ -602,15 +570,15 @@
      =========================== */
   .mac-computer {
     position: absolute; z-index: 10;
-    width: 50%; max-width: 240px;
-    /* Centered on desk, pushed toward the BACK (top = toward wall) */
-    left: 50%; top: 2%;
-    transform: translateX(-50%);
+    width: 55%; max-width: 200px;
+    /* Centered on desk, sitting in the middle of the surface */
+    left: 50%; top: 50%;
+    transform: translate(-50%, -55%);
   }
   /* Shadow underneath the computer on the desk */
   .mac-computer::before {
-    content: ''; position: absolute; bottom: -4px; left: 8%; right: 8%; height: 8px;
-    background: radial-gradient(ellipse, rgba(0,0,0,0.5) 0%, transparent 70%);
+    content: ''; position: absolute; bottom: -6px; left: 5%; right: 5%; height: 10px;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.6) 0%, transparent 70%);
     border-radius: 50%; z-index: -1;
   }
 
@@ -694,8 +662,8 @@
   /* Keyboard in front of computer on desk */
   .desk-keyboard {
     position: absolute; z-index: 8;
-    width: 42%; max-width: 190px;
-    left: 50%; bottom: 8%;
+    width: 45%; max-width: 160px;
+    left: 50%; bottom: 5%;
     transform: translateX(-50%);
     background: linear-gradient(180deg, #c8bca8, #b8aa94);
     border-radius: 3px; padding: 5px 7px 7px;
@@ -718,8 +686,8 @@
 
   /* === DESK CHAIR === */
   .desk-chair {
-    bottom: 1%; right: 24%; z-index: 7;
-    width: 50px;
+    bottom: 1%; right: 18%; z-index: 7;
+    width: 45px;
     transform: perspective(300px) rotateY(-12deg);
   }
   .chair-back {
@@ -1649,17 +1617,29 @@
         </div>
         <!-- Floor -->
         <div class="room-floor"></div>
-        <!-- Bed (left side) -->
-        <div class="room-bed">
-          <div class="bed-leg bl1"></div>
-          <div class="bed-leg bl2"></div>
-          <div class="bed-leg bl3"></div>
-          <div class="bed-leg bl4"></div>
-          <div class="bed-frame"></div>
-          <div class="bed-mattress"></div>
-          <div class="bed-pillow"></div>
-          <div class="bed-blanket"></div>
-          <div class="bed-blanket-fold"></div>
+        <!-- Bookshelf (left side, against wall) -->
+        <div class="room-bookshelf">
+          <div class="bookshelf-body"></div>
+          <div class="bk-shelf s1"></div>
+          <div class="bk-shelf s2"></div>
+          <div class="bk-shelf s3"></div>
+          <div class="bk-books row1">
+            <div class="bk-book b1"></div><div class="bk-book b2"></div>
+            <div class="bk-book b3"></div><div class="bk-book b4"></div>
+            <div class="bk-book b5"></div>
+          </div>
+          <div class="bk-books row2">
+            <div class="bk-book b6"></div><div class="bk-book b7"></div>
+            <div class="bk-book b8"></div><div class="bk-book b9"></div>
+          </div>
+          <div class="bk-books row3">
+            <div class="bk-book b10"></div><div class="bk-book b11"></div>
+            <div class="bk-book b12"></div>
+          </div>
+          <div class="bk-books row4">
+            <div class="bk-book b13"></div><div class="bk-book b14"></div>
+            <div class="bk-book b15"></div>
+          </div>
         </div>
         <!-- Dirty laundry hamper -->
         <div class="laundry-hamper">
