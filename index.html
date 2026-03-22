@@ -310,7 +310,7 @@
 
   /* === WINDOW on wall === */
   .room-window {
-    position: absolute; top: 10%; right: 12%; width: 12%; height: 26%;
+    position: absolute; top: 10%; right: 12%; width: 9%; height: 20%;
     z-index: 1;
   }
   /* Window frame */
@@ -407,7 +407,7 @@
 
   /* === POSTERS on wall behind computer === */
   .room-poster {
-    top: 5%; left: 30%; width: 75px; height: 95px;
+    top: 5%; left: 38%; width: 75px; height: 95px;
     background: #1a1a1a; z-index: 2;
     transform: rotate(-1.5deg);
     box-shadow: 2px 3px 10px rgba(0,0,0,0.7);
@@ -446,7 +446,7 @@
 
   /* Sublime poster — sun logo on blue */
   .room-poster.p2 {
-    left: auto; right: 30%; top: 4%; width: 68px; height: 88px;
+    left: auto; right: 38%; top: 4%; width: 68px; height: 88px;
     transform: rotate(1deg); background: #0a0a0a;
   }
   .room-poster.p2 .room-poster-art {
@@ -474,7 +474,7 @@
 
   /* Small wall shelf — right side, above window */
   .room-shelf {
-    top: 3%; right: 12%; width: 80px; height: 6px;
+    top: 2%; left: 55%; width: 80px; height: 6px;
     background: linear-gradient(180deg, #3a3228, #2a2420);
     z-index: 2; box-shadow: 0 3px 8px rgba(0,0,0,0.6);
     display: flex; align-items: flex-end; gap: 3px; padding: 0 4px;
@@ -507,7 +507,7 @@
   /* === BOOKSHELF (left of desk, against back wall, on floor) === */
   .room-bookshelf {
     top: 32%; left: 12%; z-index: 3;
-    width: 13%; bottom: 28%;
+    width: 10%; bottom: 28%;
   }
   /* Bookshelf body — tall wooden unit against wall */
   .bookshelf-body {
@@ -728,7 +728,7 @@
     position: absolute; z-index: 10;
     width: 36%;
     /* Sits on desk, pushed back against wall */
-    left: 50%; bottom: calc(100% + 2px);
+    left: 50%; bottom: calc(100% - 18px);
     transform: translateX(-50%);
   }
   /* Glow from screen on the desk surface */
@@ -770,7 +770,7 @@
 
   /* The screen — FIXED height, scrollable */
   .tv-screen {
-    width: 100%; height: 200px;
+    width: 100%; height: 120px;
     background: #0a0e1a; border-radius: 3px;
     overflow-y: auto; overflow-x: hidden;
     position: relative;
