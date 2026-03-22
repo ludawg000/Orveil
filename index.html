@@ -179,396 +179,373 @@
     animation: roomZoomIn 3s cubic-bezier(0.22, 0.9, 0.36, 1) forwards;
   }
 
-  /* === 3D ROOM CONTAINER === */
+  /* === 3D ROOM — isometric diorama view === */
   .room-scene {
-    position: relative;
-    width: 100%; height: 100vh;
-    perspective: 1000px;
-    perspective-origin: 55% 45%;
+    position: absolute; inset: 0;
     overflow: hidden;
-    transform-style: preserve-3d;
+    /* The whole room is tilted toward the viewer */
+    perspective: 1200px;
+    perspective-origin: 50% 35%;
   }
 
-  /* === BACK WALL — 3D plane === */
+  /* Room inner container — tilted like looking down into a box */
+  .room-scene > * { position: absolute; }
+
+  /* === BACK WALL === */
   .room-wall {
-    position: absolute; top: 0; left: -5%; right: -5%; height: 58%;
-    background: linear-gradient(180deg, #161412 0%, #1c1a16 20%, #22201c 50%, #2a2824 80%, #302c28 100%);
+    top: 0; left: 0; right: 0; height: 50%;
+    background:
+      linear-gradient(180deg, #141210 0%, #1a1816 20%, #201e1a 50%, #282520 80%, #302c28 100%);
     z-index: 0;
-    transform: translateZ(-50px);
-    transform-style: preserve-3d;
   }
   .room-wall::before {
     content: ''; position: absolute; inset: 0;
     background:
-      /* Corner depth shadows */
-      radial-gradient(ellipse at 0% 50%, rgba(0,0,0,0.6) 0%, transparent 30%),
-      radial-gradient(ellipse at 100% 50%, rgba(0,0,0,0.6) 0%, transparent 30%),
-      radial-gradient(ellipse at 50% 0%, rgba(0,0,0,0.3) 0%, transparent 40%),
-      /* Screen glow on wall */
-      radial-gradient(ellipse at 58% 70%, rgba(51,255,51,0.025) 0%, transparent 25%),
-      /* Dirty spots */
-      radial-gradient(ellipse at 20% 60%, rgba(120,90,40,0.06) 0%, transparent 30%),
-      radial-gradient(ellipse at 80% 40%, rgba(100,80,40,0.04) 0%, transparent 25%);
+      /* Side shadows for room corners */
+      linear-gradient(90deg, rgba(0,0,0,0.5) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.5) 100%),
+      /* Screen glow hitting wall */
+      radial-gradient(ellipse at 55% 80%, rgba(51,255,51,0.03) 0%, transparent 30%),
+      /* Stains */
+      radial-gradient(ellipse at 22% 55%, rgba(120,90,40,0.06) 0%, transparent 25%),
+      radial-gradient(ellipse at 78% 35%, rgba(100,80,40,0.04) 0%, transparent 20%);
     pointer-events: none;
   }
-  /* Water stain */
+  /* Baseboard */
   .room-wall::after {
-    content: ''; position: absolute; top: 12%; right: 18%; width: 100px; height: 150px;
-    background: radial-gradient(ellipse, rgba(80,65,35,0.1) 0%, transparent 60%);
-    border-radius: 50%; transform: rotate(-12deg);
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 12px;
+    background: linear-gradient(180deg, #22201c, #1a1816);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
   }
 
-  /* Ceiling light fixture */
+  /* Ceiling light */
   .ceiling-light {
-    position: absolute; top: 0; left: 55%; transform: translateX(-50%);
-    width: 5px; height: 22px; background: #1c1a16;
-    z-index: 2;
+    top: 0; left: 55%; transform: translateX(-50%);
+    width: 4px; height: 18px; background: #1c1a16; z-index: 2;
   }
   .ceiling-light::after {
-    content: ''; position: absolute; bottom: -7px; left: -9px;
-    width: 22px; height: 11px;
+    content: ''; position: absolute; bottom: -6px; left: -8px;
+    width: 20px; height: 10px;
     background: radial-gradient(ellipse, #302c28 40%, #1c1a16 100%);
     border-radius: 0 0 50% 50%;
   }
 
-  /* === POSTERS === */
+  /* === POSTERS on wall === */
   .room-poster {
-    position: absolute; top: 5%; left: 5%; width: 70px; height: 95px;
+    top: 6%; left: 6%; width: 65px; height: 85px;
     background: #2c2620; z-index: 1;
-    transform: rotate(-3deg);
-    box-shadow: 0 3px 10px rgba(0,0,0,0.6);
+    transform: rotate(-2deg);
+    box-shadow: 2px 3px 8px rgba(0,0,0,0.7);
     border: 1px solid #3a3228;
   }
   .room-poster.p2 {
-    left: auto; right: 8%; top: 3%; width: 55px; height: 75px;
-    transform: rotate(2deg);
-    background: #1a2030;
+    left: auto; right: 10%; top: 4%; width: 50px; height: 68px;
+    transform: rotate(2deg); background: #1a2030;
   }
   .room-poster-tape {
-    position: absolute; top: -5px; left: 50%; transform: translateX(-50%);
-    width: 22px; height: 8px; background: rgba(220,200,160,0.2);
-    border-radius: 1px;
+    position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
+    width: 20px; height: 7px; background: rgba(220,200,160,0.2); border-radius: 1px;
   }
   .room-poster-art {
-    position: absolute; inset: 5px;
-    background: linear-gradient(135deg, #3a2818 0%, #201408 100%);
+    position: absolute; inset: 4px;
+    background: linear-gradient(135deg, #3a2818, #201408);
   }
-  .room-poster.p2 .room-poster-art {
-    background: linear-gradient(135deg, #182838 0%, #0a1420 100%);
-  }
+  .room-poster.p2 .room-poster-art { background: linear-gradient(135deg, #182838, #0a1420); }
   .room-poster-art::after {
-    content: ''; position: absolute; top: 25%; left: 10%; right: 10%; height: 4px;
+    content: ''; position: absolute; top: 25%; left: 10%; right: 10%; height: 3px;
     background: #c0392b; opacity: 0.5;
   }
-  .room-poster.p2 .room-poster-art::after {
-    background: #2980b9; top: 40%;
-  }
+  .room-poster.p2 .room-poster-art::after { background: #2980b9; top: 40%; }
 
   /* Shelf */
   .room-shelf {
-    position: absolute; top: 8%; left: 22%; width: 100px; height: 8px;
-    background: linear-gradient(180deg, #3a3228 0%, #2a2420 100%);
-    z-index: 1;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-    display: flex; align-items: flex-end; gap: 3px;
-    padding: 0 5px;
+    top: 9%; left: 25%; width: 90px; height: 7px;
+    background: linear-gradient(180deg, #3a3228, #2a2420);
+    z-index: 1; box-shadow: 0 3px 8px rgba(0,0,0,0.6);
+    display: flex; align-items: flex-end; gap: 3px; padding: 0 4px;
   }
-  .shelf-book {
-    width: 12px; border-radius: 1px 1px 0 0;
-    transform-origin: bottom;
-  }
-  .shelf-book.b1 { height: 22px; background: #5a3a20; transform: rotate(-2deg); }
-  .shelf-book.b2 { height: 16px; background: #2a4a2a; }
-  .shelf-book.b3 { height: 26px; background: #2a2a5a; transform: rotate(4deg); }
-  .shelf-book.b4 { height: 19px; background: #5a2a2a; transform: rotate(-1deg); }
+  .shelf-book { width: 11px; border-radius: 1px 1px 0 0; transform-origin: bottom; }
+  .shelf-book.b1 { height: 20px; background: #5a3a20; transform: rotate(-2deg); }
+  .shelf-book.b2 { height: 15px; background: #2a4a2a; }
+  .shelf-book.b3 { height: 24px; background: #2a2a5a; transform: rotate(3deg); }
+  .shelf-book.b4 { height: 17px; background: #5a2a2a; transform: rotate(-1deg); }
 
-  /* === FLOOR — 3D ground plane === */
+  /* === FLOOR — receding ground plane === */
   .room-floor {
-    position: absolute; top: 52%; left: -10%; right: -10%; bottom: -20%;
+    top: 50%; left: 0; right: 0; bottom: 0;
     background:
-      /* Floorboard lines */
-      repeating-linear-gradient(90deg, transparent 0px, transparent 80px, rgba(0,0,0,0.05) 80px, rgba(0,0,0,0.05) 81px),
-      repeating-linear-gradient(90deg, transparent 0px, transparent 160px, rgba(255,255,255,0.01) 160px, rgba(255,255,255,0.01) 161px),
-      linear-gradient(180deg, #1e1a14 0%, #181410 30%, #14120e 60%, #100e0c 100%);
+      repeating-linear-gradient(90deg, transparent 0px, transparent 90px, rgba(0,0,0,0.04) 90px, rgba(0,0,0,0.04) 91px),
+      linear-gradient(180deg, #1c1a14 0%, #18160f 40%, #14120e 70%, #100e0b 100%);
     z-index: 0;
-    transform: perspective(600px) rotateX(15deg);
+    /* Floor recedes away from viewer */
     transform-origin: top center;
+    transform: perspective(500px) rotateX(8deg);
   }
-  /* Wall-floor shadow line */
+  /* Shadow line where wall meets floor */
   .room-floor::before {
-    content: ''; position: absolute; top: -2px; left: 0; right: 0; height: 12px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 40%, transparent 100%);
-  }
-  /* Ambient shadow on floor from furniture */
-  .room-floor::after {
-    content: ''; position: absolute; top: 5%; left: 0; right: 0; bottom: 0;
-    background:
-      radial-gradient(ellipse at 55% 30%, rgba(0,0,0,0.3) 0%, transparent 40%),
-      radial-gradient(ellipse at 15% 40%, rgba(0,0,0,0.2) 0%, transparent 30%);
-    pointer-events: none;
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 15px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
   }
 
-  /* === BED (left side) — 3D === */
+  /* === BED (left side) === */
   .room-bed {
-    position: absolute; bottom: 8%; left: 1%; z-index: 2;
-    width: 30%; height: 38%;
-    transform: perspective(800px) rotateY(8deg) rotateX(-2deg);
-    transform-origin: left center;
+    bottom: 2%; left: 1%; z-index: 3;
+    width: 28%; height: 42%;
+    /* Angled into left wall — shows side + top */
+    transform: perspective(600px) rotateY(12deg) rotateX(-3deg);
+    transform-origin: left bottom;
   }
   .bed-frame {
     position: absolute; inset: 0;
-    background: linear-gradient(180deg, #3a3028 0%, #2e2620 100%);
+    background: linear-gradient(180deg, #3a3028, #2e2620);
     border-radius: 4px;
-    box-shadow: 6px 6px 20px rgba(0,0,0,0.7), 0 2px 4px rgba(0,0,0,0.4);
+    box-shadow: 8px 8px 25px rgba(0,0,0,0.7);
   }
-  /* Headboard */
   .bed-frame::before {
-    content: ''; position: absolute; top: -15%; left: -1%; width: 102%; height: 20%;
-    background: linear-gradient(180deg, #4a3e30 0%, #3a3028 100%);
-    border-radius: 4px 4px 0 0;
-    box-shadow: 0 -2px 6px rgba(0,0,0,0.4);
+    content: ''; position: absolute; top: -18%; left: -1%; width: 102%; height: 22%;
+    background: linear-gradient(180deg, #4a3e30, #3a3028);
+    border-radius: 5px 5px 0 0;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.4);
   }
   .bed-mattress {
     position: absolute; top: 5%; left: 3%; right: 3%; bottom: 8%;
-    background: linear-gradient(180deg, #d8d0c0 0%, #c8c0b0 100%);
+    background: linear-gradient(180deg, #d8d0c0, #c8c0b0);
     border-radius: 3px;
-    box-shadow: inset 0 2px 6px rgba(0,0,0,0.12);
+    box-shadow: inset 0 3px 8px rgba(0,0,0,0.12);
   }
   .bed-pillow {
-    position: absolute; top: 8%; left: 8%; width: 35%; height: 20%;
-    background: linear-gradient(135deg, #ece4d8 0%, #d8d0c0 100%);
-    border-radius: 8px;
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.15);
+    position: absolute; top: 8%; left: 6%; width: 38%; height: 18%;
+    background: linear-gradient(135deg, #ece4d8, #d8d0c0);
+    border-radius: 10px 10px 8px 8px;
+    box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
+  }
+  /* Second pillow */
+  .bed-pillow::after {
+    content: ''; position: absolute; top: 2px; left: 105%; width: 90%; height: 90%;
+    background: linear-gradient(135deg, #e8e0d4, #d4ccbc);
+    border-radius: 10px 10px 8px 8px;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.15);
   }
   .bed-blanket {
-    position: absolute; top: 28%; left: 5%; right: 5%; bottom: 10%;
-    background: linear-gradient(180deg, #2a3a6a 0%, #1a2a5a 40%, #1a2850 100%);
+    position: absolute; top: 30%; left: 4%; right: 4%; bottom: 8%;
+    background: linear-gradient(180deg, #2a3a6a 0%, #1a2a5a 60%, #182850 100%);
     border-radius: 3px;
-    box-shadow: 2px 3px 8px rgba(0,0,0,0.3);
+    box-shadow: 3px 4px 12px rgba(0,0,0,0.35);
   }
-  /* Blanket bunched/messy */
   .bed-blanket::after {
-    content: ''; position: absolute; top: -5px; right: -3px; width: 40%; height: 30%;
+    content: ''; position: absolute; top: -8px; right: -4px; width: 45%; height: 35%;
     background: linear-gradient(135deg, #3a4a7a, #2a3a6a);
-    border-radius: 10px 5px 15px 5px;
-    transform: rotate(5deg);
+    border-radius: 12px 5px 15px 5px; transform: rotate(4deg);
   }
   .bed-blanket-fold {
-    position: absolute; top: 24%; left: 5%; right: 30%; height: 12%;
-    background: linear-gradient(180deg, #3a4a7a 0%, #2a3a6a 100%);
-    border-radius: 2px 20px 2px 2px;
+    position: absolute; top: 26%; left: 4%; right: 35%; height: 10%;
+    background: linear-gradient(180deg, #3a4a7a, #2a3a6a);
+    border-radius: 2px 18px 2px 2px;
   }
 
-  /* === LAUNDRY HAMPER — 3D === */
+  /* === LAUNDRY HAMPER === */
   .laundry-hamper {
-    position: absolute; bottom: 10%; left: 33%; z-index: 3;
-    width: 55px; height: 70px;
-    transform: perspective(500px) rotateY(-5deg) rotateX(2deg);
+    bottom: 5%; left: 31%; z-index: 4;
+    width: 48px; height: 65px;
+    transform: perspective(400px) rotateY(-6deg);
   }
   .hamper-body {
     position: absolute; bottom: 0; left: 0; right: 0; height: 85%;
-    background: linear-gradient(180deg, #5a5040 0%, #4a4030 50%, #3a3020 100%);
-    border-radius: 3px 3px 5px 5px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.5);
-    /* Wicker texture */
-    background-image:
+    background:
       repeating-linear-gradient(0deg, transparent 0px, transparent 4px, rgba(0,0,0,0.06) 4px, rgba(0,0,0,0.06) 5px),
-      linear-gradient(180deg, #5a5040 0%, #4a4030 50%, #3a3020 100%);
+      linear-gradient(180deg, #5a5040, #4a4030 50%, #3a3020);
+    border-radius: 3px 3px 5px 5px;
+    box-shadow: 4px 4px 12px rgba(0,0,0,0.6);
   }
   .hamper-rim {
-    position: absolute; top: 10%; left: -2px; right: -2px; height: 6px;
-    background: #5a5040;
-    border-radius: 3px;
+    position: absolute; top: 10%; left: -2px; right: -2px; height: 5px;
+    background: #5a5040; border-radius: 3px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.3);
   }
-  /* Clothes spilling out */
-  .hamper-clothes {
-    position: absolute; z-index: 4;
-  }
+  .hamper-clothes { position: absolute; z-index: 4; }
   .hamper-clothes.c1 {
-    top: -8px; left: 5px; width: 20px; height: 12px;
-    background: #c84040; border-radius: 30% 60% 40% 50%;
-    transform: rotate(-10deg);
+    top: -6px; left: 4px; width: 18px; height: 10px;
+    background: #c84040; border-radius: 30% 60% 40% 50%; transform: rotate(-8deg);
   }
   .hamper-clothes.c2 {
-    top: -4px; right: 2px; width: 16px; height: 10px;
-    background: #4080c0; border-radius: 50% 30% 50% 40%;
-    transform: rotate(15deg);
+    top: -3px; right: 2px; width: 14px; height: 9px;
+    background: #4080c0; border-radius: 50% 30% 50% 40%; transform: rotate(12deg);
   }
   .hamper-clothes.c3 {
-    top: 2px; left: -6px; width: 14px; height: 8px;
-    background: #e8e0d0; border-radius: 40% 50% 50% 40%;
-    transform: rotate(-25deg);
+    top: 4px; left: -5px; width: 12px; height: 7px;
+    background: #e8e0d0; border-radius: 40% 50% 50% 40%; transform: rotate(-20deg);
   }
 
-  /* Clothes on floor */
-  .floor-clothes {
-    position: absolute; z-index: 1; pointer-events: none;
-  }
+  /* Floor clothes */
+  .floor-clothes { position: absolute; z-index: 2; pointer-events: none; }
   .floor-clothes.fc1 {
-    bottom: 12%; left: 25%; width: 35px; height: 14px;
+    bottom: 15%; left: 22%; width: 32px; height: 12px;
     background: radial-gradient(ellipse, #3a3a5a 30%, #2a2a4a 100%);
-    border-radius: 40% 50% 50% 45%;
-    transform: rotate(20deg);
-    box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+    border-radius: 40% 50% 50% 45%; transform: rotate(18deg);
+    box-shadow: 1px 2px 5px rgba(0,0,0,0.5);
   }
   .floor-clothes.fc2 {
-    bottom: 3%; left: 38%; width: 28px; height: 10px;
+    bottom: 4%; left: 36%; width: 26px; height: 9px;
     background: radial-gradient(ellipse, #5a5a5a 30%, #3a3a3a 100%);
-    border-radius: 50% 40% 45% 50%;
-    transform: rotate(-8deg);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    border-radius: 50% 40% 45% 50%; transform: rotate(-6deg);
+    box-shadow: 1px 1px 4px rgba(0,0,0,0.4);
   }
   .floor-shirt {
-    position: absolute; bottom: 18%; left: 15%; z-index: 1;
-    width: 30px; height: 25px;
+    position: absolute; bottom: 20%; left: 12%; z-index: 2;
+    width: 28px; height: 22px;
     background: radial-gradient(ellipse at 50% 40%, #d8d0c0 20%, #a8a090 60%, #787068 100%);
-    border-radius: 35% 35% 50% 50%;
-    transform: rotate(35deg);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    border-radius: 35% 35% 50% 50%; transform: rotate(30deg);
+    box-shadow: 1px 2px 5px rgba(0,0,0,0.5);
   }
 
-  /* === DESK (center-right) — 3D against wall === */
+  /* =========================================
+     DESK — the centerpiece, 3D angled
+     ========================================= */
   .room-desk {
-    position: absolute; top: 32%; right: 3%; z-index: 5;
-    width: 58%; height: 58%;
+    top: 30%; right: 2%; z-index: 8;
+    width: 60%; height: 62%;
     transform-style: preserve-3d;
   }
+  /* Desk surface — you see the TOP of it (angled toward viewer) */
   .desk-top {
-    position: absolute; top: 0; left: 0; right: 0; height: 50%;
+    position: absolute; top: 0; left: 0; right: 0; height: 48%;
     background:
-      repeating-linear-gradient(90deg, transparent 0px, transparent 30px, rgba(255,255,255,0.015) 30px, rgba(255,255,255,0.015) 31px),
-      radial-gradient(ellipse at 40% 50%, rgba(51,255,51,0.01) 0%, transparent 30%),
-      radial-gradient(ellipse at 30% 50%, rgba(120,80,40,0.08) 0%, transparent 15%),
-      linear-gradient(180deg, #3e342c 0%, #362c24 40%, #2e261e 100%);
+      repeating-linear-gradient(90deg, transparent 0px, transparent 32px, rgba(255,255,255,0.012) 32px, rgba(255,255,255,0.012) 33px),
+      radial-gradient(ellipse at 50% 50%, rgba(51,255,51,0.012) 0%, transparent 35%),
+      radial-gradient(ellipse at 25% 40%, rgba(120,80,40,0.08) 0%, transparent 12%),
+      linear-gradient(180deg, #40362e 0%, #382e26 40%, #302820 100%);
     border-radius: 3px;
-    box-shadow:
-      0 5px 20px rgba(0,0,0,0.7),
-      0 2px 4px rgba(0,0,0,0.4),
-      inset 0 1px 0 rgba(255,255,255,0.06);
-    padding: 8px;
-    transform: perspective(900px) rotateX(5deg);
+    padding: 10px;
+    /* KEY 3D: tilt desk surface toward viewer so you see the top */
+    transform: perspective(700px) rotateX(18deg);
     transform-origin: top center;
+    box-shadow:
+      0 8px 30px rgba(0,0,0,0.8),
+      0 2px 4px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.06);
     transform-style: preserve-3d;
   }
-  /* Desk front edge thickness */
+  /* Desk front face — the vertical edge */
   .desk-top::after {
-    content: ''; position: absolute; bottom: -8px; left: 0; right: 0; height: 8px;
-    background: linear-gradient(180deg, #2e261e, #221c16);
-    border-radius: 0 0 2px 2px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    content: ''; position: absolute; bottom: -16px; left: 0; right: 0; height: 16px;
+    background: linear-gradient(180deg, #302820 0%, #28221a 50%, #201c16 100%);
+    border-radius: 0 0 3px 3px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+    transform: perspective(700px) rotateX(-5deg);
   }
+  /* Desk legs */
   .desk-leg {
-    position: absolute; bottom: 0; width: 10px;
-    background: linear-gradient(90deg, #241e18, #2e261e, #241e18);
-    border-radius: 0 0 2px 2px;
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+    position: absolute; width: 10px;
+    background: linear-gradient(90deg, #221e18, #2e2820, #221e18);
+    border-radius: 0 0 3px 3px;
+    box-shadow: 3px 3px 8px rgba(0,0,0,0.6);
   }
-  .desk-leg.dl { left: 4%; top: 48%; }
-  .desk-leg.dr { right: 4%; top: 48%; }
+  .desk-leg.dl { left: 3%; top: 46%; bottom: 5%; }
+  .desk-leg.dr { right: 3%; top: 46%; bottom: 5%; }
 
   /* Desk stains */
-  .desk-stain {
-    position: absolute; border-radius: 50%; pointer-events: none; z-index: 3;
-  }
+  .desk-stain { position: absolute; border-radius: 50%; pointer-events: none; z-index: 3; }
   .desk-stain.s1 {
-    width: 30px; height: 30px; top: 15%; left: 5%;
+    width: 28px; height: 28px; top: 12%; left: 4%;
     border: 2px solid rgba(120,80,30,0.18);
     background: radial-gradient(ellipse, rgba(90,60,20,0.1) 0%, transparent 70%);
   }
   .desk-stain.s2 {
-    width: 24px; height: 24px; bottom: 20%; right: 12%;
+    width: 22px; height: 22px; bottom: 15%; right: 10%;
     border: 1.5px solid rgba(100,70,25,0.12);
-    background: radial-gradient(ellipse, rgba(80,55,20,0.08) 0%, transparent 70%);
   }
-  .desk-scratch {
-    position: absolute; pointer-events: none; z-index: 3;
-    background: rgba(255,255,255,0.04); border-radius: 1px;
-  }
-  .desk-scratch.sc1 { width: 50px; height: 1px; top: 40%; left: 10%; transform: rotate(-4deg); }
+  .desk-scratch { position: absolute; pointer-events: none; z-index: 3;
+    background: rgba(255,255,255,0.04); border-radius: 1px; }
+  .desk-scratch.sc1 { width: 45px; height: 1px; top: 35%; left: 8%; transform: rotate(-3deg); }
 
-  /* === BEER BOTTLES === */
-  .beer-bottle { position: absolute; z-index: 7; }
+  /* Beer bottles on desk */
+  .beer-bottle { position: absolute; z-index: 9; }
   .beer-bottle .bottle-body {
-    width: 14px; height: 34px;
-    background: linear-gradient(90deg, #1a4a20 0%, #2a7a30 30%, #3a8a40 50%, #2a6a2a 70%, #1a4a1a 100%);
+    width: 13px; height: 30px;
+    background: linear-gradient(90deg, #1a4a20, #2a7a30 30%, #3a8a40 50%, #2a6a2a 70%, #1a4a1a);
     border-radius: 0 0 4px 4px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.6), inset 1px 0 0 rgba(255,255,255,0.08);
+    box-shadow: 2px 3px 8px rgba(0,0,0,0.7);
   }
   .beer-bottle .bottle-neck {
-    width: 7px; height: 12px; margin: 0 auto;
-    background: linear-gradient(90deg, #1a4a20 0%, #2a7a30 50%, #1a4a20 100%);
+    width: 6px; height: 10px; margin: 0 auto;
+    background: linear-gradient(90deg, #1a4a20, #2a7a30 50%, #1a4a20);
     border-radius: 2px 2px 0 0;
   }
   .beer-bottle .bottle-cap {
-    width: 9px; height: 4px; margin: 0 auto;
+    width: 8px; height: 3px; margin: 0 auto;
     background: linear-gradient(180deg, #c0a840, #8a7a30);
     border-radius: 2px 2px 0 0;
   }
   .beer-bottle .bottle-label {
-    position: absolute; bottom: 8px; left: 2px; right: 2px; height: 12px;
+    position: absolute; bottom: 7px; left: 2px; right: 2px; height: 10px;
     background: rgba(230,210,170,0.2); border-radius: 1px;
   }
-  .beer-bottle.bb1 { top: 8%; right: 8%; }
-  .beer-bottle.bb2 { top: 5%; right: 15%; }
+  .beer-bottle.bb1 { top: 6%; right: 6%; }
+  .beer-bottle.bb2 { top: 3%; right: 14%; }
   .beer-bottle.bb3.fallen {
-    top: 15%; right: 2%;
+    top: 12%; right: 1%;
     transform: rotate(85deg); transform-origin: bottom center;
   }
   .beer-bottle .spill {
-    position: absolute; bottom: -5px; left: -10px; width: 30px; height: 12px;
+    position: absolute; bottom: -4px; left: -8px; width: 25px; height: 10px;
     background: radial-gradient(ellipse, rgba(180,160,60,0.1) 0%, transparent 70%);
     border-radius: 50%;
   }
 
-  /* Cable */
+  /* Cable, pen, chip bag on desk */
   .desk-cable { position: absolute; z-index: 4; pointer-events: none; border-radius: 50%; }
   .desk-cable.c1 {
-    width: 70px; height: 18px; bottom: 5%; right: 3%;
-    border-bottom: 2px solid #2a2a28;
-    border-left: 2px solid #2a2a28;
-    transform: rotate(-8deg);
+    width: 60px; height: 15px; bottom: 4%; right: 2%;
+    border-bottom: 2px solid #2a2a28; border-left: 2px solid #2a2a28;
+    transform: rotate(-6deg);
   }
-
-  /* Pen */
   .desk-pen {
-    position: absolute; bottom: 18%; left: 8%; z-index: 5;
-    width: 40px; height: 4px;
-    background: linear-gradient(90deg, #2a2a5a 0%, #3a3a7a 40%, #2a2a5a 80%, #e8a020 90%, #e8a020 100%);
-    border-radius: 2px; transform: rotate(-10deg);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+    position: absolute; bottom: 15%; left: 6%; z-index: 5;
+    width: 36px; height: 3px;
+    background: linear-gradient(90deg, #2a2a5a, #3a3a7a 40%, #2a2a5a 80%, #e8a020 92%);
+    border-radius: 2px; transform: rotate(-8deg);
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
   }
-
-  /* Chip bag */
   .chip-bag {
-    position: absolute; top: 10%; left: 3%; z-index: 5;
-    width: 28px; height: 38px;
-    background: linear-gradient(180deg, #e84020 0%, #c83018 30%, #a82010 60%, #882010 100%);
-    border-radius: 3px 3px 5px 5px;
-    transform: rotate(-8deg);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+    position: absolute; top: 8%; left: 2%; z-index: 5;
+    width: 24px; height: 32px;
+    background: linear-gradient(180deg, #e84020, #c83018 30%, #a82010 60%, #882010);
+    border-radius: 3px 3px 4px 4px; transform: rotate(-6deg);
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
     clip-path: polygon(5% 0%, 15% 5%, 30% 0%, 45% 4%, 60% 0%, 75% 3%, 90% 0%, 100% 8%, 100% 100%, 0% 100%, 0% 6%);
   }
   .chip-bag::before {
-    content: ''; position: absolute; top: 22%; left: 12%; right: 12%; height: 14px;
+    content: ''; position: absolute; top: 22%; left: 12%; right: 12%; height: 12px;
     background: rgba(255,220,60,0.3); border-radius: 1px;
   }
 
-  /* === THE COMPUTER === */
+  /* ===========================
+     THE COMPUTER on the desk
+     =========================== */
   .mac-computer {
     position: relative; z-index: 10;
-    max-width: 280px; margin: 0 auto;
+    width: 55%; max-width: 260px;
+    margin: 0 auto;
+    /* Computer sits on the tilted desk surface — counteract parent tilt slightly
+       so it looks upright while still feeling grounded */
+    transform: translateY(-8px);
   }
+  /* Shadow underneath the computer on the desk */
+  .mac-computer::before {
+    content: ''; position: absolute; bottom: -6px; left: 5%; right: 5%; height: 10px;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.4) 0%, transparent 70%);
+    border-radius: 50%; z-index: -1;
+  }
+
   .mac-case {
     background: linear-gradient(180deg, #e8dcc8 0%, #d9ccb4 40%, #cfc0a6 100%);
     border-radius: 8px 8px 3px 3px;
-    padding: 1rem 1.2rem 0.8rem;
+    padding: 0.9rem 1.1rem 0.7rem;
     position: relative;
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,0.5),
-      0 0 60px rgba(51,255,51,0.08),
-      0 0 150px rgba(51,255,51,0.03),
-      0 6px 24px rgba(0,0,0,0.5);
+      0 0 60px rgba(51,255,51,0.1),
+      0 0 120px rgba(51,255,51,0.04),
+      0 6px 20px rgba(0,0,0,0.6);
   }
   .mac-case::before {
     content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
@@ -576,22 +553,22 @@
   }
   .mac-case::after {
     content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-    background: radial-gradient(ellipse at 50% 40%, rgba(51,255,51,0.02) 0%, transparent 60%);
+    background: radial-gradient(ellipse at 50% 40%, rgba(51,255,51,0.025) 0%, transparent 60%);
   }
   .mac-top-vent {
-    height: 6px; margin-bottom: 0.6rem;
+    height: 5px; margin-bottom: 0.5rem;
     background: repeating-linear-gradient(90deg, transparent 0px, transparent 5px, #c4b59e 5px, #c4b59e 6px);
     opacity: 0.3; border-radius: 2px;
   }
   .mac-screen-well {
-    background: #2a2520; border-radius: 5px; padding: 6px;
+    background: #2a2520; border-radius: 4px; padding: 5px;
     position: relative;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.12);
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.1);
   }
 
   /* The screen — FIXED height, scrollable */
   .tv-screen {
-    width: 100%; height: 220px;
+    width: 100%; height: 200px;
     background: #0d1f0d; border-radius: 3px;
     overflow-y: auto; overflow-x: hidden;
     position: relative;
@@ -608,47 +585,47 @@
     background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.06) 1px, rgba(0,0,0,0.06) 2px);
   }
   .mac-screen-glare {
-    position: absolute; top: 6px; left: 6px; right: 55%; bottom: 70%;
+    position: absolute; top: 5px; left: 5px; right: 55%; bottom: 70%;
     border-radius: 3px 3px 50% 0;
     background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 50%);
     pointer-events: none; z-index: 6;
   }
   .mac-label {
-    text-align: center; margin: 0.6rem 0 0.4rem;
-    font-family: var(--serif); font-size: 0.65rem; font-weight: 400;
+    text-align: center; margin: 0.5rem 0 0.3rem;
+    font-family: var(--serif); font-size: 0.6rem; font-weight: 400;
     letter-spacing: 0.06em; color: #8a7d6b;
   }
-  .mac-floppy { display: flex; justify-content: center; padding: 0.1rem 0 0.2rem; }
+  .mac-floppy { display: flex; justify-content: center; padding: 0.1rem 0 0.15rem; }
   .mac-floppy-slot {
-    width: 60px; height: 4px;
-    background: linear-gradient(180deg, #a89880 0%, #b8a890 50%, #a89880 100%);
-    border-radius: 2px;
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
+    width: 55px; height: 4px;
+    background: linear-gradient(180deg, #a89880, #b8a890 50%, #a89880);
+    border-radius: 2px; box-shadow: inset 0 1px 2px rgba(0,0,0,0.2);
   }
   .mac-base {
-    background: linear-gradient(180deg, #c8baa4 0%, #b8a890 100%);
+    background: linear-gradient(180deg, #c8baa4, #b8a890);
     border-radius: 0 0 5px 5px;
-    padding: 0.2rem 1rem 0.4rem;
-    box-shadow: 0 3px 12px rgba(0,0,0,0.5);
+    padding: 0.15rem 0.8rem 0.3rem;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.5);
   }
   .mac-base-ridge {
     height: 2px;
     background: linear-gradient(90deg, transparent 8%, #a89880 20%, #a89880 80%, transparent 92%);
-    border-radius: 1px; opacity: 0.35;
+    border-radius: 1px; opacity: 0.3;
   }
 
-  /* === KEYBOARD === */
+  /* Keyboard in front of computer */
   .desk-keyboard {
     position: relative; z-index: 8;
-    max-width: 220px; margin: 0.8rem auto 0;
-    background: linear-gradient(180deg, #c8bca8 0%, #b8aa94 100%);
-    border-radius: 4px; padding: 6px 8px 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
-    transform: perspective(600px) rotateX(6deg);
+    width: 80%; max-width: 200px; margin: 0.6rem auto 0;
+    background: linear-gradient(180deg, #c8bca8, #b8aa94);
+    border-radius: 3px; padding: 5px 7px 7px;
+    box-shadow: 2px 3px 10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
+    /* Keyboard tilted more aggressively since it's on the tilted desk */
+    transform: perspective(400px) rotateX(12deg);
   }
   .kb-row {
-    height: 6px; margin-bottom: 2px; border-radius: 1px;
-    background: repeating-linear-gradient(90deg, #a09888 0px, #a09888 10px, #b0a898 10px, #b0a898 11px);
+    height: 5px; margin-bottom: 2px; border-radius: 1px;
+    background: repeating-linear-gradient(90deg, #a09888 0px, #a09888 9px, #b0a898 9px, #b0a898 10px);
     box-shadow: inset 0 1px 1px rgba(0,0,0,0.12);
   }
   .kb-row.r1 { width: 96%; }
@@ -656,85 +633,74 @@
   .kb-row.r3 { width: 89%; margin-left: 4.5%; }
   .kb-row.r4 { width: 85%; margin-left: 6.5%; }
   .kb-spacebar {
-    width: 48%; height: 6px; margin: 2px auto 0;
+    width: 48%; height: 5px; margin: 2px auto 0;
     background: #a09888; border-radius: 2px;
     box-shadow: inset 0 1px 1px rgba(0,0,0,0.12);
   }
 
-  /* === DESK CHAIR — 3D === */
+  /* === DESK CHAIR === */
   .desk-chair {
-    position: absolute; bottom: 6%; right: 25%; z-index: 6;
-    width: 50px;
-    transform: perspective(400px) rotateY(-10deg) rotateX(3deg);
+    bottom: 3%; right: 22%; z-index: 7;
+    width: 45px;
+    transform: perspective(300px) rotateY(-12deg);
   }
   .chair-back {
-    width: 42px; height: 35px; margin: 0 auto;
-    background: linear-gradient(180deg, #342e28 0%, #2a2420 100%);
+    width: 38px; height: 32px; margin: 0 auto;
+    background: linear-gradient(180deg, #342e28, #2a2420);
     border-radius: 5px 5px 0 0;
-    box-shadow: 3px 3px 10px rgba(0,0,0,0.6);
+    box-shadow: 4px 4px 12px rgba(0,0,0,0.6);
   }
-  /* Cushion on chair back */
   .chair-back::after {
     content: ''; position: absolute; top: 15%; left: 10%; right: 10%; bottom: 15%;
-    background: #2e2822;
-    border-radius: 3px;
+    background: #2e2822; border-radius: 3px;
     box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
   }
   .chair-seat {
-    width: 48px; height: 10px;
+    width: 44px; height: 9px;
     background: linear-gradient(180deg, #302a24, #2a2420);
-    border-radius: 3px;
-    box-shadow: 2px 3px 8px rgba(0,0,0,0.5);
+    border-radius: 3px; box-shadow: 3px 3px 8px rgba(0,0,0,0.5);
   }
   .chair-leg {
-    width: 5px; height: 22px; margin: 0 auto;
-    background: #1a1a18;
-    box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    width: 4px; height: 20px; margin: 0 auto;
+    background: #1a1a18; box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
   }
   .chair-leg::before {
-    content: ''; position: absolute; bottom: 0; left: -8px; width: 22px; height: 3px;
+    content: ''; position: absolute; bottom: 0; left: -7px; width: 20px; height: 3px;
     background: #1a1a18; border-radius: 2px;
   }
 
   /* === FLOOR ITEMS === */
   .floor-shoe {
     position: absolute; z-index: 2;
-    width: 28px; height: 12px;
-    border-radius: 10px 5px 5px 10px;
+    width: 24px; height: 10px;
+    border-radius: 8px 4px 4px 8px;
     box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
   }
   .floor-shoe.s1 {
-    bottom: 8%; right: 12%;
+    bottom: 10%; right: 10%;
     background: linear-gradient(90deg, #f0e8d8, #d8d0c0);
-    transform: perspective(200px) rotateX(10deg) rotate(-20deg);
+    transform: rotate(-18deg);
   }
   .floor-shoe.s2 {
-    bottom: 5%; right: 18%;
+    bottom: 7%; right: 16%;
     background: linear-gradient(90deg, #f0e8d8, #d8d0c0);
-    transform: perspective(200px) rotateX(10deg) rotate(40deg);
+    transform: rotate(35deg);
   }
-  /* Shoe sole detail */
   .floor-shoe::after {
     content: ''; position: absolute; bottom: 0; left: 15%; right: 15%; height: 3px;
     background: #3a3228; border-radius: 0 0 3px 3px;
   }
-
   .floor-can {
-    position: absolute; bottom: 4%; right: 42%; z-index: 2;
-    width: 14px; height: 22px;
-    background: linear-gradient(90deg, #b82020 0%, #e83838 35%, #e83838 65%, #b82020 100%);
-    border-radius: 3px;
-    transform: perspective(200px) rotateX(5deg) rotate(75deg);
+    position: absolute; bottom: 5%; right: 40%; z-index: 2;
+    width: 12px; height: 20px;
+    background: linear-gradient(90deg, #b82020, #e83838 35%, #e83838 65%, #b82020);
+    border-radius: 3px; transform: rotate(70deg);
     box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
   }
   .floor-can::after {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
     background: linear-gradient(180deg, #d0d0d0, #a0a0a0);
     border-radius: 3px 3px 0 0;
-  }
-  .floor-can::before {
-    content: ''; position: absolute; top: 30%; left: 15%; right: 15%; height: 8px;
-    background: rgba(255,255,255,0.2); border-radius: 1px;
   }
 
   /* Cards inside the screen — green phosphor CRT look */
