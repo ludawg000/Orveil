@@ -139,20 +139,55 @@
   /* RETRO TV MODE — realistic vintage set */
   .retro-tv .projects-grid { display: none; }
 
-  .tv-frame { display: none; max-width: 700px; margin: 0 auto; }
+  .tv-frame { display: none; }
   .retro-tv .tv-frame { display: block !important; }
+
+  /* Dark room environment */
+  .retro-tv {
+    background: radial-gradient(ellipse at 50% 35%, #0d0d0f 0%, #060608 50%, #020203 100%) !important;
+    padding-bottom: 3rem !important;
+    min-height: 100vh;
+  }
+  .retro-tv .dash-header { position: relative; z-index: 2; }
+  .retro-tv .dash-title { color: #888; }
+  .retro-tv .dash-name-input { color: #aaa; border-bottom-color: #333; }
+  .retro-tv .dash-name-input::placeholder { color: #555; }
+
+  /* Desk surface */
+  .tv-frame {
+    max-width: 600px; margin: 0 auto;
+    padding: 2rem 2.5rem 0;
+    position: relative;
+  }
+  /* Desk surface under the computer */
+  .tv-frame::after {
+    content: ''; position: absolute; bottom: -12px; left: -15%; right: -15%; height: 40px;
+    background: linear-gradient(180deg, #1a1610 0%, #12100c 60%, #0a0908 100%);
+    border-radius: 3px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.6);
+    z-index: 0;
+  }
+
+  /* Screen glow on desk/wall */
+  .tv-frame::before {
+    content: ''; position: absolute;
+    top: -60px; left: -30%; right: -30%; bottom: -30px;
+    background: radial-gradient(ellipse at 50% 40%, rgba(51,255,51,0.04) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
+  }
 
   /* Classic Mac case */
   .mac-case {
     background: linear-gradient(180deg, #e8dcc8 0%, #d9ccb4 40%, #cfc0a6 100%);
     border-radius: 10px 10px 4px 4px;
     padding: 1.6rem 1.8rem 1.2rem;
-    position: relative;
+    position: relative; z-index: 1;
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,0.5),
       inset 0 -1px 3px rgba(0,0,0,0.08),
-      0 8px 30px rgba(0,0,0,0.25),
-      0 2px 6px rgba(0,0,0,0.15);
+      0 0 60px rgba(51,255,51,0.06),
+      0 8px 30px rgba(0,0,0,0.5),
+      0 2px 6px rgba(0,0,0,0.3);
   }
   /* Subtle plastic texture */
   .mac-case::before {
@@ -186,16 +221,22 @@
       0 1px 0 rgba(255,255,255,0.15);
   }
 
-  /* The screen itself */
+  /* The screen itself — fixed height, scrollable */
   .tv-screen {
-    width: 100%; min-height: 320px; max-height: 500px;
+    width: 100%; height: 340px;
     background: #1a3a1a;
     border-radius: 4px;
     overflow-y: auto; overflow-x: hidden;
     position: relative;
     display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1px;
+    align-content: start;
     background-color: #0d1f0d;
   }
+  /* Custom scrollbar for the CRT */
+  .tv-screen::-webkit-scrollbar { width: 6px; }
+  .tv-screen::-webkit-scrollbar-track { background: #0a1a0a; }
+  .tv-screen::-webkit-scrollbar-thumb { background: #1a4a1a; border-radius: 3px; }
+  .tv-screen::-webkit-scrollbar-thumb:hover { background: #33ff33; }
   /* Phosphor scanlines */
   .tv-screen::after {
     content: ''; position: absolute; inset: 0; z-index: 5; pointer-events: none;
@@ -235,8 +276,9 @@
     background: linear-gradient(180deg, #c8baa4 0%, #bfb098 50%, #b8a890 100%);
     border-radius: 0 0 6px 6px;
     padding: 0.3rem 1.8rem 0.6rem;
+    position: relative; z-index: 1;
     box-shadow:
-      0 4px 12px rgba(0,0,0,0.15),
+      0 4px 20px rgba(0,0,0,0.4),
       inset 0 1px 0 rgba(255,255,255,0.1);
   }
   .mac-base-ridge {
