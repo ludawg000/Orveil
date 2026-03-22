@@ -1062,6 +1062,39 @@
   .room-scene[data-beanbag="cream"] .bean-bag { background: radial-gradient(ellipse at 45% 40%, #3a3428 0%, #302c20 40%, #26221a 100%); }
   .room-scene[data-beanbag="lavender"] .bean-bag { background: radial-gradient(ellipse at 45% 40%, #2e2838 0%, #262030 40%, #1e1828 100%); }
 
+  /* Floor types */
+  .room-scene[data-floor="dark-wood"] .room-floor {
+    background: linear-gradient(180deg, #1a1510 0%, #141008 20%, #0e0c06 50%, #080804 100%);
+  }
+  .room-scene[data-floor="dark-wood"] .room-floor::after {
+    background:
+      repeating-linear-gradient(90deg, transparent 0px, transparent 40px, rgba(255,255,255,0.01) 40px, rgba(255,255,255,0.01) 41px),
+      radial-gradient(ellipse at 55% 0%, rgba(100,140,255,0.02) 0%, transparent 70%);
+  }
+  .room-scene[data-floor="light-wood"] .room-floor {
+    background: linear-gradient(180deg, #2a2418 0%, #221c12 20%, #1a160e 50%, #14100a 100%);
+  }
+  .room-scene[data-floor="light-wood"] .room-floor::after {
+    background:
+      repeating-linear-gradient(90deg, transparent 0px, transparent 35px, rgba(255,255,255,0.02) 35px, rgba(255,255,255,0.02) 36px),
+      radial-gradient(ellipse at 55% 0%, rgba(100,140,255,0.02) 0%, transparent 70%);
+  }
+  .room-scene[data-floor="carpet"] .room-floor {
+    background: linear-gradient(180deg, #14121a 0%, #100e16 20%, #0c0a12 50%, #08080e 100%);
+  }
+  .room-scene[data-floor="carpet-warm"] .room-floor {
+    background: linear-gradient(180deg, #1a1412 0%, #161010 20%, #120e0c 50%, #0e0a08 100%);
+  }
+  .room-scene[data-floor="tile"] .room-floor {
+    background:
+      repeating-linear-gradient(0deg, transparent 0px, transparent 28px, rgba(255,255,255,0.03) 28px, rgba(255,255,255,0.03) 29px),
+      repeating-linear-gradient(90deg, transparent 0px, transparent 28px, rgba(255,255,255,0.03) 28px, rgba(255,255,255,0.03) 29px),
+      linear-gradient(180deg, #141414 0%, #101010 20%, #0c0c0c 50%, #080808 100%);
+  }
+  .room-scene[data-floor="pink-carpet"] .room-floor {
+    background: linear-gradient(180deg, #1a1018 0%, #160e14 20%, #120a10 50%, #0e080c 100%);
+  }
+
   /* Clutter toggle */
   .room-scene[data-clutter="off"] .floor-clothes,
   .room-scene[data-clutter="off"] .floor-shirt,
@@ -2168,7 +2201,7 @@
           <div class="desk-leg dl"></div>
           <div class="desk-leg dr"></div>
           <!-- Computer sits ON the desk -->
-          <div class="mac-computer" data-draggable="computer">
+          <div class="mac-computer">
             <div class="mac-case">
               <div class="mac-top-vent"></div>
               <div class="mac-screen-well">
@@ -2306,6 +2339,19 @@
           <div class="rc-swatch" data-value="navy" data-label="Navy" style="background:#1e2238" onclick="setRoomOption('beanbag','navy')"></div>
           <div class="rc-swatch" data-value="cream" data-label="Cream" style="background:#3a3428" onclick="setRoomOption('beanbag','cream')"></div>
           <div class="rc-swatch" data-value="lavender" data-label="Lavender" style="background:#2e2838" onclick="setRoomOption('beanbag','lavender')"></div>
+        </div>
+      </div>
+
+      <div class="rc-section">
+        <div class="rc-label">Floor</div>
+        <div class="rc-swatches" data-option="floor">
+          <div class="rc-swatch" data-value="default" data-label="Default" style="background:#0a0908" onclick="setRoomOption('floor','default')"></div>
+          <div class="rc-swatch" data-value="dark-wood" data-label="Dark Wood" style="background:#1a1510" onclick="setRoomOption('floor','dark-wood')"></div>
+          <div class="rc-swatch" data-value="light-wood" data-label="Light Wood" style="background:#2a2418" onclick="setRoomOption('floor','light-wood')"></div>
+          <div class="rc-swatch" data-value="carpet" data-label="Carpet" style="background:#14121a" onclick="setRoomOption('floor','carpet')"></div>
+          <div class="rc-swatch" data-value="carpet-warm" data-label="Warm Carpet" style="background:#1a1412" onclick="setRoomOption('floor','carpet-warm')"></div>
+          <div class="rc-swatch" data-value="tile" data-label="Tile" style="background:#141414" onclick="setRoomOption('floor','tile')"></div>
+          <div class="rc-swatch" data-value="pink-carpet" data-label="Pink Carpet" style="background:#1a1018" onclick="setRoomOption('floor','pink-carpet')"></div>
         </div>
       </div>
 
@@ -4088,12 +4134,12 @@ function toggleManageMode() {
 }
 
 // ─── ROOM CUSTOMIZATION ───
-const ROOM_DEFAULTS = { wall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on' };
+const ROOM_DEFAULTS = { wall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on', floor: 'default' };
 const ROOM_THEMES = {
-  grunge: { wall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on' },
-  minimal: { wall: 'charcoal', computer: 'silver', poster1: 'quote', poster2: 'none', beanbag: 'cream', clutter: 'off' },
-  cozy: { wall: 'cream', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'green', clutter: 'off' },
-  girly: { wall: 'blush', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'pink', clutter: 'off' }
+  grunge: { wall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on', floor: 'default' },
+  minimal: { wall: 'charcoal', computer: 'silver', poster1: 'quote', poster2: 'none', beanbag: 'cream', clutter: 'off', floor: 'tile' },
+  cozy: { wall: 'cream', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'green', clutter: 'off', floor: 'light-wood' },
+  girly: { wall: 'blush', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'pink', clutter: 'off', floor: 'pink-carpet' }
 };
 
 function getRoomConfig() {
@@ -4243,7 +4289,6 @@ function initRoomDrag() {
       el.style.top = saved[id].top;
       el.style.right = 'auto';
       el.style.bottom = 'auto';
-      el.style.transform = 'none';
     }
   });
 
@@ -4271,7 +4316,6 @@ function initRoomDrag() {
     dragging.style.top = top + '%';
     dragging.style.right = 'auto';
     dragging.style.bottom = 'auto';
-    dragging.style.transform = 'none';
   }
 
   function endDrag() {
