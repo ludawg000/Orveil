@@ -489,24 +489,17 @@
   }
   .color-picker-group:hover { background: var(--white); color: var(--black); }
   .color-picker-group:hover .color-label { color: var(--g600); }
-  .color-picker-group:hover .color-hex-input { color: var(--black); border-color: var(--g200); }
   .color-label {
     font-size: 0.6rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
     color: var(--white); margin-bottom: 0.5rem; display: block; transition: color 0.2s;
   }
-  .color-input-wrap { display: flex; align-items: center; gap: 0.5rem; }
-  .color-input-wrap input[type="color"] {
-    width: 32px; height: 32px; border: 1px solid rgba(255,255,255,0.2);
+  .color-picker-group input[type="color"] {
+    width: 36px; height: 36px; border: 1px solid rgba(255,255,255,0.2);
     padding: 0; cursor: pointer; background: none;
     -webkit-appearance: none; appearance: none;
   }
-  .color-input-wrap input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
-  .color-input-wrap input[type="color"]::-webkit-color-swatch { border: none; }
-  .color-hex-input {
-    font-family: var(--sans); font-size: 0.75rem; width: 76px;
-    padding: 0.4rem 0.5rem; border: 1px solid rgba(255,255,255,0.2);
-    background: transparent; color: var(--white); outline: none; transition: all 0.2s;
-  }
+  .color-picker-group input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
+  .color-picker-group input[type="color"]::-webkit-color-swatch { border: none; }
   .contrast-warning { font-size: 0.68rem; color: #c44; margin-top: 0.4rem; font-style: italic; }
   .font-results {
     max-height: 140px; overflow-y: auto; border: 1px solid var(--g200);
@@ -1218,17 +1211,11 @@
         <div class="color-pickers-row">
           <div class="color-picker-group">
             <label class="color-label">Background</label>
-            <div class="color-input-wrap">
-              <input type="color" id="gallery-bg-color" value="#0a0a0a" onchange="syncColor('bg')">
-              <input type="text" class="color-hex-input" id="gallery-bg-hex" value="#0a0a0a" maxlength="7" onchange="syncColorFromHex('bg')">
-            </div>
+            <input type="color" id="gallery-bg-color" value="#0a0a0a" onchange="syncColor('bg')">
           </div>
           <div class="color-picker-group">
             <label class="color-label">Text / Accent</label>
-            <div class="color-input-wrap">
-              <input type="color" id="gallery-accent-color" value="#fafafa" onchange="syncColor('accent')">
-              <input type="text" class="color-hex-input" id="gallery-accent-hex" value="#fafafa" maxlength="7" onchange="syncColorFromHex('accent')">
-            </div>
+            <input type="color" id="gallery-accent-color" value="#fafafa" onchange="syncColor('accent')">
           </div>
         </div>
         <div class="contrast-warning" id="contrast-warning" style="display:none">Low contrast — text may be hard to read.</div>
@@ -2269,9 +2256,7 @@ function populateCustomizeUI() {
     document.getElementById('logo-placeholder').style.display = 'flex';
   }
   document.getElementById('gallery-bg-color').value = s.bg_color;
-  document.getElementById('gallery-bg-hex').value = s.bg_color;
   document.getElementById('gallery-accent-color').value = s.accent_color;
-  document.getElementById('gallery-accent-hex').value = s.accent_color;
   checkContrast();
   if (s.font_family && s.font_family !== 'Playfair Display') {
     loadGoogleFont(s.font_family);
@@ -2472,20 +2457,7 @@ async function saveCrop() {
 // Colors
 function syncColor(which) {
   const id = which === 'bg' ? 'gallery-bg-color' : 'gallery-accent-color';
-  const hexId = which === 'bg' ? 'gallery-bg-hex' : 'gallery-accent-hex';
-  document.getElementById(hexId).value = document.getElementById(id).value;
   currentGallerySettings[which === 'bg' ? 'bg_color' : 'accent_color'] = document.getElementById(id).value;
-  checkContrast();
-}
-
-function syncColorFromHex(which) {
-  const hexId = which === 'bg' ? 'gallery-bg-hex' : 'gallery-accent-hex';
-  const id = which === 'bg' ? 'gallery-bg-color' : 'gallery-accent-color';
-  const hex = document.getElementById(hexId).value;
-  if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
-    document.getElementById(id).value = hex;
-    currentGallerySettings[which === 'bg' ? 'bg_color' : 'accent_color'] = hex;
-  }
   checkContrast();
 }
 
