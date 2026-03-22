@@ -176,9 +176,9 @@
     /* Phase 2: Full room view — hold here briefly */
     35% { transform: scale(1) translateY(0); filter: blur(0) brightness(1); }
     60% { transform: scale(1) translateY(0); filter: blur(0) brightness(1); }
-    /* Phase 3: Zoom into the computer screen (sits just above center) */
+    /* Phase 3: Zoom into the computer screen — comfortable reading size */
     100% {
-      transform: scale(5) translate(0%, -8%);
+      transform: scale(3.2) translate(0%, -8%);
       filter: blur(0) brightness(1);
     }
   }
@@ -187,7 +187,7 @@
   }
   /* After zoom completes, lock on the screen */
   .tv-frame.zoomed-in {
-    transform: scale(5) translate(0%, -8%);
+    transform: scale(3.2) translate(0%, -8%);
   }
 
   /* === 3D ROOM — straight-on view from doorway === */
@@ -577,7 +577,7 @@
      =========================== */
   .mac-computer {
     position: absolute; z-index: 10;
-    width: 55%;
+    width: 30%;
     aspect-ratio: 5 / 4;
     /* Bottom of computer rests on the desk surface (top of container) */
     left: 50%; bottom: 100%;
