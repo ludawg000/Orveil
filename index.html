@@ -179,42 +179,53 @@
     animation: roomZoomIn 3s cubic-bezier(0.22, 0.9, 0.36, 1) forwards;
   }
 
-  /* === 3D ROOM — immersive diorama view === */
+  /* === 3D ROOM — straight-on view from doorway === */
   .room-scene {
     position: absolute; inset: 0;
     overflow: hidden;
-    perspective: 900px;
-    perspective-origin: 50% 40%;
+    /* No perspective tilt — straight-on like looking through a doorway */
   }
 
   .room-scene > * { position: absolute; }
 
-  /* === BACK WALL — takes up more space for bigger room feel === */
+  /* === BACK WALL — fills most of view, lit by monitor glow === */
   .room-wall {
-    top: 0; left: 0; right: 0; height: 62%;
+    top: 0; left: 8%; right: 8%; height: 72%;
     background:
-      linear-gradient(180deg, #141210 0%, #1a1816 15%, #201e1a 40%, #282520 70%, #302c28 100%);
+      linear-gradient(180deg, #0a0908 0%, #0e0d0b 20%, #121110 50%, #161412 80%, #1a1816 100%);
     z-index: 0;
   }
+  /* Monitor glow on the wall behind the computer */
   .room-wall::before {
     content: ''; position: absolute; inset: 0;
     background:
-      linear-gradient(90deg, rgba(0,0,0,0.5) 0%, transparent 12%, transparent 88%, rgba(0,0,0,0.5) 100%),
-      radial-gradient(ellipse at 55% 85%, rgba(51,255,51,0.035) 0%, transparent 25%),
-      radial-gradient(ellipse at 22% 50%, rgba(120,90,40,0.06) 0%, transparent 25%),
-      radial-gradient(ellipse at 78% 30%, rgba(100,80,40,0.04) 0%, transparent 20%);
+      radial-gradient(ellipse at 55% 75%, rgba(51,255,51,0.06) 0%, transparent 30%),
+      radial-gradient(ellipse at 55% 80%, rgba(51,255,51,0.03) 0%, transparent 50%);
     pointer-events: none;
   }
   /* Baseboard */
   .room-wall::after {
-    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 14px;
-    background: linear-gradient(180deg, #24221e, #1c1a16);
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 10px;
+    background: linear-gradient(180deg, #1e1c18, #141210);
     box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+  }
+  /* Side walls — perspective depth illusion (left and right dark panels) */
+  .room-scene::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 8%; bottom: 0;
+    background: linear-gradient(90deg, #020202 0%, #0a0908 60%, #0e0d0b 100%);
+    z-index: 1;
+    clip-path: polygon(0 0, 100% 8%, 100% 68%, 0 100%);
+  }
+  .room-scene::after {
+    content: ''; position: absolute; top: 0; right: 0; width: 8%; bottom: 0;
+    background: linear-gradient(-90deg, #020202 0%, #0a0908 60%, #0e0d0b 100%);
+    z-index: 1;
+    clip-path: polygon(0 8%, 100% 0, 100% 100%, 0 68%);
   }
 
   /* === WINDOW on wall === */
   .room-window {
-    position: absolute; top: 6%; right: 18%; width: 16%; height: 34%;
+    position: absolute; top: 8%; right: 15%; width: 14%; height: 28%;
     z-index: 1;
   }
   /* Window frame */
@@ -266,8 +277,8 @@
 
   /* Ceiling light */
   .ceiling-light {
-    top: 0; left: 55%; transform: translateX(-50%);
-    width: 4px; height: 18px; background: #1c1a16; z-index: 2;
+    top: 0; left: 50%; transform: translateX(-50%);
+    width: 3px; height: 14px; background: #141210; z-index: 2;
   }
   .ceiling-light::after {
     content: ''; position: absolute; bottom: -6px; left: -8px;
@@ -278,15 +289,15 @@
 
   /* === POSTERS on wall === */
   .room-poster {
-    top: 4%; left: 5%; width: 80px; height: 105px;
-    background: #3a3228; z-index: 1;
-    transform: rotate(-2deg);
-    box-shadow: 2px 4px 12px rgba(0,0,0,0.7);
-    border: 1px solid #4a4238;
+    top: 6%; left: 12%; width: 70px; height: 90px;
+    background: #2a2420; z-index: 1;
+    transform: rotate(-1deg);
+    box-shadow: 2px 3px 10px rgba(0,0,0,0.7);
+    border: 1px solid #3a3228;
   }
   .room-poster.p2 {
-    left: auto; right: 40%; top: 3%; width: 60px; height: 82px;
-    transform: rotate(2deg); background: #1e2838;
+    left: auto; right: 15%; top: 5%; width: 55px; height: 72px;
+    transform: rotate(1.5deg); background: #1a2030;
   }
   .room-poster-tape {
     position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
@@ -305,10 +316,10 @@
 
   /* Shelf */
   .room-shelf {
-    top: 8%; left: 22%; width: 110px; height: 8px;
-    background: linear-gradient(180deg, #4a4038, #3a3228);
-    z-index: 1; box-shadow: 0 4px 10px rgba(0,0,0,0.6);
-    display: flex; align-items: flex-end; gap: 3px; padding: 0 5px;
+    top: 10%; left: 35%; width: 100px; height: 6px;
+    background: linear-gradient(180deg, #3a3228, #2a2420);
+    z-index: 1; box-shadow: 0 3px 8px rgba(0,0,0,0.6);
+    display: flex; align-items: flex-end; gap: 3px; padding: 0 4px;
   }
   .shelf-book { width: 13px; border-radius: 1px 1px 0 0; transform-origin: bottom; }
   .shelf-book.b1 { height: 24px; background: #6a4a28; transform: rotate(-2deg); }
@@ -316,27 +327,29 @@
   .shelf-book.b3 { height: 28px; background: #3a3a6a; transform: rotate(3deg); }
   .shelf-book.b4 { height: 20px; background: #6a3a3a; transform: rotate(-1deg); }
 
-  /* === FLOOR — receding ground plane === */
+  /* === FLOOR — ground plane below back wall === */
   .room-floor {
-    top: 62%; left: 0; right: 0; bottom: 0;
+    top: 72%; left: 0; right: 0; bottom: 0;
     background:
-      repeating-linear-gradient(90deg, transparent 0px, transparent 90px, rgba(0,0,0,0.04) 90px, rgba(0,0,0,0.04) 91px),
-      linear-gradient(180deg, #1c1a14 0%, #18160f 40%, #14120e 70%, #100e0b 100%);
+      linear-gradient(180deg, #0e0d0a 0%, #0a0908 30%, #060605 100%);
     z-index: 0;
-    /* Floor recedes away from viewer */
-    transform-origin: top center;
-    transform: perspective(500px) rotateX(8deg);
   }
   /* Shadow line where wall meets floor */
   .room-floor::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 15px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 12px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, transparent 100%);
+  }
+  /* Monitor glow on floor */
+  .room-floor::after {
+    content: ''; position: absolute; top: 0; left: 35%; right: 25%; height: 40%;
+    background: radial-gradient(ellipse at 55% 0%, rgba(51,255,51,0.02) 0%, transparent 70%);
+    pointer-events: none;
   }
 
-  /* === BOOKSHELF (left side, against wall) === */
+  /* === BOOKSHELF (left side, against back wall) === */
   .room-bookshelf {
-    bottom: 2%; left: 2%; z-index: 3;
-    width: 18%; height: 52%;
+    bottom: 28%; left: 10%; z-index: 3;
+    width: 14%; height: 42%;
   }
   /* Bookshelf body — tall wooden unit against wall */
   .bookshelf-body {
@@ -394,9 +407,8 @@
 
   /* === LAUNDRY HAMPER === */
   .laundry-hamper {
-    bottom: 4%; left: 30%; z-index: 4;
-    width: 52px; height: 72px;
-    transform: perspective(400px) rotateY(-6deg);
+    bottom: 28%; right: 12%; z-index: 4;
+    width: 40px; height: 55px;
   }
   .hamper-body {
     position: absolute; bottom: 0; left: 0; right: 0; height: 85%;
@@ -428,66 +440,56 @@
   /* Floor clothes */
   .floor-clothes { position: absolute; z-index: 2; pointer-events: none; }
   .floor-clothes.fc1 {
-    bottom: 10%; left: 24%; width: 36px; height: 14px;
-    background: radial-gradient(ellipse, #4a4a6a 30%, #2a2a4a 100%);
+    bottom: 8%; left: 20%; width: 28px; height: 10px;
+    background: radial-gradient(ellipse, #2a2a3a 30%, #1a1a2a 100%);
     border-radius: 40% 50% 50% 45%; transform: rotate(18deg);
-    box-shadow: 1px 2px 5px rgba(0,0,0,0.5);
+    box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
   }
   .floor-clothes.fc2 {
-    bottom: 3%; left: 38%; width: 30px; height: 11px;
-    background: radial-gradient(ellipse, #6a6a6a 30%, #4a4a4a 100%);
+    bottom: 5%; right: 30%; width: 24px; height: 8px;
+    background: radial-gradient(ellipse, #3a3a3a 30%, #2a2a2a 100%);
     border-radius: 50% 40% 45% 50%; transform: rotate(-6deg);
-    box-shadow: 1px 1px 4px rgba(0,0,0,0.4);
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.4);
   }
   .floor-shirt {
-    position: absolute; bottom: 16%; left: 14%; z-index: 2;
-    width: 32px; height: 26px;
-    background: radial-gradient(ellipse at 50% 40%, #e0d8c8 20%, #b0a898 60%, #887870 100%);
+    position: absolute; bottom: 12%; left: 35%; z-index: 2;
+    width: 22px; height: 18px;
+    background: radial-gradient(ellipse at 50% 40%, #3a3830 20%, #2a2820 60%, #1a1810 100%);
     border-radius: 35% 35% 50% 50%; transform: rotate(30deg);
-    box-shadow: 1px 2px 5px rgba(0,0,0,0.5);
+    box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
   }
 
   /* =========================================
      DESK — the centerpiece, 3D angled
      ========================================= */
   .room-desk {
-    top: 38%; right: 10%; z-index: 8;
-    width: 38%; height: 52%;
+    bottom: 6%; left: 30%; right: 20%; z-index: 8;
+    height: 38%;
     transform-style: preserve-3d;
   }
-  /* Desk surface — you see the TOP of it (angled toward viewer) */
+  /* Desk surface — horizontal surface, slight perspective */
   .desk-top {
-    position: absolute; top: 0; left: 0; right: 0; height: 48%;
-    background:
-      repeating-linear-gradient(90deg, transparent 0px, transparent 32px, rgba(255,255,255,0.012) 32px, rgba(255,255,255,0.012) 33px),
-      radial-gradient(ellipse at 25% 40%, rgba(120,80,40,0.08) 0%, transparent 12%),
-      linear-gradient(180deg, #40362e 0%, #382e26 40%, #302820 100%);
-    border-radius: 3px;
-    padding: 10px;
-    transform: perspective(700px) rotateX(18deg);
-    transform-origin: top center;
+    position: absolute; top: 0; left: 0; right: 0; height: 10px;
+    background: linear-gradient(180deg, #3a3028 0%, #342a22 100%);
+    border-radius: 2px;
     box-shadow:
-      0 8px 30px rgba(0,0,0,0.8),
-      0 2px 4px rgba(0,0,0,0.5),
+      0 2px 8px rgba(0,0,0,0.6),
       inset 0 1px 0 rgba(255,255,255,0.06);
-    transform-style: preserve-3d;
   }
-  /* Desk front face — the vertical edge */
+  /* Desk front face — the thick visible edge below the surface */
   .desk-top::after {
-    content: ''; position: absolute; bottom: -14px; left: 0; right: 0; height: 14px;
-    background: linear-gradient(180deg, #302820 0%, #28221a 50%, #201c16 100%);
-    border-radius: 0 0 3px 3px;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+    content: ''; position: absolute; top: 100%; left: 0; right: 0; height: 8px;
+    background: linear-gradient(180deg, #2e2620 0%, #261e18 100%);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
   }
   /* Desk legs */
   .desk-leg {
-    position: absolute; width: 8px;
-    background: linear-gradient(90deg, #221e18, #2e2820, #221e18);
-    border-radius: 0 0 3px 3px;
-    box-shadow: 3px 3px 8px rgba(0,0,0,0.6);
+    position: absolute; width: 6px; top: 18px; bottom: 0;
+    background: linear-gradient(90deg, #1e1a14, #28221c, #1e1a14);
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
   }
-  .desk-leg.dl { left: 4%; top: 46%; bottom: 5%; }
-  .desk-leg.dr { right: 4%; top: 46%; bottom: 5%; }
+  .desk-leg.dl { left: 5%; }
+  .desk-leg.dr { right: 5%; }
 
   /* Desk stains */
   .desk-stain { position: absolute; border-radius: 50%; pointer-events: none; z-index: 3; }
@@ -526,17 +528,9 @@
     position: absolute; bottom: 7px; left: 2px; right: 2px; height: 10px;
     background: rgba(230,210,170,0.2); border-radius: 1px;
   }
-  .beer-bottle.bb1 { top: 25%; right: 5%; }
-  .beer-bottle.bb2 { top: 20%; right: 13%; }
-  .beer-bottle.bb3.fallen {
-    top: 35%; right: 1%;
-    transform: rotate(85deg); transform-origin: bottom center;
-  }
-  .beer-bottle .spill {
-    position: absolute; bottom: -4px; left: -8px; width: 25px; height: 10px;
-    background: radial-gradient(ellipse, rgba(180,160,60,0.1) 0%, transparent 70%);
-    border-radius: 50%;
-  }
+  /* Bottles sit on desk surface — bottom aligned to top of desk */
+  .beer-bottle.bb1 { right: 8%; bottom: calc(100% - 14px); }
+  .beer-bottle.bb2 { right: 18%; bottom: calc(100% - 12px); }
 
   /* Cable, pen, chip bag on desk */
   .desk-cable { position: absolute; z-index: 4; pointer-events: none; border-radius: 50%; }
@@ -570,15 +564,15 @@
      =========================== */
   .mac-computer {
     position: absolute; z-index: 10;
-    width: 55%; max-width: 200px;
-    /* Centered on desk, sitting in the middle of the surface */
-    left: 50%; top: 50%;
-    transform: translate(-50%, -55%);
+    width: 45%; max-width: 180px;
+    /* Bottom of computer sits on desk surface (top of .desk-top = top:0 of .room-desk) */
+    left: 50%; bottom: calc(100% - 10px);
+    transform: translateX(-50%);
   }
-  /* Shadow underneath the computer on the desk */
+  /* Glow from screen on the desk surface */
   .mac-computer::before {
-    content: ''; position: absolute; bottom: -6px; left: 5%; right: 5%; height: 10px;
-    background: radial-gradient(ellipse, rgba(0,0,0,0.6) 0%, transparent 70%);
+    content: ''; position: absolute; bottom: -8px; left: -10%; right: -10%; height: 14px;
+    background: radial-gradient(ellipse, rgba(51,255,51,0.08) 0%, transparent 70%);
     border-radius: 50%; z-index: -1;
   }
 
@@ -661,9 +655,9 @@
 
   /* Keyboard in front of computer on desk */
   .desk-keyboard {
-    position: absolute; z-index: 8;
-    width: 45%; max-width: 160px;
-    left: 50%; bottom: 5%;
+    position: absolute; z-index: 11;
+    width: 40%; max-width: 140px;
+    left: 50%; bottom: calc(100% + 4px);
     transform: translateX(-50%);
     background: linear-gradient(180deg, #c8bca8, #b8aa94);
     border-radius: 3px; padding: 5px 7px 7px;
@@ -686,9 +680,8 @@
 
   /* === DESK CHAIR === */
   .desk-chair {
-    bottom: 1%; right: 18%; z-index: 7;
-    width: 45px;
-    transform: perspective(300px) rotateY(-12deg);
+    bottom: 2%; left: 42%; z-index: 9;
+    width: 40px;
   }
   .chair-back {
     width: 38px; height: 32px; margin: 0 auto;
@@ -723,13 +716,13 @@
     box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
   }
   .floor-shoe.s1 {
-    bottom: 10%; right: 10%;
-    background: linear-gradient(90deg, #f0e8d8, #d8d0c0);
+    bottom: 6%; right: 35%;
+    background: linear-gradient(90deg, #2a2820, #1e1c18);
     transform: rotate(-18deg);
   }
   .floor-shoe.s2 {
-    bottom: 7%; right: 16%;
-    background: linear-gradient(90deg, #f0e8d8, #d8d0c0);
+    bottom: 4%; right: 40%;
+    background: linear-gradient(90deg, #2a2820, #1e1c18);
     transform: rotate(35deg);
   }
   .floor-shoe::after {
@@ -737,16 +730,16 @@
     background: #3a3228; border-radius: 0 0 3px 3px;
   }
   .floor-can {
-    position: absolute; bottom: 5%; right: 40%; z-index: 2;
-    width: 12px; height: 20px;
-    background: linear-gradient(90deg, #b82020, #e83838 35%, #e83838 65%, #b82020);
-    border-radius: 3px; transform: rotate(70deg);
-    box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+    position: absolute; bottom: 3%; left: 15%; z-index: 2;
+    width: 10px; height: 16px;
+    background: linear-gradient(90deg, #4a1818, #6a2020 35%, #6a2020 65%, #4a1818);
+    border-radius: 2px; transform: rotate(70deg);
+    box-shadow: 1px 1px 4px rgba(0,0,0,0.5);
   }
   .floor-can::after {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
-    background: linear-gradient(180deg, #d0d0d0, #a0a0a0);
-    border-radius: 3px 3px 0 0;
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(180deg, #404040, #2a2a2a);
+    border-radius: 2px 2px 0 0;
   }
 
   /* Cards inside the screen — green phosphor CRT look */
@@ -1653,64 +1646,47 @@
         <div class="floor-clothes fc1"></div>
         <div class="floor-clothes fc2"></div>
         <div class="floor-shirt"></div>
-        <!-- Desk (center-right) -->
+        <!-- Desk (center) -->
         <div class="room-desk">
-          <div class="desk-top">
-            <!-- Desk stains -->
-            <div class="desk-stain s1"></div>
-            <div class="desk-stain s2"></div>
-            <div class="desk-scratch sc1"></div>
-            <!-- Beer bottles -->
-            <div class="beer-bottle bb1">
-              <div class="bottle-cap"></div>
-              <div class="bottle-neck"></div>
-              <div class="bottle-body"></div>
-              <div class="bottle-label"></div>
-            </div>
-            <div class="beer-bottle bb2">
-              <div class="bottle-cap"></div>
-              <div class="bottle-neck"></div>
-              <div class="bottle-body"></div>
-              <div class="bottle-label"></div>
-            </div>
-            <div class="beer-bottle bb3 fallen">
-              <div class="bottle-cap"></div>
-              <div class="bottle-neck"></div>
-              <div class="bottle-body"></div>
-              <div class="bottle-label"></div>
-              <div class="spill"></div>
-            </div>
-            <!-- Stuff on desk -->
-            <div class="desk-cable c1"></div>
-            <div class="desk-pen"></div>
-            <div class="chip-bag"></div>
-            <!-- The computer -->
-            <div class="mac-computer">
-              <div class="mac-case">
-                <div class="mac-top-vent"></div>
-                <div class="mac-screen-well">
-                  <div class="tv-screen" id="tv-screen"></div>
-                  <div class="mac-screen-glare"></div>
-                </div>
-                <div class="mac-label">Orveil</div>
-                <div class="mac-floppy"><div class="mac-floppy-slot"></div></div>
-              </div>
-              <div class="mac-base">
-                <div class="mac-base-ridge"></div>
-              </div>
-            </div>
-            <!-- Keyboard -->
-            <div class="desk-keyboard">
-              <div class="kb-row r1"></div>
-              <div class="kb-row r2"></div>
-              <div class="kb-row r3"></div>
-              <div class="kb-row r4"></div>
-              <div class="kb-spacebar"></div>
-            </div>
-          </div>
-          <!-- Desk legs -->
+          <div class="desk-top"></div>
           <div class="desk-leg dl"></div>
           <div class="desk-leg dr"></div>
+          <!-- Computer sits ON the desk -->
+          <div class="mac-computer">
+            <div class="mac-case">
+              <div class="mac-top-vent"></div>
+              <div class="mac-screen-well">
+                <div class="tv-screen" id="tv-screen"></div>
+                <div class="mac-screen-glare"></div>
+              </div>
+              <div class="mac-label">Orveil</div>
+              <div class="mac-floppy"><div class="mac-floppy-slot"></div></div>
+            </div>
+            <div class="mac-base">
+              <div class="mac-base-ridge"></div>
+            </div>
+          </div>
+          <!-- Bottles on desk surface -->
+          <div class="beer-bottle bb1">
+            <div class="bottle-cap"></div>
+            <div class="bottle-neck"></div>
+            <div class="bottle-body"></div>
+            <div class="bottle-label"></div>
+          </div>
+          <div class="beer-bottle bb2">
+            <div class="bottle-cap"></div>
+            <div class="bottle-neck"></div>
+            <div class="bottle-body"></div>
+            <div class="bottle-label"></div>
+          </div>
+          <!-- Keyboard in front -->
+          <div class="desk-keyboard">
+            <div class="kb-row r1"></div>
+            <div class="kb-row r2"></div>
+            <div class="kb-row r3"></div>
+            <div class="kb-row r4"></div>
+            <div class="kb-spacebar"></div>
+          </div>
         </div>
         <!-- Desk chair -->
         <div class="desk-chair">
