@@ -241,6 +241,7 @@
   .modal {
     background: var(--white); width: 100%; max-width: 460px;
     padding: 2.4rem; border-radius: 2px; position: relative;
+    max-height: 90vh; overflow-y: auto;
   }
   .modal-title { font-family: var(--serif); font-size: 1.5rem; font-weight: 400; margin-bottom: 1.4rem; }
   .modal-input {
@@ -328,20 +329,33 @@
   }
   .customize-input:focus { border-color: var(--black); }
   .logo-upload-area {
-    border: 1.5px dashed var(--g200); padding: 1.2rem; text-align: center;
-    cursor: pointer; transition: border-color 0.2s;
+    border: 1px solid var(--g200); padding: 1rem;
+    display: flex; align-items: center; gap: 1rem;
+    cursor: pointer; transition: all 0.3s;
   }
-  .logo-upload-area:hover { border-color: var(--g400); }
-  .logo-placeholder { font-size: 0.72rem; color: var(--g400); }
-  .logo-preview { position: relative; display: inline-block; }
-  .logo-preview img { max-height: 50px; max-width: 180px; object-fit: contain; }
+  .logo-upload-area:hover { border-color: var(--black); }
+  .logo-upload-area:hover .logo-upload-btn { background: var(--black); color: var(--white); }
+  .logo-placeholder {
+    display: flex; align-items: center; gap: 1rem; width: 100%;
+  }
+  .logo-upload-btn {
+    font-family: var(--sans); font-size: 0.6rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.5rem 1.2rem; border: 1px solid var(--black);
+    color: var(--black); background: none; cursor: pointer;
+    transition: all 0.3s; white-space: nowrap;
+  }
+  .logo-upload-hint { font-size: 0.6rem; color: var(--g400); letter-spacing: 0.03em; }
+  .logo-preview { position: relative; display: inline-flex; align-items: center; gap: 1rem; }
+  .logo-preview img { max-height: 40px; max-width: 160px; object-fit: contain; }
   .logo-remove-btn {
-    position: absolute; top: -6px; right: -6px;
-    width: 18px; height: 18px; border-radius: 50%;
-    background: var(--black); color: var(--white);
-    border: none; cursor: pointer; font-size: 0.55rem;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: none; color: var(--g400);
+    border: 1px solid var(--g200); cursor: pointer; font-size: 0.55rem;
     display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
   }
+  .logo-remove-btn:hover { border-color: var(--black); color: var(--black); }
   .color-pickers-row { display: flex; gap: 1.5rem; }
   .color-picker-group { flex: 1; }
   .color-label { font-size: 0.68rem; color: var(--g600); margin-bottom: 0.3rem; display: block; }
@@ -834,7 +848,10 @@
             <img id="logo-preview-img" src="" alt="Logo">
             <button class="logo-remove-btn" onclick="event.stopPropagation();removeLogo()">&#10005;</button>
           </div>
-          <div class="logo-placeholder" id="logo-placeholder">Upload logo (PNG, SVG, or JPG)</div>
+          <div class="logo-placeholder" id="logo-placeholder">
+            <div class="logo-upload-btn">Select Logo</div>
+            <span class="logo-upload-hint">PNG, SVG, or JPG &mdash; max 2MB</span>
+          </div>
           <input type="file" id="logo-file-input" accept="image/png,image/jpeg,image/svg+xml,image/webp" style="display:none" onchange="handleLogoUpload(event)">
         </div>
       </div>
