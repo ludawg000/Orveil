@@ -1213,6 +1213,7 @@ const STORAGE_LIMIT = 15 * 1024 * 1024 * 1024;
 let currentUser = null;
 let currentProject = null;
 let isGalleryMode = false;
+let pendingInviteToken = new URLSearchParams(window.location.search).get('invite');
 
 // REST helpers — bypass Supabase JS client for data queries
 function authHeaders() {
@@ -1768,6 +1769,19 @@ async function initApp() {
       document.body.classList.add('dark-mode');
     }
 
+    // Accept pending invite if present
+    if (pendingInviteToken) {
+      try {
+        const { data: invite } = await dbSelect('collaborators', '*', `invite_token=eq.${pendingInviteToken}&status=eq.pending`, { single: true });
+        if (invite) {
+          await dbUpdate('collaborators', { user_id: currentUser.id, status: 'accepted' }, `id=eq.${invite.id}`);
+          showToast('Invite accepted! You now have access to the project.');
+        }
+      } catch (e) { console.error('Invite accept error:', e); }
+      pendingInviteToken = null;
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+
     showScreen('app-screen');
     await loadProjects();
     await updateStorage();
@@ -1825,7 +1839,25 @@ async function loadProjects() {
       grid.innerHTML = `<div class="empty-state"><div class="empty-title">Error loading projects.</div><div class="empty-sub">${errData.message || resp.statusText}</div></div>`;
       return;
     }
-    const projects = await resp.json();
+    const ownProjects = await resp.json();
+
+    // Fetch collaborated projects
+    let collabProjects = [];
+    try {
+      const { data: collabs } = await dbSelect('collaborators', 'project_id', `user_id=eq.${currentUser.id}&status=eq.accepted`);
+      if (collabs?.length) {
+        const ids = collabs.map(c => c.project_id);
+        const collabUrl = `${SUPABASE_URL}/rest/v1/projects?select=id,name,file_count,created_at&id=in.(${ids.join(',')})&order=created_at.desc`;
+        const collabResp = await fetch(collabUrl, {
+          headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${accessToken}`, 'Accept': 'application/json' }
+        });
+        if (collabResp.ok) collabProjects = await collabResp.json();
+      }
+    } catch (e) { console.error('Collab projects error:', e); }
+
+    // Mark collab projects and merge
+    collabProjects.forEach(p => p._collab = true);
+    const projects = [...ownProjects, ...collabProjects];
 
     if (!projects?.length) {
       grid.innerHTML = `<div class="empty-state">
@@ -1843,7 +1875,7 @@ async function loadProjects() {
       return `<div class="project-card" onclick="${manageMode ? '' : `openProject('${p.id}','${escHtml(p.name)}')`}" style="${manageMode ? 'cursor:default;position:relative' : ''}">
         ${manageOverlay}
         <div class="project-thumb" id="pthumb-${p.id}"><div class="project-thumb-placeholder">${p.file_count ? p.file_count + ' files' : (() => { const q = randomQuip(); return q.emoji + '<br><span style="font-size:0.55rem;letter-spacing:0.05em;opacity:0.7">' + q.text + '</span>'; })()}</div></div>
-        <div class="project-name">${escHtml(p.name)}</div>
+        <div class="project-name">${escHtml(p.name)}${p._collab ? '<span style="font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--g400);margin-left:0.5rem;font-weight:400">Shared</span>' : ''}</div>
         <div class="project-meta">${p.file_count || 0} files · ${timeAgo(p.created_at)}</div>
       </div>`;
     }).join('');
@@ -2487,9 +2519,34 @@ function closeInviteModal() {
 async function sendInvite() {
   const email = document.getElementById('invite-email-input').value.trim();
   if (!email || !email.includes('@')) { showToast('Enter a valid email'); return; }
-  // TODO: implement collaborator invites (store in DB, send email)
-  showToast(`Invite sent to ${email}`);
-  closeInviteModal();
+
+  const btn = document.querySelector('#invite-modal .modal-confirm');
+  btn.textContent = 'Sending...';
+  btn.disabled = true;
+
+  try {
+    const resp = await fetch('/api/send-invite', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        projectId: pendingInviteId,
+        projectName: document.getElementById('invite-project-name').textContent.replace('> ', ''),
+        invitedBy: currentUser.id,
+        accessToken
+      })
+    });
+    const data = await resp.json();
+    if (!resp.ok) { showToast(data.error || 'Failed to send invite'); return; }
+    showToast(`Invite sent to ${email}`);
+    closeInviteModal();
+  } catch (err) {
+    console.error('Invite error:', err);
+    showToast('Failed to send invite');
+  } finally {
+    btn.textContent = 'Send Invite';
+    btn.disabled = false;
+  }
 }
 
 // ─── NAVIGATION ───
