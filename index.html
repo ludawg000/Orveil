@@ -171,14 +171,15 @@
   /* 3-phase zoom: far away → full room → centered on computer screen */
   @keyframes roomZoomIn {
     /* Phase 1: Far away, dark, blurry */
-    0% { transform: scale(0.3) translateY(-5%); opacity: 0; filter: blur(4px) brightness(0.2); }
+    0% { transform: scale(0.3); opacity: 0; filter: blur(4px) brightness(0.2); transform-origin: 50% 50%; }
     10% { opacity: 1; filter: blur(2px) brightness(0.4); }
     /* Phase 2: Full room view — hold here briefly */
-    35% { transform: scale(1) translateY(0); filter: blur(0) brightness(1); }
-    60% { transform: scale(1) translateY(0); filter: blur(0) brightness(1); }
-    /* Phase 3: Zoom into the computer screen — comfortable reading size */
+    35% { transform: scale(1); filter: blur(0) brightness(1); transform-origin: 50% 50%; }
+    60% { transform: scale(1); filter: blur(0) brightness(1); transform-origin: 50% 50%; }
+    /* Phase 3: Zoom into the computer screen */
     100% {
-      transform: scale(3.2) translateY(-22vh);
+      transform: scale(4);
+      transform-origin: 50% 42%;
       filter: blur(0) brightness(1);
     }
   }
@@ -187,7 +188,8 @@
   }
   /* After zoom completes, lock on the screen */
   .tv-frame.zoomed-in {
-    transform: scale(3.2) translateY(-22vh);
+    transform: scale(4);
+    transform-origin: 50% 42%;
   }
 
   /* === 3D ROOM — straight-on view from doorway === */
