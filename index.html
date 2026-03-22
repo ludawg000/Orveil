@@ -139,167 +139,185 @@
   /* RETRO TV MODE — realistic vintage set */
   .retro-tv .projects-grid { display: none; }
 
-  .tv-frame { display: none; }
+  .tv-frame { display: none; max-width: 700px; margin: 0 auto; }
   .retro-tv .tv-frame { display: block !important; }
 
-  .tv-antenna {
-    display: flex; justify-content: center; gap: 0; height: 60px; position: relative;
-  }
-  .tv-antenna-left, .tv-antenna-right {
-    width: 3px; height: 60px; background: linear-gradient(to bottom, #888, #aaa);
-    border-radius: 2px; transform-origin: bottom center;
-  }
-  .tv-antenna-left { transform: rotate(-20deg); margin-right: -2px; }
-  .tv-antenna-right { transform: rotate(20deg); margin-left: -2px; }
-
-  .tv-cabinet {
-    background: linear-gradient(180deg, #6b4c30 0%, #5a3d22 20%, #4a3018 80%, #3d2510 100%);
-    border-radius: 12px 12px 8px 8px;
-    padding: 1.8rem;
-    display: flex; gap: 1.2rem;
+  /* Classic Mac case */
+  .mac-case {
+    background: linear-gradient(180deg, #e8dcc8 0%, #d9ccb4 40%, #cfc0a6 100%);
+    border-radius: 10px 10px 4px 4px;
+    padding: 1.6rem 1.8rem 1.2rem;
+    position: relative;
     box-shadow:
-      inset 0 1px 0 rgba(255,255,255,0.08),
-      inset 0 -2px 4px rgba(0,0,0,0.3),
-      0 10px 40px rgba(0,0,0,0.5),
-      0 2px 8px rgba(0,0,0,0.3);
-    position: relative;
+      inset 0 1px 0 rgba(255,255,255,0.5),
+      inset 0 -1px 3px rgba(0,0,0,0.08),
+      0 8px 30px rgba(0,0,0,0.25),
+      0 2px 6px rgba(0,0,0,0.15);
   }
-  /* Wood grain texture */
-  .tv-cabinet::before {
+  /* Subtle plastic texture */
+  .mac-case::before {
     content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-    background:
-      repeating-linear-gradient(
-        90deg,
-        transparent 0px, transparent 20px,
-        rgba(0,0,0,0.03) 20px, rgba(0,0,0,0.03) 21px
-      ),
-      repeating-linear-gradient(
-        90deg,
-        transparent 0px, transparent 47px,
-        rgba(255,255,255,0.02) 47px, rgba(255,255,255,0.02) 48px
-      );
+    background: repeating-linear-gradient(
+      180deg, transparent 0px, transparent 3px,
+      rgba(0,0,0,0.008) 3px, rgba(0,0,0,0.008) 4px
+    );
   }
 
-  .tv-screen-bezel {
-    flex: 1; background: #1a1208;
-    border-radius: 20px; padding: 12px;
-    position: relative;
-    box-shadow: inset 0 2px 8px rgba(0,0,0,0.6), inset 0 0 2px rgba(0,0,0,0.8);
+  /* Top ventilation lines */
+  .mac-top-vent {
+    height: 8px; margin-bottom: 1rem;
+    background: repeating-linear-gradient(
+      90deg,
+      transparent 0px, transparent 6px,
+      #c4b59e 6px, #c4b59e 7px
+    );
+    opacity: 0.4; border-radius: 2px;
   }
+
+  /* Screen well — recessed dark bezel */
+  .mac-screen-well {
+    background: #2a2520;
+    border-radius: 6px;
+    padding: 10px;
+    position: relative;
+    box-shadow:
+      inset 0 2px 6px rgba(0,0,0,0.5),
+      inset 0 0 0 1px rgba(0,0,0,0.15),
+      0 1px 0 rgba(255,255,255,0.15);
+  }
+
+  /* The screen itself */
   .tv-screen {
-    width: 100%; min-height: 300px;
-    background: #141210;
-    border-radius: 14px;
+    width: 100%; min-height: 320px; max-height: 500px;
+    background: #1a3a1a;
+    border-radius: 4px;
     overflow-y: auto; overflow-x: hidden;
     position: relative;
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1px;
-    background-color: #2a1c0e;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1px;
+    background-color: #0d1f0d;
   }
-  /* Scanlines */
+  /* Phosphor scanlines */
   .tv-screen::after {
     content: ''; position: absolute; inset: 0; z-index: 5; pointer-events: none;
-    border-radius: 14px;
+    border-radius: 4px;
     background: repeating-linear-gradient(
-      0deg, transparent, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px
+      0deg, transparent, transparent 1px, rgba(0,0,0,0.08) 1px, rgba(0,0,0,0.08) 2px
     );
   }
   /* Screen glare */
-  .tv-glare {
-    position: absolute; top: 12px; left: 12px; right: 40%; bottom: 60%;
-    border-radius: 14px 14px 80% 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 60%);
+  .mac-screen-glare {
+    position: absolute; top: 10px; left: 10px; right: 50%; bottom: 65%;
+    border-radius: 4px 4px 60% 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.07) 0%, transparent 50%);
     pointer-events: none; z-index: 6;
   }
 
-  .tv-controls {
-    width: 80px; display: flex; flex-direction: column;
-    align-items: center; justify-content: space-between;
-    padding: 0.5rem 0;
-  }
-  .tv-brand-label {
-    font-family: var(--serif); font-size: 0.55rem; font-weight: 400;
-    letter-spacing: 0.2em; color: #c8a882; opacity: 0.6;
-    text-transform: uppercase;
-  }
-  .tv-knobs { display: flex; flex-direction: column; gap: 1.2rem; align-items: center; }
-  .tv-knob {
-    width: 36px; height: 36px; border-radius: 50%;
-    background: radial-gradient(circle at 40% 35%, #8a7050, #5a4028 60%, #3d2b1a);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.08);
-    position: relative; cursor: pointer;
-  }
-  .tv-knob.small { width: 28px; height: 28px; }
-  .tv-knob-line {
-    position: absolute; top: 4px; left: 50%; width: 2px; height: 35%;
-    background: rgba(255,255,255,0.15); transform: translateX(-50%);
-    border-radius: 1px;
-  }
-  .tv-knob:hover { transform: rotate(30deg); transition: transform 0.3s; }
-
-  .tv-legs {
-    display: flex; justify-content: center; gap: 60%;
-    padding-top: 0;
-  }
-  .tv-leg {
-    width: 6px; height: 28px;
-    background: linear-gradient(to bottom, #5a3d22, #4a3018);
-    border-radius: 0 0 3px 3px;
-    transform: perspective(100px) rotateX(-5deg);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  /* Brand label */
+  .mac-label {
+    text-align: center; margin: 1rem 0 0.6rem;
+    font-family: var(--serif); font-size: 0.85rem; font-weight: 400;
+    letter-spacing: 0.06em; color: #8a7d6b;
   }
 
-  /* Cards inside the TV screen */
+  /* Floppy drive slot */
+  .mac-floppy {
+    display: flex; justify-content: center; padding: 0.2rem 0 0.4rem;
+  }
+  .mac-floppy-slot {
+    width: 90px; height: 6px;
+    background: linear-gradient(180deg, #a89880 0%, #b8a890 50%, #a89880 100%);
+    border-radius: 3px;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.25), 0 1px 0 rgba(255,255,255,0.2);
+  }
+
+  /* Base/stand */
+  .mac-base {
+    background: linear-gradient(180deg, #c8baa4 0%, #bfb098 50%, #b8a890 100%);
+    border-radius: 0 0 6px 6px;
+    padding: 0.3rem 1.8rem 0.6rem;
+    box-shadow:
+      0 4px 12px rgba(0,0,0,0.15),
+      inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+  .mac-base-ridge {
+    height: 2px;
+    background: linear-gradient(90deg, transparent 5%, #a89880 15%, #a89880 85%, transparent 95%);
+    border-radius: 1px; opacity: 0.4;
+  }
+
+  /* Cards inside the screen — green phosphor CRT look */
   .tv-screen .project-card {
-    background: #1c1410; padding: 1.2rem;
-    cursor: pointer; transition: background 0.15s;
+    background: #0f280f; padding: 1.2rem;
+    cursor: pointer; transition: background 0.2s;
     display: flex; flex-direction: column; gap: 0.6rem;
-    position: relative;
+    position: relative; border-bottom: 1px solid #1a3a1a;
   }
-  .tv-screen .project-card:hover { background: #2a1c0e; }
+  .tv-screen .project-card:hover { background: #1a3a1a; }
   .tv-screen .project-name {
-    font-family: var(--serif); color: #f5e6d0; font-style: italic;
-    font-size: 0.9rem; font-weight: 400;
+    font-family: 'Courier New', monospace; color: #33ff33;
+    font-size: 0.85rem; font-weight: 700;
+    text-shadow: 0 0 6px rgba(51,255,51,0.3);
   }
-  .tv-screen .project-meta { font-size: 0.68rem; color: #c8a882; opacity: 0.6; }
+  .tv-screen .project-meta {
+    font-family: 'Courier New', monospace;
+    font-size: 0.65rem; color: #33ff33; opacity: 0.5;
+  }
   .tv-screen .project-thumb {
     width: 100%; aspect-ratio: 16/9;
-    background: #141210; border-radius: 2px;
+    background: #0a1f0a; border-radius: 2px;
     display: flex; align-items: center; justify-content: center;
     overflow: hidden;
-    filter: sepia(0.15) brightness(0.9) contrast(1.05);
+    filter: saturate(0) brightness(0.7) contrast(1.1);
+    border: 1px solid #1a3a1a;
   }
-  .tv-screen .project-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .tv-screen .project-thumb img {
+    width: 100%; height: 100%; object-fit: cover;
+    mix-blend-mode: luminosity;
+    filter: brightness(1.2) contrast(1.1);
+  }
+  /* Green tint overlay on thumbnails */
+  .tv-screen .project-thumb::after {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(51,255,51,0.08); pointer-events: none;
+  }
   .tv-screen .project-thumb-placeholder {
-    font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
-    color: #c8a882; opacity: 0.4;
+    font-family: 'Courier New', monospace;
+    font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: #33ff33; opacity: 0.35;
   }
   .tv-screen .project-card:hover .manage-actions { display: flex; }
   .tv-screen .empty-state {
     grid-column: 1/-1; display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    padding: 4rem 2rem; gap: 1rem; background: #1c1410;
+    padding: 4rem 2rem; gap: 1rem; background: #0f280f;
   }
-  .tv-screen .empty-title { color: #f5e6d0; font-family: var(--serif); }
-  .tv-screen .empty-sub { color: #c8a882; opacity: 0.5; }
+  .tv-screen .empty-title {
+    font-family: 'Courier New', monospace; color: #33ff33;
+    text-shadow: 0 0 8px rgba(51,255,51,0.3);
+  }
+  .tv-screen .empty-sub {
+    font-family: 'Courier New', monospace;
+    color: #33ff33; opacity: 0.45; font-size: 0.75rem;
+  }
 
   /* Manage action buttons on cards */
   .manage-actions {
     display: none; position: absolute; inset: 0;
-    z-index: 10; background: rgba(20,12,6,0.85);
+    z-index: 10; background: rgba(10,20,10,0.88);
     flex-direction: column; align-items: center; justify-content: center; gap: 0.6rem;
   }
   .retro-tv .project-card { position: relative; }
   .retro-tv .project-card:hover .manage-actions { display: flex; }
   .manage-action-btn {
-    font-family: var(--sans); font-size: 0.65rem; font-weight: 500;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    padding: 0.6rem 1.4rem; border: none; cursor: pointer;
+    font-family: 'Courier New', monospace; font-size: 0.65rem; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.6rem 1.4rem; border: 1px solid #33ff33; cursor: pointer;
     transition: all 0.2s; width: 160px; text-align: center;
   }
-  .manage-delete-btn { background: #c0392b; color: #fff; }
-  .manage-delete-btn:hover { background: #e74c3c; }
-  .manage-invite-btn { background: #f5e6d0; color: #2a1c0e; }
-  .manage-invite-btn:hover { background: #fff; }
+  .manage-delete-btn { background: transparent; color: #ff4444; border-color: #ff4444; }
+  .manage-delete-btn:hover { background: #ff4444; color: #000; }
+  .manage-invite-btn { background: transparent; color: #33ff33; border-color: #33ff33; }
+  .manage-invite-btn:hover { background: #33ff33; color: #000; }
 
   /* EMPTY STATE */
   .empty-state {
@@ -1065,21 +1083,18 @@
       </div>
     </div>
     <div class="tv-frame" id="tv-frame" style="display:none">
-      <div class="tv-antenna"><div class="tv-antenna-left"></div><div class="tv-antenna-right"></div></div>
-      <div class="tv-cabinet">
-        <div class="tv-screen-bezel">
+      <div class="mac-case">
+        <div class="mac-top-vent"></div>
+        <div class="mac-screen-well">
           <div class="tv-screen" id="tv-screen"></div>
-          <div class="tv-glare"></div>
+          <div class="mac-screen-glare"></div>
         </div>
-        <div class="tv-controls">
-          <div class="tv-brand-label">ORVEIL</div>
-          <div class="tv-knobs">
-            <div class="tv-knob"><div class="tv-knob-line"></div></div>
-            <div class="tv-knob small"><div class="tv-knob-line"></div></div>
-          </div>
-        </div>
+        <div class="mac-label">Orveil</div>
+        <div class="mac-floppy"><div class="mac-floppy-slot"></div></div>
       </div>
-      <div class="tv-legs"><div class="tv-leg"></div><div class="tv-leg"></div></div>
+      <div class="mac-base">
+        <div class="mac-base-ridge"></div>
+      </div>
     </div>
     <div class="projects-grid" id="projects-grid">
       <div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
