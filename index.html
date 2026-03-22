@@ -365,10 +365,10 @@
   .gallery-video-item:hover video { transform: scale(1.02); }
   .video-placeholder {
     width: 100%; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center;
-    background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.3);
-    font-size: 0.72rem; letter-spacing: 0.05em; padding: 1rem;
+    background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.25);
+    font-size: 0.65rem; letter-spacing: 0.05em; padding: 1.5rem;
     word-break: break-all; text-align: center;
-
+    border: 1px solid rgba(255,255,255,0.06);
   }
   .gallery-video-badge {
     position: absolute; top: 0.8rem; left: 0.8rem;
@@ -753,6 +753,7 @@ async function loadGallery(token) {
   document.getElementById('gallery-meta').textContent = parts.join(' · ');
 
   renderGalleryGrid();
+  generateVideoThumbnails();
   } catch (err) {
     console.error('loadGallery crash:', err);
     document.getElementById('gallery-grid').innerHTML =
@@ -764,8 +765,8 @@ function renderGalleryGrid() {
   const grid = document.getElementById('gallery-grid');
   grid.innerHTML = galleryFiles.map((f, i) => {
     if (f.type?.startsWith('video/')) {
-      return `<div class="gallery-item gallery-video-item" onclick="openLightbox(${i})">
-        <video src="${f.publicUrl}" muted playsinline preload="metadata" onloadeddata="this.currentTime=0.5" onerror="this.outerHTML='<div class=\\'video-placeholder\\'>${escHtml(f.name)}</div>'"></video>
+      return `<div class="gallery-item gallery-video-item" id="gallery-item-${i}" onclick="openLightbox(${i})">
+        <div class="video-placeholder">${escHtml(f.name)}</div>
         <div class="gallery-video-badge">Video</div>
         <div class="gallery-item-overlay">
           <div class="gallery-item-name">${escHtml(f.name)}</div>
@@ -781,6 +782,37 @@ function renderGalleryGrid() {
       </div>
     </div>`;
   }).join('');
+}
+
+function generateVideoThumbnails() {
+  galleryFiles.forEach((f, i) => {
+    if (!f.type?.startsWith('video/')) return;
+    const container = document.getElementById(`gallery-item-${i}`);
+    if (!container) return;
+    const video = document.createElement('video');
+    video.crossOrigin = 'anonymous';
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = 'metadata';
+    video.src = f.publicUrl;
+    video.addEventListener('loadeddata', () => {
+      video.currentTime = Math.min(1, video.duration * 0.1);
+    });
+    video.addEventListener('seeked', () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        const img = document.createElement('img');
+        img.src = canvas.toDataURL('image/jpeg', 0.8);
+        img.alt = f.name;
+        const placeholder = container.querySelector('.video-placeholder');
+        if (placeholder) placeholder.replaceWith(img);
+      } catch (e) { /* CORS or codec fail — keep placeholder */ }
+    });
+    video.addEventListener('error', () => { /* keep placeholder */ });
+  });
 }
 
 // ─── LIGHTBOX ───
