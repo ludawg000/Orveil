@@ -709,7 +709,7 @@
       linear-gradient(90deg, #0e4a18 0%, #1a7a2a 20%, #22a038 38%, #28b840 50%, #22a038 62%, #1a7a2a 80%, #0e4a18 100%);
     box-shadow: 2px 3px 8px rgba(0,0,0,0.7), inset -1px 0 3px rgba(0,0,0,0.2);
   }
-  .soda-can.sc1 { right: 8%; bottom: calc(100% - 20px); }
+  .soda-can.sc1 { right: 34%; bottom: 31%; }
 
   /* Red can — slightly crushed, subtle dent */
   .soda-can.sc2 .can-body {
@@ -724,7 +724,7 @@
   .soda-can.sc2 .can-top {
     width: 14px;
   }
-  .soda-can.sc2 { right: 18%; bottom: calc(100% - 20px); }
+  .soda-can.sc2 { right: 37%; bottom: 31%; }
 
   /* Cable, pen, chip bag on desk */
   .desk-cable { position: absolute; z-index: 4; pointer-events: none; border-radius: 50%; }
@@ -957,6 +957,243 @@
     background: linear-gradient(180deg, #404040, #2a2a2a);
     border-radius: 2px 2px 0 0;
   }
+
+  /* ═══ ROOM CUSTOMIZATION OVERRIDES ═══ */
+
+  /* Wall colors */
+  .room-scene[data-wall="charcoal"] .room-wall { background: linear-gradient(180deg, #121216 0%, #1a1a1e 20%, #1e1e22 50%, #222226 80%, #26262a 100%); }
+  .room-scene[data-wall="sage"] .room-wall { background: linear-gradient(180deg, #0a0e0a 0%, #121a12 20%, #162016 50%, #1a261a 80%, #1e2c1e 100%); }
+  .room-scene[data-wall="rose"] .room-wall { background: linear-gradient(180deg, #120a0c 0%, #1e1216 20%, #24161a 50%, #2a1a20 80%, #301e24 100%); }
+  .room-scene[data-wall="navy"] .room-wall { background: linear-gradient(180deg, #080a12 0%, #0c1020 20%, #101428 50%, #141830 80%, #181c36 100%); }
+  .room-scene[data-wall="cream"] .room-wall { background: linear-gradient(180deg, #14120e 0%, #1e1c16 20%, #24221a 50%, #2a2820 80%, #302e24 100%); }
+
+  /* Computer colors */
+  .room-scene[data-computer="space-gray"] .mac-case { background: linear-gradient(180deg, #5a5a5e 0%, #4a4a4e 40%, #3e3e42 100%); }
+  .room-scene[data-computer="space-gray"] .mac-case { box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 0 60px rgba(100,140,255,0.1), 0 6px 20px rgba(0,0,0,0.6); }
+  .room-scene[data-computer="space-gray"] .mac-base { background: linear-gradient(180deg, #3e3e42, #333338); }
+  .room-scene[data-computer="space-gray"] .mac-label { color: #888; }
+  .room-scene[data-computer="space-gray"] .mac-top-vent { background: repeating-linear-gradient(90deg, transparent 0px, transparent 5px, #505054 5px, #505054 6px); }
+  .room-scene[data-computer="space-gray"] .mac-floppy-slot { background: linear-gradient(180deg, #505054, #585860 50%, #505054); }
+
+  .room-scene[data-computer="silver"] .mac-case { background: linear-gradient(180deg, #d4d4d8 0%, #c0c0c4 40%, #b0b0b4 100%); }
+  .room-scene[data-computer="silver"] .mac-base { background: linear-gradient(180deg, #b0b0b4, #a0a0a4); }
+  .room-scene[data-computer="silver"] .mac-label { color: #777; }
+  .room-scene[data-computer="silver"] .mac-top-vent { background: repeating-linear-gradient(90deg, transparent 0px, transparent 5px, #b8b8bc 5px, #b8b8bc 6px); }
+  .room-scene[data-computer="silver"] .mac-floppy-slot { background: linear-gradient(180deg, #b8b8bc, #c4c4c8 50%, #b8b8bc); }
+
+  .room-scene[data-computer="rose-gold"] .mac-case { background: linear-gradient(180deg, #deb8ae 0%, #d4a8a0 40%, #c89890 100%); }
+  .room-scene[data-computer="rose-gold"] .mac-base { background: linear-gradient(180deg, #c89890, #b88880); }
+  .room-scene[data-computer="rose-gold"] .mac-label { color: #8a6a64; }
+  .room-scene[data-computer="rose-gold"] .mac-top-vent { background: repeating-linear-gradient(90deg, transparent 0px, transparent 5px, #c4a098 5px, #c4a098 6px); }
+  .room-scene[data-computer="rose-gold"] .mac-floppy-slot { background: linear-gradient(180deg, #c4a098, #d0aca4 50%, #c4a098); }
+
+  .room-scene[data-computer="bondi-blue"] .mac-case { background: linear-gradient(180deg, #5aa0bc 0%, #4a8aaa 40%, #3a7a98 100%); }
+  .room-scene[data-computer="bondi-blue"] .mac-case { box-shadow: inset 0 1px 0 rgba(255,255,255,0.25), 0 0 60px rgba(100,140,255,0.1), 0 6px 20px rgba(0,0,0,0.6); }
+  .room-scene[data-computer="bondi-blue"] .mac-base { background: linear-gradient(180deg, #3a7a98, #2a6a88); }
+  .room-scene[data-computer="bondi-blue"] .mac-label { color: #2a5a6a; }
+  .room-scene[data-computer="bondi-blue"] .mac-top-vent { background: repeating-linear-gradient(90deg, transparent 0px, transparent 5px, #4890a8 5px, #4890a8 6px); }
+  .room-scene[data-computer="bondi-blue"] .mac-floppy-slot { background: linear-gradient(180deg, #4890a8, #54a0b8 50%, #4890a8); }
+
+  .room-scene[data-computer="lilac"] .mac-case { background: linear-gradient(180deg, #b0a0c8 0%, #9a88b8 40%, #8878a8 100%); }
+  .room-scene[data-computer="lilac"] .mac-base { background: linear-gradient(180deg, #8878a8, #786898); }
+  .room-scene[data-computer="lilac"] .mac-label { color: #6a5a7a; }
+  .room-scene[data-computer="lilac"] .mac-top-vent { background: repeating-linear-gradient(90deg, transparent 0px, transparent 5px, #9888b0 5px, #9888b0 6px); }
+  .room-scene[data-computer="lilac"] .mac-floppy-slot { background: linear-gradient(180deg, #9888b0, #a898c0 50%, #9888b0); }
+
+  /* Poster variants — Poster 1 (left) */
+  .room-scene[data-poster1="matisse"] .room-poster:not(.p2) .room-poster-art { background: #f4efe6; }
+  .room-scene[data-poster1="matisse"] .room-poster:not(.p2) .room-poster-art::before { background: #c83028; border-radius: 60% 40% 50% 50%; width: 22px; height: 30px; top: 15%; }
+  .room-scene[data-poster1="matisse"] .room-poster:not(.p2) .room-poster-art::after { content: 'MATISSE'; color: #2a2a2a; font-size: 4px; }
+  .room-scene[data-poster1="matisse"] .room-poster:not(.p2) .room-poster-tape { display: none; }
+
+  .room-scene[data-poster1="floral"] .room-poster:not(.p2) .room-poster-art { background: linear-gradient(180deg, #1a2a1a 0%, #0e1a0e 100%); }
+  .room-scene[data-poster1="floral"] .room-poster:not(.p2) .room-poster-art::before { background: radial-gradient(circle, #d47a8a 30%, #b85a6a 60%, transparent 70%); width: 30px; height: 30px; top: 18%; box-shadow: -12px 18px 0 6px rgba(100,160,100,0.5), 10px 22px 0 4px rgba(100,160,100,0.4); }
+  .room-scene[data-poster1="floral"] .room-poster:not(.p2) .room-poster-art::after { content: 'BOTANICAL'; color: #8ab888; font-size: 3.5px; }
+  .room-scene[data-poster1="floral"] .room-poster:not(.p2) .room-poster-tape { display: none; }
+
+  .room-scene[data-poster1="sza"] .room-poster:not(.p2) .room-poster-art { background: linear-gradient(180deg, #2a1040 0%, #401850 50%, #201030 100%); }
+  .room-scene[data-poster1="sza"] .room-poster:not(.p2) .room-poster-art::before { background: radial-gradient(ellipse at 50% 60%, #e08840 0%, #c06020 40%, transparent 65%); width: 36px; height: 40px; top: 10%; border-radius: 0; }
+  .room-scene[data-poster1="sza"] .room-poster:not(.p2) .room-poster-art::after { content: 'SZA'; color: #e0a060; font-size: 6px; letter-spacing: 4px; }
+  .room-scene[data-poster1="sza"] .room-poster:not(.p2) .room-poster-tape { display: none; }
+
+  .room-scene[data-poster1="quote"] .room-poster:not(.p2) .room-poster-art { background: #0a0a0a; }
+  .room-scene[data-poster1="quote"] .room-poster:not(.p2) .room-poster-art::before { display: none; }
+  .room-scene[data-poster1="quote"] .room-poster:not(.p2) .room-poster-art::after { content: 'CREATE'; color: #fafafa; font-size: 7px; font-weight: 900; letter-spacing: 3px; top: 50%; bottom: auto; transform: translateY(-50%); font-family: 'Helvetica Neue', sans-serif; }
+  .room-scene[data-poster1="quote"] .room-poster:not(.p2) .room-poster-tape { display: none; }
+
+  .room-scene[data-poster1="none"] .room-poster:not(.p2) { display: none; }
+
+  /* Poster variants — Poster 2 (right, .p2) */
+  .room-scene[data-poster2="nirvana"] .room-poster.p2 .room-poster-art { background: #0a0a0a; }
+  .room-scene[data-poster2="nirvana"] .room-poster.p2 .room-poster-art::before { content: ''; width: 28px; height: 28px; border-radius: 50%; background: #d4a820; box-shadow: inset 0 0 0 2px #b89018; top: 22%; left: 50%; transform: translateX(-50%); }
+  .room-scene[data-poster2="nirvana"] .room-poster.p2 .room-poster-art::after { content: 'NIRVANA'; color: #d4a820; font-size: 5px; font-weight: 700; letter-spacing: 2px; }
+
+  .room-scene[data-poster2="matisse"] .room-poster.p2 .room-poster-art { background: #f4efe6; }
+  .room-scene[data-poster2="matisse"] .room-poster.p2 .room-poster-art::before { background: #2868a8; border-radius: 40% 60% 50% 50%; width: 20px; height: 28px; top: 15%; left: 50%; transform: translateX(-50%); box-shadow: none; }
+  .room-scene[data-poster2="matisse"] .room-poster.p2 .room-poster-art::after { content: 'MATISSE'; color: #2a2a2a; font-size: 4px; letter-spacing: 1px; }
+
+  .room-scene[data-poster2="floral"] .room-poster.p2 .room-poster-art { background: linear-gradient(180deg, #1a2a1a 0%, #0e1a0e 100%); }
+  .room-scene[data-poster2="floral"] .room-poster.p2 .room-poster-art::before { background: radial-gradient(circle, #e8c44a 30%, #c8a030 60%, transparent 70%); width: 26px; height: 26px; top: 20%; box-shadow: -10px 16px 0 5px rgba(100,160,100,0.5); left: 50%; transform: translateX(-50%); }
+  .room-scene[data-poster2="floral"] .room-poster.p2 .room-poster-art::after { content: 'BOTANICAL'; color: #8ab888; font-size: 3.5px; letter-spacing: 1px; }
+
+  .room-scene[data-poster2="sza"] .room-poster.p2 .room-poster-art { background: linear-gradient(180deg, #2a1040 0%, #401850 50%, #201030 100%); }
+  .room-scene[data-poster2="sza"] .room-poster.p2 .room-poster-art::before { background: radial-gradient(ellipse at 50% 60%, #e08840 0%, #c06020 40%, transparent 65%); width: 32px; height: 36px; top: 12%; border-radius: 0; left: 50%; transform: translateX(-50%); box-shadow: none; }
+  .room-scene[data-poster2="sza"] .room-poster.p2 .room-poster-art::after { content: 'SZA'; color: #e0a060; font-size: 6px; letter-spacing: 4px; }
+
+  .room-scene[data-poster2="quote"] .room-poster.p2 .room-poster-art { background: #0a0a0a; }
+  .room-scene[data-poster2="quote"] .room-poster.p2 .room-poster-art::before { display: none; }
+  .room-scene[data-poster2="quote"] .room-poster.p2 .room-poster-art::after { content: 'CREATE'; color: #fafafa; font-size: 6px; font-weight: 900; letter-spacing: 3px; top: 50%; bottom: auto; transform: translateY(-50%); font-family: 'Helvetica Neue', sans-serif; }
+
+  .room-scene[data-poster2="none"] .room-poster.p2 { display: none; }
+
+  /* Bean bag colors */
+  .room-scene[data-beanbag="pink"] .bean-bag { background: radial-gradient(ellipse at 45% 40%, #3a2830 0%, #2e1e28 40%, #221420 100%); }
+  .room-scene[data-beanbag="green"] .bean-bag { background: radial-gradient(ellipse at 45% 40%, #1e3a28 0%, #163020 40%, #0e2418 100%); }
+  .room-scene[data-beanbag="navy"] .bean-bag { background: radial-gradient(ellipse at 45% 40%, #1e2238 0%, #161a30 40%, #0e1228 100%); }
+  .room-scene[data-beanbag="cream"] .bean-bag { background: radial-gradient(ellipse at 45% 40%, #3a3428 0%, #302c20 40%, #26221a 100%); }
+  .room-scene[data-beanbag="lavender"] .bean-bag { background: radial-gradient(ellipse at 45% 40%, #2e2838 0%, #262030 40%, #1e1828 100%); }
+
+  /* Clutter toggle */
+  .room-scene[data-clutter="off"] .floor-clothes,
+  .room-scene[data-clutter="off"] .floor-shirt,
+  .room-scene[data-clutter="off"] .floor-shoe,
+  .room-scene[data-clutter="off"] .floor-can { display: none; }
+
+  /* ═══ DRAG STYLES ═══ */
+  .tv-frame:not(.zoomed-in) [data-draggable] { cursor: grab; }
+  .tv-frame:not(.zoomed-in) [data-draggable]:active { cursor: grabbing; }
+  .tv-frame:not(.zoomed-in) [data-draggable]:hover { outline: 1px dashed rgba(255,255,255,0.2); outline-offset: 2px; }
+
+  /* ═══ ROOM CUSTOMIZER PANEL ═══ */
+  .room-customizer {
+    position: fixed; top: 0; left: 0; bottom: 0; width: 280px;
+    background: rgba(10,10,10,0.95); backdrop-filter: blur(12px);
+    z-index: 400; transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    overflow-y: auto; padding: 1.5rem 1.2rem;
+    border-right: 1px solid rgba(255,255,255,0.08);
+    font-family: var(--sans);
+  }
+  .room-customizer.open { transform: translateX(0); }
+  .room-customizer h3 {
+    font-family: var(--serif); font-size: 1rem; font-weight: 400;
+    color: #fafafa; margin: 0 0 1rem; letter-spacing: 0.02em;
+  }
+  .room-customizer .rc-section {
+    margin-bottom: 1.2rem; padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .room-customizer .rc-label {
+    font-size: 0.65rem; color: rgba(255,255,255,0.45);
+    letter-spacing: 0.1em; text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .room-customizer .rc-swatches {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .room-customizer .rc-swatch {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 2px solid transparent; cursor: pointer;
+    transition: border-color 0.2s, transform 0.15s;
+    position: relative;
+  }
+  .room-customizer .rc-swatch:hover { transform: scale(1.15); }
+  .room-customizer .rc-swatch.active { border-color: #fafafa; }
+  .room-customizer .rc-swatch::after {
+    content: attr(data-label); position: absolute; bottom: -14px; left: 50%;
+    transform: translateX(-50%); font-size: 0.5rem; color: rgba(255,255,255,0.3);
+    white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.2s;
+  }
+  .room-customizer .rc-swatch:hover::after { opacity: 1; }
+
+  /* Theme preset cards */
+  .room-customizer .rc-themes {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 0.5rem;
+  }
+  .room-customizer .rc-theme {
+    padding: 0.5rem; border-radius: 6px; cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    text-align: center; transition: border-color 0.2s, background 0.2s;
+  }
+  .room-customizer .rc-theme:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); }
+  .room-customizer .rc-theme.active { border-color: #fafafa; }
+  .room-customizer .rc-theme-name {
+    font-size: 0.7rem; color: #fafafa; font-weight: 500; margin-bottom: 2px;
+  }
+  .room-customizer .rc-theme-desc {
+    font-size: 0.55rem; color: rgba(255,255,255,0.35);
+  }
+
+  /* Poster option thumbnails */
+  .room-customizer .rc-posters {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .room-customizer .rc-poster-opt {
+    width: 36px; height: 46px; border-radius: 3px;
+    border: 2px solid transparent; cursor: pointer;
+    transition: border-color 0.2s, transform 0.15s;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.35rem; color: rgba(255,255,255,0.6); text-align: center;
+    overflow: hidden; position: relative;
+  }
+  .room-customizer .rc-poster-opt:hover { transform: scale(1.1); }
+  .room-customizer .rc-poster-opt.active { border-color: #fafafa; }
+
+  /* Toggle switch */
+  .room-customizer .rc-toggle {
+    display: flex; align-items: center; gap: 8px; cursor: pointer;
+  }
+  .room-customizer .rc-toggle-track {
+    width: 36px; height: 20px; border-radius: 10px;
+    background: rgba(255,255,255,0.12); position: relative;
+    transition: background 0.2s;
+  }
+  .room-customizer .rc-toggle-track.on { background: rgba(255,255,255,0.35); }
+  .room-customizer .rc-toggle-track::after {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: #fafafa; transition: transform 0.2s;
+  }
+  .room-customizer .rc-toggle-track.on::after { transform: translateX(16px); }
+  .room-customizer .rc-toggle-label {
+    font-size: 0.65rem; color: rgba(255,255,255,0.5);
+  }
+
+  /* Close + Reset buttons */
+  .room-customizer .rc-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: none; border: none; color: rgba(255,255,255,0.4);
+    font-size: 1.2rem; cursor: pointer; padding: 4px;
+  }
+  .room-customizer .rc-close:hover { color: #fafafa; }
+  .room-customizer .rc-reset {
+    background: none; border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.5); font-size: 0.6rem;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.4rem 0.8rem; cursor: pointer; border-radius: 3px;
+    font-family: var(--sans); transition: border-color 0.2s, color 0.2s;
+  }
+  .room-customizer .rc-reset:hover { border-color: rgba(255,255,255,0.3); color: #fafafa; }
+
+  /* ═══ ZOOM-OUT + CUSTOMIZE BUTTONS ═══ */
+  .room-zoom-out-btn, .room-customize-btn {
+    position: fixed; z-index: 300;
+    background: rgba(10,10,10,0.7); backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.6); cursor: pointer;
+    font-family: var(--sans); font-size: 0.6rem;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.5rem 0.8rem; border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+    display: none;
+  }
+  .room-zoom-out-btn:hover, .room-customize-btn:hover { background: rgba(10,10,10,0.9); color: #fafafa; }
+  .room-zoom-out-btn { top: 80px; right: 20px; }
+  .room-customize-btn { top: 80px; left: 20px; }
+
+  /* ═══ ZOOM TRANSITION ═══ */
+  .tv-frame { transition: transform 0.6s ease; }
 
   /* Cards inside the screen — blue CRT look */
   .tv-screen .project-card {
@@ -1857,17 +2094,17 @@
         <!-- Ceiling light (off, just fixture) -->
         <div class="ceiling-light"></div>
         <!-- Poster on wall -->
-        <div class="room-poster">
+        <div class="room-poster" data-draggable="poster1">
           <div class="room-poster-tape"></div>
           <div class="room-poster-art"></div>
         </div>
         <!-- Second poster -->
-        <div class="room-poster p2">
+        <div class="room-poster p2" data-draggable="poster2">
           <div class="room-poster-tape"></div>
           <div class="room-poster-art"></div>
         </div>
         <!-- Shelf on right wall -->
-        <div class="room-shelf">
+        <div class="room-shelf" data-draggable="shelf">
           <div class="shelf-book b1"></div>
           <div class="shelf-book b2"></div>
           <div class="shelf-book b3"></div>
@@ -1882,7 +2119,7 @@
         <!-- Floor -->
         <div class="room-floor"></div>
         <!-- Bookshelf (left side, against wall) -->
-        <div class="room-bookshelf">
+        <div class="room-bookshelf" data-draggable="bookshelf">
           <div class="bookshelf-body"></div>
           <div class="bk-shelf s1"></div>
           <div class="bk-shelf s2"></div>
@@ -1906,11 +2143,11 @@
           </div>
         </div>
         <!-- Bean bag -->
-        <div class="bean-bag"></div>
+        <div class="bean-bag" data-draggable="beanbag"></div>
         <!-- Clothes on floor -->
-        <div class="floor-clothes fc1"></div>
-        <div class="floor-clothes fc2"></div>
-        <div class="floor-shirt"></div>
+        <div class="floor-clothes fc1" data-draggable="clothes1"></div>
+        <div class="floor-clothes fc2" data-draggable="clothes2"></div>
+        <div class="floor-shirt" data-draggable="shirt"></div>
         <!-- Desk (center) -->
         <div class="room-desk">
           <div class="desk-top"></div>
@@ -1933,35 +2170,140 @@
               <div class="mac-base-ridge"></div>
             </div>
           </div>
-          <!-- Soda cans on desk -->
-          <div class="soda-can sc1">
-            <div class="can-top"></div>
-            <div class="can-body"></div>
-          </div>
-          <div class="soda-can sc2">
-            <div class="can-top"></div>
-            <div class="can-body"></div>
-          </div>
         </div>
-        <!-- Desk lamp — on the wall/desk boundary, not inside desk -->
-        <div class="desk-lamp">
+        <!-- Soda cans — room-scene children for free positioning -->
+        <div class="soda-can sc1" data-draggable="can-green">
+          <div class="can-top"></div>
+          <div class="can-body"></div>
+        </div>
+        <div class="soda-can sc2" data-draggable="can-red">
+          <div class="can-top"></div>
+          <div class="can-body"></div>
+        </div>
+        <!-- Desk lamp -->
+        <div class="desk-lamp" data-draggable="lamp">
           <div class="lamp-shade"></div>
           <div class="lamp-neck"></div>
           <div class="lamp-base"></div>
         </div>
         <!-- Desk chair -->
-        <div class="desk-chair">
+        <div class="desk-chair" data-draggable="chair">
           <div class="chair-back"></div>
           <div class="chair-seat"></div>
           <div class="chair-leg"></div>
         </div>
         <!-- Sneakers on floor -->
-        <div class="floor-shoe s1"></div>
-        <div class="floor-shoe s2"></div>
+        <div class="floor-shoe s1" data-draggable="shoe1"></div>
+        <div class="floor-shoe s2" data-draggable="shoe2"></div>
         <!-- Soda can on floor -->
-        <div class="floor-can"></div>
+        <div class="floor-can" data-draggable="floor-can"></div>
       </div>
     </div>
+    <!-- Room control buttons (fixed position, outside tv-frame) -->
+    <button class="room-zoom-out-btn" id="room-zoom-out-btn" onclick="zoomOutRoom()">&#8592; Room View</button>
+    <button class="room-customize-btn" id="room-customize-btn" onclick="openRoomCustomizer()">Customize</button>
+
+    <!-- Room Customizer Panel -->
+    <div class="room-customizer" id="room-customizer">
+      <button class="rc-close" onclick="closeRoomCustomizer()">&times;</button>
+      <h3>Customize Room</h3>
+
+      <div class="rc-section">
+        <div class="rc-label">Theme Presets</div>
+        <div class="rc-themes">
+          <div class="rc-theme" data-theme="grunge" onclick="applyRoomTheme('grunge')">
+            <div class="rc-theme-name">Grunge</div>
+            <div class="rc-theme-desc">Dark &amp; messy</div>
+          </div>
+          <div class="rc-theme" data-theme="minimal" onclick="applyRoomTheme('minimal')">
+            <div class="rc-theme-name">Minimal</div>
+            <div class="rc-theme-desc">Clean &amp; sleek</div>
+          </div>
+          <div class="rc-theme" data-theme="cozy" onclick="applyRoomTheme('cozy')">
+            <div class="rc-theme-name">Cozy</div>
+            <div class="rc-theme-desc">Warm &amp; inviting</div>
+          </div>
+          <div class="rc-theme" data-theme="pastel" onclick="applyRoomTheme('pastel')">
+            <div class="rc-theme-name">Pastel</div>
+            <div class="rc-theme-desc">Soft &amp; pretty</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rc-section">
+        <div class="rc-label">Wall Color</div>
+        <div class="rc-swatches" data-option="wall">
+          <div class="rc-swatch" data-value="midnight" data-label="Midnight" style="background:#0e0d0b" onclick="setRoomOption('wall','midnight')"></div>
+          <div class="rc-swatch" data-value="charcoal" data-label="Charcoal" style="background:#1a1a1e" onclick="setRoomOption('wall','charcoal')"></div>
+          <div class="rc-swatch" data-value="sage" data-label="Sage" style="background:#1a231a" onclick="setRoomOption('wall','sage')"></div>
+          <div class="rc-swatch" data-value="rose" data-label="Rose" style="background:#231a1e" onclick="setRoomOption('wall','rose')"></div>
+          <div class="rc-swatch" data-value="navy" data-label="Navy" style="background:#141828" onclick="setRoomOption('wall','navy')"></div>
+          <div class="rc-swatch" data-value="cream" data-label="Cream" style="background:#2a2820" onclick="setRoomOption('wall','cream')"></div>
+        </div>
+      </div>
+
+      <div class="rc-section">
+        <div class="rc-label">Computer</div>
+        <div class="rc-swatches" data-option="computer">
+          <div class="rc-swatch" data-value="classic" data-label="Classic" style="background:#e8dcc8" onclick="setRoomOption('computer','classic')"></div>
+          <div class="rc-swatch" data-value="space-gray" data-label="Space Gray" style="background:#4a4a4e" onclick="setRoomOption('computer','space-gray')"></div>
+          <div class="rc-swatch" data-value="silver" data-label="Silver" style="background:#c0c0c4" onclick="setRoomOption('computer','silver')"></div>
+          <div class="rc-swatch" data-value="rose-gold" data-label="Rose Gold" style="background:#d4a8a0" onclick="setRoomOption('computer','rose-gold')"></div>
+          <div class="rc-swatch" data-value="bondi-blue" data-label="Bondi Blue" style="background:#4a8aaa" onclick="setRoomOption('computer','bondi-blue')"></div>
+          <div class="rc-swatch" data-value="lilac" data-label="Lilac" style="background:#9a88b8" onclick="setRoomOption('computer','lilac')"></div>
+        </div>
+      </div>
+
+      <div class="rc-section">
+        <div class="rc-label">Left Poster</div>
+        <div class="rc-posters" data-option="poster1">
+          <div class="rc-poster-opt" data-value="nirvana" style="background:#0a0a0a;color:#d4a820" onclick="setRoomOption('poster1','nirvana')">NIR</div>
+          <div class="rc-poster-opt" data-value="matisse" style="background:#f4efe6;color:#c83028" onclick="setRoomOption('poster1','matisse')">MAT</div>
+          <div class="rc-poster-opt" data-value="floral" style="background:#1a2a1a;color:#d47a8a" onclick="setRoomOption('poster1','floral')">FLR</div>
+          <div class="rc-poster-opt" data-value="sza" style="background:#2a1040;color:#e0a060" onclick="setRoomOption('poster1','sza')">SZA</div>
+          <div class="rc-poster-opt" data-value="quote" style="background:#0a0a0a;color:#fafafa" onclick="setRoomOption('poster1','quote')">TXT</div>
+          <div class="rc-poster-opt" data-value="none" style="background:#1a1a1a;color:rgba(255,255,255,0.3)" onclick="setRoomOption('poster1','none')">&#x2715;</div>
+        </div>
+      </div>
+
+      <div class="rc-section">
+        <div class="rc-label">Right Poster</div>
+        <div class="rc-posters" data-option="poster2">
+          <div class="rc-poster-opt" data-value="sublime" style="background:#0c1830;color:#e8a020" onclick="setRoomOption('poster2','sublime')">SUB</div>
+          <div class="rc-poster-opt" data-value="nirvana" style="background:#0a0a0a;color:#d4a820" onclick="setRoomOption('poster2','nirvana')">NIR</div>
+          <div class="rc-poster-opt" data-value="matisse" style="background:#f4efe6;color:#2868a8" onclick="setRoomOption('poster2','matisse')">MAT</div>
+          <div class="rc-poster-opt" data-value="floral" style="background:#1a2a1a;color:#e8c44a" onclick="setRoomOption('poster2','floral')">FLR</div>
+          <div class="rc-poster-opt" data-value="sza" style="background:#2a1040;color:#e0a060" onclick="setRoomOption('poster2','sza')">SZA</div>
+          <div class="rc-poster-opt" data-value="quote" style="background:#0a0a0a;color:#fafafa" onclick="setRoomOption('poster2','quote')">TXT</div>
+          <div class="rc-poster-opt" data-value="none" style="background:#1a1a1a;color:rgba(255,255,255,0.3)" onclick="setRoomOption('poster2','none')">&#x2715;</div>
+        </div>
+      </div>
+
+      <div class="rc-section">
+        <div class="rc-label">Bean Bag</div>
+        <div class="rc-swatches" data-option="beanbag">
+          <div class="rc-swatch" data-value="red" data-label="Red" style="background:#3a2828" onclick="setRoomOption('beanbag','red')"></div>
+          <div class="rc-swatch" data-value="pink" data-label="Pink" style="background:#3a2830" onclick="setRoomOption('beanbag','pink')"></div>
+          <div class="rc-swatch" data-value="green" data-label="Green" style="background:#1e3a28" onclick="setRoomOption('beanbag','green')"></div>
+          <div class="rc-swatch" data-value="navy" data-label="Navy" style="background:#1e2238" onclick="setRoomOption('beanbag','navy')"></div>
+          <div class="rc-swatch" data-value="cream" data-label="Cream" style="background:#3a3428" onclick="setRoomOption('beanbag','cream')"></div>
+          <div class="rc-swatch" data-value="lavender" data-label="Lavender" style="background:#2e2838" onclick="setRoomOption('beanbag','lavender')"></div>
+        </div>
+      </div>
+
+      <div class="rc-section">
+        <div class="rc-label">Floor Clutter</div>
+        <div class="rc-toggle" onclick="toggleClutter()">
+          <div class="rc-toggle-track on" id="rc-clutter-toggle"></div>
+          <span class="rc-toggle-label">Show shoes, clothes &amp; cans</span>
+        </div>
+      </div>
+
+      <div class="rc-section" style="border-bottom:none">
+        <button class="rc-reset" onclick="resetRoomLayout()">Reset Object Positions</button>
+      </div>
+    </div>
+
     <div class="projects-grid" id="projects-grid">
       <div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
     </div>
@@ -3683,10 +4025,13 @@ function toggleManageMode() {
   const btn = document.getElementById('manage-btn');
   const tvFrame = document.getElementById('tv-frame');
   const powerBtn = document.getElementById('room-exit-btn');
+  const zoomOutBtn = document.getElementById('room-zoom-out-btn');
+  const customizeBtn = document.getElementById('room-customize-btn');
   if (manageMode) {
     main.classList.add('retro-tv');
     btn.classList.add('active');
     btn.textContent = 'Done';
+    loadRoomConfig();
     // Restore day/night state
     const isDay = localStorage.getItem('orveil-room-daytime') === '1';
     const glass = document.getElementById('room-window-glass');
@@ -3701,19 +4046,257 @@ function toggleManageMode() {
         tvFrame.classList.remove('zooming-in');
         tvFrame.classList.add('zoomed-in');
         if (powerBtn) powerBtn.classList.add('visible');
+        if (zoomOutBtn) zoomOutBtn.style.display = 'block';
       }, { once: true });
     }
+    initRoomDrag();
   } else {
     main.classList.remove('retro-tv');
     btn.classList.remove('active');
     btn.textContent = 'Manage';
     if (powerBtn) powerBtn.classList.remove('visible');
+    if (zoomOutBtn) zoomOutBtn.style.display = 'none';
+    if (customizeBtn) customizeBtn.style.display = 'none';
+    closeRoomCustomizer();
     if (tvFrame) {
       tvFrame.classList.remove('zooming-in', 'zoomed-in');
       tvFrame.style.display = 'none';
     }
   }
   loadProjects();
+}
+
+// ─── ROOM CUSTOMIZATION ───
+const ROOM_DEFAULTS = { wall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on' };
+const ROOM_THEMES = {
+  grunge: { wall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on' },
+  minimal: { wall: 'charcoal', computer: 'silver', poster1: 'quote', poster2: 'none', beanbag: 'cream', clutter: 'off' },
+  cozy: { wall: 'cream', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'green', clutter: 'off' },
+  pastel: { wall: 'rose', computer: 'lilac', poster1: 'matisse', poster2: 'floral', beanbag: 'pink', clutter: 'off' }
+};
+
+function getRoomConfig() {
+  try { return { ...ROOM_DEFAULTS, ...JSON.parse(localStorage.getItem('orveil-room-config') || '{}') }; }
+  catch { return { ...ROOM_DEFAULTS }; }
+}
+
+function loadRoomConfig() {
+  const config = getRoomConfig();
+  const scene = document.querySelector('.room-scene');
+  if (!scene) return;
+  Object.keys(ROOM_DEFAULTS).forEach(key => {
+    scene.setAttribute('data-' + key, config[key]);
+  });
+  updateCustomizerUI(config);
+  // Update clutter toggle
+  const toggle = document.getElementById('rc-clutter-toggle');
+  if (toggle) toggle.classList.toggle('on', config.clutter === 'on');
+}
+
+function setRoomOption(key, value) {
+  const config = getRoomConfig();
+  config[key] = value;
+  localStorage.setItem('orveil-room-config', JSON.stringify(config));
+  const scene = document.querySelector('.room-scene');
+  if (scene) scene.setAttribute('data-' + key, value);
+  updateCustomizerUI(config);
+  // Clear active theme highlight
+  document.querySelectorAll('.rc-theme').forEach(t => t.classList.remove('active'));
+  // Check if config matches a theme
+  for (const [name, theme] of Object.entries(ROOM_THEMES)) {
+    if (Object.keys(theme).every(k => config[k] === theme[k])) {
+      const el = document.querySelector(`.rc-theme[data-theme="${name}"]`);
+      if (el) el.classList.add('active');
+    }
+  }
+  if (key === 'clutter') {
+    const toggle = document.getElementById('rc-clutter-toggle');
+    if (toggle) toggle.classList.toggle('on', value === 'on');
+  }
+}
+
+function applyRoomTheme(name) {
+  const theme = ROOM_THEMES[name];
+  if (!theme) return;
+  localStorage.setItem('orveil-room-config', JSON.stringify(theme));
+  loadRoomConfig();
+  document.querySelectorAll('.rc-theme').forEach(t => t.classList.remove('active'));
+  const el = document.querySelector(`.rc-theme[data-theme="${name}"]`);
+  if (el) el.classList.add('active');
+}
+
+function updateCustomizerUI(config) {
+  // Update active swatches
+  document.querySelectorAll('.rc-swatches').forEach(group => {
+    const opt = group.dataset.option;
+    group.querySelectorAll('.rc-swatch').forEach(s => {
+      s.classList.toggle('active', s.dataset.value === config[opt]);
+    });
+  });
+  // Update active poster options
+  document.querySelectorAll('.rc-posters').forEach(group => {
+    const opt = group.dataset.option;
+    group.querySelectorAll('.rc-poster-opt').forEach(p => {
+      p.classList.toggle('active', p.dataset.value === config[opt]);
+    });
+  });
+}
+
+function toggleClutter() {
+  const config = getRoomConfig();
+  setRoomOption('clutter', config.clutter === 'on' ? 'off' : 'on');
+}
+
+function openRoomCustomizer() {
+  document.getElementById('room-customizer').classList.add('open');
+}
+
+function closeRoomCustomizer() {
+  document.getElementById('room-customizer')?.classList.remove('open');
+}
+
+// ─── ZOOM NAVIGATION ───
+function zoomOutRoom() {
+  const tvFrame = document.getElementById('tv-frame');
+  const powerBtn = document.getElementById('room-exit-btn');
+  const zoomOutBtn = document.getElementById('room-zoom-out-btn');
+  const customizeBtn = document.getElementById('room-customize-btn');
+  if (tvFrame) {
+    tvFrame.classList.remove('zoomed-in');
+    if (powerBtn) powerBtn.classList.remove('visible');
+  }
+  if (zoomOutBtn) zoomOutBtn.style.display = 'none';
+  if (customizeBtn) customizeBtn.style.display = 'block';
+}
+
+function zoomInRoom() {
+  const tvFrame = document.getElementById('tv-frame');
+  const powerBtn = document.getElementById('room-exit-btn');
+  const zoomOutBtn = document.getElementById('room-zoom-out-btn');
+  const customizeBtn = document.getElementById('room-customize-btn');
+  if (tvFrame) {
+    tvFrame.classList.add('zoomed-in');
+    if (powerBtn) powerBtn.classList.add('visible');
+  }
+  if (zoomOutBtn) zoomOutBtn.style.display = 'block';
+  if (customizeBtn) customizeBtn.style.display = 'none';
+  closeRoomCustomizer();
+}
+
+// Click computer to zoom back in when zoomed out
+document.addEventListener('click', e => {
+  if (!manageMode) return;
+  const tvFrame = document.getElementById('tv-frame');
+  if (!tvFrame || tvFrame.classList.contains('zoomed-in')) return;
+  if (e.target.closest('.mac-computer')) {
+    e.preventDefault();
+    e.stopPropagation();
+    zoomInRoom();
+  }
+});
+
+// Escape to zoom out, or exit manage mode if already zoomed out
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && manageMode) {
+    const tvFrame = document.getElementById('tv-frame');
+    if (tvFrame?.classList.contains('zoomed-in')) {
+      zoomOutRoom();
+    }
+    e.preventDefault();
+  }
+});
+
+// ─── DRAGGABLE ROOM OBJECTS ───
+let roomDragInitialized = false;
+
+function initRoomDrag() {
+  const scene = document.querySelector('.room-scene');
+  if (!scene) return;
+
+  // Apply saved positions
+  const saved = JSON.parse(localStorage.getItem('orveil-room-positions') || '{}');
+  scene.querySelectorAll('[data-draggable]').forEach(el => {
+    const id = el.dataset.draggable;
+    if (saved[id]) {
+      el.style.left = saved[id].left;
+      el.style.top = saved[id].top;
+      el.style.right = 'auto';
+      el.style.bottom = 'auto';
+    }
+  });
+
+  if (roomDragInitialized) return;
+  roomDragInitialized = true;
+
+  let dragging = null, offsetX = 0, offsetY = 0;
+
+  function startDrag(el, clientX, clientY) {
+    // Only allow dragging when zoomed out
+    const tvFrame = document.getElementById('tv-frame');
+    if (tvFrame?.classList.contains('zoomed-in')) return;
+    dragging = el;
+    const rect = el.getBoundingClientRect();
+    offsetX = clientX - rect.left;
+    offsetY = clientY - rect.top;
+  }
+
+  function moveDrag(clientX, clientY) {
+    if (!dragging) return;
+    const sceneRect = scene.getBoundingClientRect();
+    const left = ((clientX - offsetX - sceneRect.left) / sceneRect.width) * 100;
+    const top = ((clientY - offsetY - sceneRect.top) / sceneRect.height) * 100;
+    dragging.style.left = left + '%';
+    dragging.style.top = top + '%';
+    dragging.style.right = 'auto';
+    dragging.style.bottom = 'auto';
+  }
+
+  function endDrag() {
+    if (!dragging) return;
+    const id = dragging.dataset.draggable;
+    const saved = JSON.parse(localStorage.getItem('orveil-room-positions') || '{}');
+    saved[id] = { left: dragging.style.left, top: dragging.style.top };
+    localStorage.setItem('orveil-room-positions', JSON.stringify(saved));
+    dragging = null;
+  }
+
+  // Mouse events
+  scene.addEventListener('mousedown', e => {
+    const el = e.target.closest('[data-draggable]');
+    if (!el) return;
+    startDrag(el, e.clientX, e.clientY);
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', e => { moveDrag(e.clientX, e.clientY); });
+  document.addEventListener('mouseup', endDrag);
+
+  // Touch events
+  scene.addEventListener('touchstart', e => {
+    const el = e.target.closest('[data-draggable]');
+    if (!el) return;
+    const t = e.touches[0];
+    startDrag(el, t.clientX, t.clientY);
+  }, { passive: true });
+  document.addEventListener('touchmove', e => {
+    if (!dragging) return;
+    e.preventDefault();
+    const t = e.touches[0];
+    moveDrag(t.clientX, t.clientY);
+  }, { passive: false });
+  document.addEventListener('touchend', endDrag);
+}
+
+function resetRoomLayout() {
+  localStorage.removeItem('orveil-room-positions');
+  const scene = document.querySelector('.room-scene');
+  if (!scene) return;
+  scene.querySelectorAll('[data-draggable]').forEach(el => {
+    el.style.left = '';
+    el.style.top = '';
+    el.style.right = '';
+    el.style.bottom = '';
+  });
+  showToast('Room layout reset to defaults.');
 }
 
 function openDeleteModal(id, name, e) {
