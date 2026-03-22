@@ -168,15 +168,26 @@
     overflow: hidden;
   }
 
-  /* Zoom-in intro: camera pulls in from distance */
+  /* 3-phase zoom: far away → full room → centered on computer screen */
   @keyframes roomZoomIn {
-    0% { transform: scale(0.4) translateY(-8%); opacity: 0; filter: blur(3px) brightness(0.3); }
-    15% { opacity: 1; filter: blur(2px) brightness(0.5); }
-    50% { transform: scale(0.65) translateY(-4%); filter: blur(0.5px) brightness(0.8); }
-    100% { transform: scale(1) translateY(0); filter: blur(0) brightness(1); }
+    /* Phase 1: Far away, dark, blurry */
+    0% { transform: scale(0.3) translateY(-5%); opacity: 0; filter: blur(4px) brightness(0.2); }
+    10% { opacity: 1; filter: blur(2px) brightness(0.4); }
+    /* Phase 2: Full room view — hold here briefly */
+    35% { transform: scale(1) translateY(0); filter: blur(0) brightness(1); }
+    60% { transform: scale(1) translateY(0); filter: blur(0) brightness(1); }
+    /* Phase 3: Zoom into the computer screen */
+    100% {
+      transform: scale(3.2) translate(-2%, -18%);
+      filter: blur(0) brightness(1);
+    }
   }
   .tv-frame.zooming-in {
-    animation: roomZoomIn 3s cubic-bezier(0.22, 0.9, 0.36, 1) forwards;
+    animation: roomZoomIn 5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+  }
+  /* After zoom completes, only the screen area is visible */
+  .tv-frame.zoomed-in {
+    transform: scale(3.2) translate(-2%, -18%);
   }
 
   /* === 3D ROOM — straight-on view from doorway === */
@@ -199,8 +210,8 @@
   .room-wall::before {
     content: ''; position: absolute; inset: 0;
     background:
-      radial-gradient(ellipse at 55% 75%, rgba(51,255,51,0.06) 0%, transparent 30%),
-      radial-gradient(ellipse at 55% 80%, rgba(51,255,51,0.03) 0%, transparent 50%);
+      radial-gradient(ellipse at 50% 70%, rgba(51,255,51,0.07) 0%, transparent 25%),
+      radial-gradient(ellipse at 50% 75%, rgba(51,255,51,0.03) 0%, transparent 45%);
     pointer-events: none;
   }
   /* Baseboard */
@@ -225,7 +236,7 @@
 
   /* === WINDOW on wall === */
   .room-window {
-    position: absolute; top: 8%; right: 15%; width: 14%; height: 28%;
+    position: absolute; top: 10%; right: 12%; width: 12%; height: 26%;
     z-index: 1;
   }
   /* Window frame */
@@ -346,10 +357,10 @@
     pointer-events: none;
   }
 
-  /* === BOOKSHELF (left side, against back wall) === */
+  /* === BOOKSHELF (left of desk, against back wall) === */
   .room-bookshelf {
-    bottom: 28%; left: 10%; z-index: 3;
-    width: 14%; height: 42%;
+    bottom: 28%; left: 12%; z-index: 3;
+    width: 13%; height: 40%;
   }
   /* Bookshelf body — tall wooden unit against wall */
   .bookshelf-body {
@@ -463,8 +474,8 @@
      DESK — the centerpiece, 3D angled
      ========================================= */
   .room-desk {
-    bottom: 6%; left: 30%; right: 20%; z-index: 8;
-    height: 38%;
+    bottom: 28%; left: 28%; right: 28%; z-index: 8;
+    height: 30%;
     transform-style: preserve-3d;
   }
   /* Desk surface — horizontal surface, slight perspective */
@@ -3402,16 +3413,21 @@ function toggleManageMode() {
     btn.textContent = 'Done';
     if (tvFrame) {
       tvFrame.style.display = 'block';
-      tvFrame.classList.remove('zooming-in');
-      void tvFrame.offsetWidth; // force reflow
+      tvFrame.classList.remove('zooming-in', 'zoomed-in');
+      void tvFrame.offsetWidth;
       tvFrame.classList.add('zooming-in');
+      // After animation ends, lock the zoomed-in state
+      tvFrame.addEventListener('animationend', () => {
+        tvFrame.classList.remove('zooming-in');
+        tvFrame.classList.add('zoomed-in');
+      }, { once: true });
     }
   } else {
     main.classList.remove('retro-tv');
     btn.classList.remove('active');
     btn.textContent = 'Manage';
     if (tvFrame) {
-      tvFrame.classList.remove('zooming-in');
+      tvFrame.classList.remove('zooming-in', 'zoomed-in');
       tvFrame.style.display = 'none';
     }
   }
