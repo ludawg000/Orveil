@@ -1306,27 +1306,14 @@ async function signOut() {
 
 // ─── INIT ───
 let appStarted = false;
+let accessToken = null;
 
 sb.auth.onAuthStateChange(async (event, session) => {
   if (isGalleryMode) return;
   try {
-    if (session?.user) {
-      // Validate session — if token expired, try refresh
-      const expiresAt = session.expires_at ? session.expires_at * 1000 : 0;
-      if (expiresAt && expiresAt < Date.now()) {
-        const { data: refreshed, error: refreshErr } = await sb.auth.refreshSession();
-        if (refreshErr || !refreshed?.session) {
-          await sb.auth.signOut();
-          localStorage.clear();
-          currentUser = null;
-          appStarted = false;
-          showScreen('login-screen');
-          return;
-        }
-        currentUser = refreshed.session.user;
-      } else {
-        currentUser = session.user;
-      }
+    if (session?.user && session?.access_token) {
+      currentUser = session.user;
+      accessToken = session.access_token;
       window.history.replaceState(null, '', window.location.pathname);
       if (!appStarted) {
         appStarted = true;
@@ -1335,13 +1322,14 @@ sb.auth.onAuthStateChange(async (event, session) => {
     } else {
       appStarted = false;
       currentUser = null;
+      accessToken = null;
       showScreen('login-screen');
     }
   } catch (err) {
     console.error('Auth state change error:', err);
     appStarted = false;
     currentUser = null;
-    localStorage.clear();
+    accessToken = null;
     showScreen('login-screen');
   }
 });
@@ -1371,12 +1359,17 @@ async function initApp() {
 
 // ─── STORAGE ───
 async function updateStorage() {
-  const { data } = await sb.from('profiles').select('storage_used').eq('id', currentUser.id).single();
-  if (!data) return;
-  const used = data.storage_used || 0;
-  const pct = Math.min((used / STORAGE_LIMIT) * 100, 100);
-  document.getElementById('storage-fill').style.width = pct + '%';
-  document.getElementById('storage-label').textContent = `${formatBytes(used)} of 15 GB used`;
+  try {
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/profiles?select=storage_used&id=eq.${currentUser.id}`, {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${accessToken}` }
+    });
+    const rows = await resp.json();
+    if (!rows?.[0]) return;
+    const used = rows[0].storage_used || 0;
+    const pct = Math.min((used / STORAGE_LIMIT) * 100, 100);
+    document.getElementById('storage-fill').style.width = pct + '%';
+    document.getElementById('storage-label').textContent = `${formatBytes(used)} of 15 GB used`;
+  } catch {}
 }
 
 // ─── PROJECTS ───
@@ -1386,9 +1379,6 @@ async function loadProjects() {
   grid.innerHTML = '<div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>';
 
   try {
-    // Get fresh access token
-    const { data: sessionData } = await sb.auth.getSession();
-    const accessToken = sessionData?.session?.access_token;
     if (!accessToken) {
       grid.innerHTML = `<div class="empty-state"><div class="empty-title">Not authenticated.</div>
         <div class="empty-sub">Please sign in again.</div>
@@ -1397,7 +1387,7 @@ async function loadProjects() {
       return;
     }
 
-    // Direct REST call with timeout instead of Supabase client
+    // Direct REST call with timeout
     const controller = new AbortController();
     const fetchTimeout = setTimeout(() => controller.abort(), 8000);
     const url = `${SUPABASE_URL}/rest/v1/projects?select=id,name,file_count,created_at&user_id=eq.${currentUser.id}&order=created_at.desc`;
