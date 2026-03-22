@@ -406,14 +406,13 @@
   }
   .customize-input:focus { border-color: var(--black); }
   .logo-upload-area {
-    border: 1px solid var(--g200); padding: 1rem;
+    padding: 0.8rem 0;
     display: flex; flex-direction: column; align-items: center; gap: 0.8rem;
     cursor: pointer; transition: all 0.3s;
   }
-  .logo-upload-area:hover { border-color: var(--black); }
   .logo-upload-area:hover .logo-upload-btn { background: var(--black); color: var(--white); }
   .logo-placeholder {
-    display: flex; align-items: center; gap: 1rem; width: 100%; justify-content: center;
+    display: flex; align-items: center; gap: 1rem; width: 100%;
   }
   .logo-upload-btn {
     font-family: var(--sans); font-size: 0.6rem; font-weight: 500;
@@ -424,45 +423,36 @@
   }
   .logo-upload-hint { font-size: 0.6rem; color: var(--g400); letter-spacing: 0.03em; }
   .logo-preview {
-    position: relative; display: flex; flex-direction: column; align-items: center; gap: 0.6rem; width: 100%;
+    position: relative; display: flex; align-items: center; gap: 1rem; width: 100%;
   }
   .logo-preview img {
-    max-height: 80px; max-width: 320px; object-fit: contain; display: block;
+    max-height: 80px; max-width: 260px; object-fit: contain; display: block;
     cursor: pointer; transition: opacity 0.2s;
   }
   .logo-preview img:hover { opacity: 0.7; }
   .logo-preview-actions {
-    display: flex; gap: 0.5rem; align-items: center;
+    display: flex; flex-direction: column; gap: 0.3rem;
   }
   .logo-action-btn {
-    font-family: var(--sans); font-size: 0.55rem; font-weight: 500;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    padding: 0.35rem 0.8rem; border: 1px solid var(--g200);
-    color: var(--g600); background: none; cursor: pointer;
-    transition: all 0.3s;
+    font-family: var(--sans); font-size: 0.6rem; font-weight: 400;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0; border: none; background: none;
+    color: var(--g400); cursor: pointer; transition: color 0.2s;
+    text-align: left;
   }
-  .logo-action-btn:hover { border-color: var(--black); color: var(--black); }
-  .logo-action-btn.remove:hover { border-color: #c44; color: #c44; }
-  .logo-remove-btn {
-    width: 22px; height: 22px; border-radius: 50%;
-    background: none; color: var(--g400);
-    border: 1px solid var(--g200); cursor: pointer; font-size: 0.55rem;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.3s;
-  }
-  .logo-remove-btn:hover { border-color: var(--black); color: var(--black); }
+  .logo-action-btn:hover { color: var(--black); }
+  .logo-action-btn.remove:hover { color: #c44; }
 
   /* LOGO CROP MODAL */
   .crop-overlay {
-    position: fixed; inset: 0; background: rgba(10,10,10,0.85);
+    position: fixed; inset: 0; background: rgba(10,10,10,0.9);
     display: none; align-items: center; justify-content: center; z-index: 300;
-    flex-direction: column; gap: 1rem;
+    flex-direction: column; gap: 1.5rem;
   }
   .crop-overlay.active { display: flex; }
   .crop-container {
     position: relative; max-width: 90vw; max-height: 70vh;
-    overflow: hidden; cursor: crosshair; background: #1a1a1a;
-    border: 1px solid #333;
+    overflow: hidden; cursor: crosshair; background: #0a0a0a;
   }
   .crop-container img {
     display: block; max-width: 90vw; max-height: 70vh; object-fit: contain;
@@ -477,16 +467,21 @@
     display: flex; gap: 0.8rem;
   }
   .crop-btn {
-    font-family: var(--sans); font-size: 0.72rem; font-weight: 500;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    padding: 0.7rem 1.4rem; border: none; cursor: pointer; transition: all 0.2s;
+    font-family: var(--sans); font-size: 0.68rem; font-weight: 400;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.75rem 1.6rem; cursor: pointer; transition: all 0.2s;
   }
-  .crop-save { background: var(--white); color: var(--black); }
-  .crop-save:hover { background: var(--g200); }
-  .crop-cancel { background: none; color: var(--white); border: 1px solid rgba(255,255,255,0.2); }
-  .crop-cancel:hover { border-color: rgba(255,255,255,0.5); }
+  .crop-save {
+    background: #fafafa; color: #0a0a0a; border: none;
+  }
+  .crop-save:hover { background: #e4e4e0; }
+  .crop-cancel {
+    background: none; color: #fafafa; border: 1px solid rgba(250,250,250,0.15);
+  }
+  .crop-cancel:hover { border-color: rgba(250,250,250,0.4); color: #fff; }
   .crop-hint {
-    font-size: 0.68rem; color: rgba(255,255,255,0.4); letter-spacing: 0.05em;
+    font-family: var(--sans); font-size: 0.62rem; color: rgba(255,255,255,0.35);
+    letter-spacing: 0.1em; text-transform: uppercase;
   }
   .color-pickers-row { display: flex; gap: 1.5rem; }
   .color-picker-group { flex: 1; }
@@ -2309,8 +2304,10 @@ async function handleLogoUpload(event) {
   const path = `${currentUser.id}/logo.${ext}`;
   const { error } = await storageUpload('logos', path, uploadFile, { upsert: true });
   if (error) { showToast('Logo upload failed.'); console.error(error); return; }
+  // Keep local blob for crop (avoids CORS)
+  logoLocalBlobUrl = URL.createObjectURL(uploadFile);
   document.getElementById('logo-preview-img').src = `${SUPABASE_URL}/storage/v1/object/public/logos/${path}?t=${Date.now()}`;
-  document.getElementById('logo-preview').style.display = 'inline-block';
+  document.getElementById('logo-preview').style.display = 'flex';
   document.getElementById('logo-placeholder').style.display = 'none';
   currentGallerySettings.logo_path = path;
   showToast('Logo uploaded.');
@@ -2343,16 +2340,28 @@ function removeLogo() {
   document.getElementById('logo-preview').style.display = 'none';
   document.getElementById('logo-placeholder').style.display = 'flex';
   currentGallerySettings.logo_path = null;
+  if (logoLocalBlobUrl) { URL.revokeObjectURL(logoLocalBlobUrl); logoLocalBlobUrl = null; }
 }
 
 // Logo crop
 let cropState = { startX: 0, startY: 0, dragging: false };
+let logoLocalBlobUrl = null; // keep a local copy to avoid CORS
 
 function openLogoCrop() {
-  const src = document.getElementById('logo-preview-img').src;
+  const src = logoLocalBlobUrl || document.getElementById('logo-preview-img').src;
   if (!src) return;
   const cropImg = document.getElementById('crop-img');
-  cropImg.src = src;
+
+  // If loading from remote, fetch as blob to avoid tainted canvas
+  if (!logoLocalBlobUrl && src.startsWith('http')) {
+    fetch(src).then(r => r.blob()).then(blob => {
+      logoLocalBlobUrl = URL.createObjectURL(blob);
+      cropImg.src = logoLocalBlobUrl;
+    }).catch(() => { cropImg.crossOrigin = 'anonymous'; cropImg.src = src; });
+  } else {
+    cropImg.src = src;
+  }
+
   document.getElementById('crop-selection').style.display = 'none';
   document.getElementById('crop-overlay').classList.add('active');
 
@@ -2436,10 +2445,14 @@ async function saveCrop() {
   const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 0.95));
   if (!blob) { showToast('Crop failed'); return; }
 
-  const file = new File([blob], 'logo.png', { type: 'image/png' });
+  const croppedFile = new File([blob], 'logo.png', { type: 'image/png' });
   const path = `${currentUser.id}/logo.png`;
-  const { error } = await storageUpload('logos', path, file, { upsert: true });
+  const { error } = await storageUpload('logos', path, croppedFile, { upsert: true });
   if (error) { showToast('Failed to save crop'); console.error(error); return; }
+
+  // Update local blob for future crops
+  if (logoLocalBlobUrl) URL.revokeObjectURL(logoLocalBlobUrl);
+  logoLocalBlobUrl = URL.createObjectURL(blob);
 
   const newUrl = `${SUPABASE_URL}/storage/v1/object/public/logos/${path}?t=${Date.now()}`;
   document.getElementById('logo-preview-img').src = newUrl;
