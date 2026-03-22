@@ -914,6 +914,64 @@ let currentUser = null;
 let currentProject = null;
 let isGalleryMode = false;
 
+// REST helpers — bypass Supabase JS client for data queries
+function authHeaders() {
+  return { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${accessToken || SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+}
+async function dbSelect(table, columns, filters, opts) {
+  let url = `${SUPABASE_URL}/rest/v1/${table}?select=${columns}`;
+  if (filters) url += '&' + filters;
+  if (opts?.order) url += `&order=${opts.order}`;
+  if (opts?.limit) url += `&limit=${opts.limit}`;
+  const h = authHeaders();
+  if (opts?.single) h['Accept'] = 'application/vnd.pgrst.object+json';
+  else h['Accept'] = 'application/json';
+  const resp = await fetch(url, { headers: h });
+  if (!resp.ok) { const e = await resp.json().catch(() => ({})); return { data: null, error: e }; }
+  const data = await resp.json();
+  return { data, error: null };
+}
+async function dbInsert(table, row) {
+  const resp = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, {
+    method: 'POST', headers: authHeaders(), body: JSON.stringify(row)
+  });
+  if (!resp.ok) { const e = await resp.json().catch(() => ({})); return { data: null, error: e }; }
+  const data = await resp.json();
+  return { data: data?.[0] || data, error: null };
+}
+async function dbUpdate(table, updates, filters) {
+  const resp = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${filters}`, {
+    method: 'PATCH', headers: authHeaders(), body: JSON.stringify(updates)
+  });
+  if (!resp.ok) { const e = await resp.json().catch(() => ({})); return { error: e }; }
+  return { error: null };
+}
+async function dbDelete(table, filters) {
+  const resp = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${filters}`, {
+    method: 'DELETE', headers: authHeaders()
+  });
+  if (!resp.ok) { const e = await resp.json().catch(() => ({})); return { error: e }; }
+  return { error: null };
+}
+async function storageUpload(bucket, path, file, opts) {
+  const method = opts?.upsert ? 'PUT' : 'POST';
+  const resp = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`, {
+    method,
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${accessToken || SUPABASE_KEY}`, 'Content-Type': file.type || 'application/octet-stream' },
+    body: file
+  });
+  if (!resp.ok) { const e = await resp.json().catch(() => ({})); return { error: e }; }
+  return { error: null };
+}
+async function storageRemove(bucket, paths) {
+  const resp = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}`, {
+    method: 'DELETE',
+    headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${accessToken || SUPABASE_KEY}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ prefixes: paths })
+  });
+  return { error: resp.ok ? null : 'delete failed' };
+}
+
 // Emergency reset: add ?reset to the URL to clear stuck sessions
 if (window.location.search.includes('reset')) {
   localStorage.clear();
@@ -1492,11 +1550,11 @@ async function createProject() {
   const name = document.getElementById('project-name-input').value.trim();
   if (!name) { showToast('Please enter a project name.'); return; }
 
-  const { data, error } = await sb.from('projects').insert({
+  const { data, error } = await dbInsert('projects', {
     user_id: currentUser.id,
     name,
     description: document.getElementById('project-desc-input').value.trim()
-  }).select().single();
+  });
 
   if (error) { showToast('Could not create project.'); return; }
   closeNewProject();
@@ -1517,7 +1575,7 @@ async function loadFiles() {
   const grid = document.getElementById('files-grid');
   grid.innerHTML = '<div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>';
 
-  const { data: files } = await sb.from('files').select('*').eq('project_id', currentProject.id).order('created_at', { ascending: false });
+  const { data: files } = await dbSelect('files', '*', `project_id=eq.${currentProject.id}`, { order: 'created_at.desc' });
 
   if (!files?.length) {
     grid.innerHTML = `<div class="empty-state"><div class="empty-title">No files yet.</div><div class="empty-sub">Upload photos or videos to get started.</div></div>`;
@@ -1576,8 +1634,8 @@ async function handleFileSelect(fileList) {
     label.textContent = `Uploading ${file.name}...`;
     const path = `${currentUser.id}/${currentProject.id}/${Date.now()}-${file.name}`;
 
-    const { error: storageErr } = await sb.storage.from('projects').upload(path, file);
-    if (storageErr) { console.error('Upload error:', storageErr); showToast(`Failed: ${file.name} — ${storageErr.message}`); continue; }
+    const { error: storageErr } = await storageUpload('projects', path, file);
+    if (storageErr) { console.error('Upload error:', storageErr); showToast(`Failed: ${file.name}`); continue; }
 
     // Generate video thumbnail
     let thumbPath = null;
@@ -1586,12 +1644,12 @@ async function handleFileSelect(fileList) {
         const thumbBlob = await generateUploadThumb(file);
         if (thumbBlob) {
           thumbPath = path + '_thumb.jpg';
-          await sb.storage.from('projects').upload(thumbPath, thumbBlob, { contentType: 'image/jpeg' });
+          await storageUpload('projects', thumbPath, new Blob([thumbBlob], { type: 'image/jpeg' }));
         }
       } catch (e) { /* no thumbnail — that's ok */ }
     }
 
-    await sb.from('files').insert({
+    await dbInsert('files', {
       project_id: currentProject.id,
       user_id: currentUser.id,
       name: file.name,
@@ -1602,15 +1660,15 @@ async function handleFileSelect(fileList) {
     });
 
     // Update storage used
-    const { data: profile } = await sb.from('profiles').select('storage_used').eq('id', currentUser.id).single();
+    const { data: profile } = await dbSelect('profiles', 'storage_used', `id=eq.${currentUser.id}`, { single: true });
     if (profile) {
-      await sb.from('profiles').update({ storage_used: (profile.storage_used || 0) + file.size }).eq('id', currentUser.id);
+      await dbUpdate('profiles', { storage_used: (profile.storage_used || 0) + file.size }, `id=eq.${currentUser.id}`);
     }
 
     // Update file count
-    const { data: proj } = await sb.from('projects').select('file_count').eq('id', currentProject.id).single();
+    const { data: proj } = await dbSelect('projects', 'file_count', `id=eq.${currentProject.id}`, { single: true });
     if (proj) {
-      await sb.from('projects').update({ file_count: (proj.file_count || 0) + 1 }).eq('id', currentProject.id);
+      await dbUpdate('projects', { file_count: (proj.file_count || 0) + 1 }, `id=eq.${currentProject.id}`);
     }
 
     uploaded++;
@@ -1630,19 +1688,19 @@ async function handleFileSelect(fileList) {
 
 async function deleteFile(fileId, path, size, e) {
   e.stopPropagation();
-  await sb.storage.from('projects').remove([path]);
-  await sb.from('files').delete().eq('id', fileId);
+  await storageRemove('projects', [path]);
+  await dbDelete('files', `id=eq.${fileId}`);
 
   // Update storage used
-  const { data: profile } = await sb.from('profiles').select('storage_used').eq('id', currentUser.id).single();
+  const { data: profile } = await dbSelect('profiles', 'storage_used', `id=eq.${currentUser.id}`, { single: true });
   if (profile) {
-    await sb.from('profiles').update({ storage_used: Math.max(0, (profile.storage_used || 0) - size) }).eq('id', currentUser.id);
+    await dbUpdate('profiles', { storage_used: Math.max(0, (profile.storage_used || 0) - size) }, `id=eq.${currentUser.id}`);
   }
 
   // Update file count
-  const { data: proj } = await sb.from('projects').select('file_count').eq('id', currentProject.id).single();
+  const { data: proj } = await dbSelect('projects', 'file_count', `id=eq.${currentProject.id}`, { single: true });
   if (proj) {
-    await sb.from('projects').update({ file_count: Math.max(0, (proj.file_count || 0) - 1) }).eq('id', currentProject.id);
+    await dbUpdate('projects', { file_count: Math.max(0, (proj.file_count || 0) - 1) }, `id=eq.${currentProject.id}`);
   }
 
   showToast('File deleted.');
@@ -1695,7 +1753,7 @@ async function openDelivery() {
 }
 
 async function loadShareLink() {
-  const { data: proj } = await sb.from('projects').select('share_token').eq('id', currentProject.id).single();
+  const { data: proj } = await dbSelect('projects', 'share_token', `id=eq.${currentProject.id}`, { single: true });
   const linkBox = document.getElementById('delivery-link-box');
   if (proj?.share_token) {
     const url = `${window.location.origin}${window.location.pathname}?gallery=${proj.share_token}`;
@@ -1711,13 +1769,8 @@ async function loadShareLink() {
 async function loadGallerySettings() {
   const defaults = { logo_path: null, bg_color: '#0a0a0a', accent_color: '#fafafa', font_family: 'Playfair Display', layout: 'masonry' };
 
-  const { data: profile } = await sb.from('profiles')
-    .select('gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout')
-    .eq('id', currentUser.id).single();
-
-  const { data: proj } = await sb.from('projects')
-    .select('gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout')
-    .eq('id', currentProject.id).single();
+  const { data: profile } = await dbSelect('profiles', 'gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout', `id=eq.${currentUser.id}`, { single: true });
+  const { data: proj } = await dbSelect('projects', 'gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout', `id=eq.${currentProject.id}`, { single: true });
 
   const p = profile || {};
   currentGallerySettings = {
@@ -1774,7 +1827,7 @@ async function handleLogoUpload(event) {
   if (file.size > 2 * 1024 * 1024) { showToast('Logo must be under 2MB.'); return; }
   const ext = file.name.split('.').pop().toLowerCase();
   const path = `${currentUser.id}/logo.${ext}`;
-  const { error } = await sb.storage.from('logos').upload(path, file, { upsert: true });
+  const { error } = await storageUpload('logos', path, file, { upsert: true });
   if (error) { showToast('Logo upload failed.'); return; }
   document.getElementById('logo-preview-img').src = `${SUPABASE_URL}/storage/v1/object/public/logos/${path}`;
   document.getElementById('logo-preview').style.display = 'inline-block';
@@ -1896,7 +1949,7 @@ async function sendDelivery() {
   btn.disabled = true;
 
   // Generate share token if needed
-  const { data: proj } = await sb.from('projects').select('share_token').eq('id', currentProject.id).single();
+  const { data: proj } = await dbSelect('projects', 'share_token', `id=eq.${currentProject.id}`, { single: true });
   let token = proj?.share_token;
 
   if (!token) {
@@ -1905,7 +1958,7 @@ async function sendDelivery() {
     token = btoa(String.fromCharCode(...bytes))
       .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '').slice(0, 12);
 
-    const { error } = await sb.from('projects').update({ share_token: token }).eq('id', currentProject.id);
+    const { error } = await dbUpdate('projects', { share_token: token }, `id=eq.${currentProject.id}`);
     if (error) {
       showToast('Could not generate link.');
       btn.innerHTML = 'Generate Link &amp; Send';
@@ -1922,17 +1975,17 @@ async function sendDelivery() {
     gallery_font_family: currentGallerySettings.font_family,
     gallery_layout: currentGallerySettings.layout
   };
-  await sb.from('projects').update(galUpdate).eq('id', currentProject.id);
+  await dbUpdate('projects', galUpdate, `id=eq.${currentProject.id}`);
 
   // Save as default if checked
   if (document.getElementById('save-as-default').checked) {
-    await sb.from('profiles').update({
+    await dbUpdate('profiles', {
       gallery_logo_path: currentGallerySettings.logo_path,
       gallery_bg_color: currentGallerySettings.bg_color,
       gallery_accent_color: currentGallerySettings.accent_color,
       gallery_font_family: currentGallerySettings.font_family,
       gallery_layout: currentGallerySettings.layout
-    }).eq('id', currentUser.id);
+    }, `id=eq.${currentUser.id}`);
   }
 
   const galleryUrl = `${window.location.origin}${window.location.pathname}?gallery=${token}`;
