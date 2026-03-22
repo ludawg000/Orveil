@@ -482,49 +482,60 @@
     font-family: var(--sans); font-size: 0.62rem; color: rgba(255,255,255,0.35);
     letter-spacing: 0.1em; text-transform: uppercase;
   }
-  .color-pickers-row { display: flex; gap: 1.5rem; justify-content: center; }
-  .color-picker-group {
-    flex: 1; padding: 1.2rem 0.8rem; cursor: pointer; transition: all 0.4s ease;
-    background:
-      radial-gradient(circle at 30% 40%, rgba(255,255,255,0.08) 0%, transparent 50%),
-      radial-gradient(circle at 70% 60%, rgba(255,255,255,0.05) 0%, transparent 40%),
-      conic-gradient(from 180deg at 50% 50%, #0a0a0a 0%, #1a1a1a 25%, #0a0a0a 50%, #151515 75%, #0a0a0a 100%);
-    color: var(--white);
-    display: flex; flex-direction: column; align-items: center; text-align: center;
-    border-radius: 50%; aspect-ratio: 1; justify-content: center; max-width: 120px;
-    box-shadow: 4px 6px 12px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.06);
-    position: relative; overflow: hidden;
+  .color-pickers-row { display: flex; gap: 2rem; justify-content: center; padding: 0.5rem 0; }
+  .color-palette {
+    position: relative; width: 140px; height: 100px; cursor: pointer;
   }
-  .color-picker-group::before {
-    content: ''; position: absolute; inset: 0; border-radius: 50%;
-    background: repeating-conic-gradient(
-      rgba(255,255,255,0.02) 0deg 10deg, transparent 10deg 20deg
-    );
+  .color-palette-shape {
+    width: 100%; height: 100%;
+    background: #c8a96e;
+    background-image:
+      radial-gradient(circle at 25% 30%, rgba(0,0,0,0.08) 0%, transparent 40%),
+      radial-gradient(circle at 75% 70%, rgba(255,255,255,0.1) 0%, transparent 40%),
+      linear-gradient(135deg, #d4b87a 0%, #c8a96e 40%, #b8955a 100%);
+    border-radius: 50% 50% 50% 10% / 60% 60% 40% 30%;
+    box-shadow: 2px 4px 10px rgba(0,0,0,0.25), inset 0 1px 2px rgba(255,255,255,0.2);
+    position: relative; overflow: hidden;
+    transition: transform 0.3s;
+  }
+  .color-palette:hover .color-palette-shape { transform: scale(1.04) rotate(-2deg); }
+  .color-palette-shape::before {
+    content: ''; position: absolute; inset: 0;
+    border-radius: inherit;
+    background:
+      radial-gradient(ellipse 8px 8px at 30% 35%, #e74c3c 0%, transparent 100%),
+      radial-gradient(ellipse 7px 7px at 55% 25%, #3498db 0%, transparent 100%),
+      radial-gradient(ellipse 6px 6px at 75% 40%, #f1c40f 0%, transparent 100%),
+      radial-gradient(ellipse 7px 7px at 40% 60%, #2ecc71 0%, transparent 100%),
+      radial-gradient(ellipse 6px 6px at 65% 65%, #9b59b6 0%, transparent 100%);
+    opacity: 0.7;
     pointer-events: none;
   }
-  .color-picker-group:hover {
-    background:
-      radial-gradient(circle at 30% 40%, rgba(0,0,0,0.06) 0%, transparent 50%),
-      radial-gradient(circle at 70% 60%, rgba(0,0,0,0.04) 0%, transparent 40%),
-      conic-gradient(from 180deg at 50% 50%, #fafafa 0%, #e8e8e4 25%, #fafafa 50%, #f0f0ec 75%, #fafafa 100%);
-    color: var(--black);
-    box-shadow: 2px 3px 8px rgba(0,0,0,0.15), inset 0 1px 1px rgba(255,255,255,0.5);
-    transform: scale(1.05);
+  .color-palette-thumb {
+    position: absolute; bottom: -4px; left: 5px;
+    width: 14px; height: 50px; background: #8b6b3d;
+    border-radius: 3px 3px 2px 2px; transform: rotate(25deg);
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.2);
+    background-image: linear-gradient(90deg, #9b7b4d 0%, #8b6b3d 50%, #7b5b2d 100%);
   }
-  .color-picker-group:hover .color-label { color: var(--g600); }
-  .color-label {
-    font-size: 0.6rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--white); margin-bottom: 0.5rem; display: block; transition: color 0.2s;
+  .color-palette-label {
+    font-family: var(--sans); font-size: 0.58rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--black); text-align: center;
+    margin-top: 0.5rem;
   }
-  .color-picker-group input[type="color"] {
-    width: 32px; height: 32px; border: 2px solid rgba(255,255,255,0.15);
+  .color-palette-swatch {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    z-index: 2;
+  }
+  .color-palette-swatch input[type="color"] {
+    width: 30px; height: 30px; border: 2px solid rgba(255,255,255,0.5);
     padding: 0; cursor: pointer; background: none;
     -webkit-appearance: none; appearance: none;
-    border-radius: 50%; transition: all 0.3s;
+    border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   }
-  .color-picker-group:hover input[type="color"] { border-color: rgba(0,0,0,0.15); }
-  .color-picker-group input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; border-radius: 50%; }
-  .color-picker-group input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
+  .color-palette-swatch input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; border-radius: 50%; }
+  .color-palette-swatch input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
   .contrast-warning { font-size: 0.68rem; color: #c44; margin-top: 0.4rem; font-style: italic; }
   .font-results {
     max-height: 140px; overflow-y: auto; border: 1px solid var(--g200);
@@ -1234,13 +1245,23 @@
       <div class="customize-section">
         <label class="customize-label">Colors</label>
         <div class="color-pickers-row">
-          <div class="color-picker-group">
-            <label class="color-label">Background</label>
-            <input type="color" id="gallery-bg-color" value="#0a0a0a" onchange="syncColor('bg')">
+          <div class="color-palette">
+            <div class="color-palette-shape">
+              <div class="color-palette-swatch">
+                <input type="color" id="gallery-bg-color" value="#0a0a0a" onchange="syncColor('bg')">
+              </div>
+            </div>
+            <div class="color-palette-thumb"></div>
+            <div class="color-palette-label">Background</div>
           </div>
-          <div class="color-picker-group">
-            <label class="color-label">Text / Accent</label>
-            <input type="color" id="gallery-accent-color" value="#fafafa" onchange="syncColor('accent')">
+          <div class="color-palette">
+            <div class="color-palette-shape">
+              <div class="color-palette-swatch">
+                <input type="color" id="gallery-accent-color" value="#fafafa" onchange="syncColor('accent')">
+              </div>
+            </div>
+            <div class="color-palette-thumb"></div>
+            <div class="color-palette-label">Text / Accent</div>
           </div>
         </div>
         <div class="contrast-warning" id="contrast-warning" style="display:none">Low contrast — text may be hard to read.</div>
