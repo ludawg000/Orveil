@@ -293,45 +293,194 @@
   }
   .copy-link-btn:hover { background: var(--g600); }
 
+  /* GALLERY CUSTOMIZATION */
+  .delivery-customize-toggle {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.75rem 0; cursor: pointer; font-size: 0.75rem;
+    font-weight: 400; letter-spacing: 0.08em; color: var(--g600);
+    border-top: 1px solid var(--g200); margin-top: 0.8rem;
+    user-select: none; transition: color 0.2s;
+  }
+  .delivery-customize-toggle:hover { color: var(--black); }
+  .customize-arrow { font-size: 0.55rem; transition: transform 0.25s; }
+  .customize-arrow.open { transform: rotate(180deg); }
+  .delivery-customize { padding: 0.5rem 0; }
+  .customize-section { margin-bottom: 1.4rem; }
+  .customize-label {
+    font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--g400); margin-bottom: 0.5rem; display: block;
+  }
+  .customize-input {
+    width: 100%; font-family: var(--sans); font-size: 0.82rem; font-weight: 300;
+    padding: 0.65rem 0.8rem; border: 1px solid var(--g200);
+    background: transparent; color: var(--black); outline: none;
+    transition: border-color 0.2s;
+  }
+  .customize-input:focus { border-color: var(--black); }
+  .logo-upload-area {
+    border: 1.5px dashed var(--g200); padding: 1.2rem; text-align: center;
+    cursor: pointer; transition: border-color 0.2s;
+  }
+  .logo-upload-area:hover { border-color: var(--g400); }
+  .logo-placeholder { font-size: 0.72rem; color: var(--g400); }
+  .logo-preview { position: relative; display: inline-block; }
+  .logo-preview img { max-height: 50px; max-width: 180px; object-fit: contain; }
+  .logo-remove-btn {
+    position: absolute; top: -6px; right: -6px;
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--black); color: var(--white);
+    border: none; cursor: pointer; font-size: 0.55rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .color-pickers-row { display: flex; gap: 1.5rem; }
+  .color-picker-group { flex: 1; }
+  .color-label { font-size: 0.68rem; color: var(--g600); margin-bottom: 0.3rem; display: block; }
+  .color-input-wrap { display: flex; align-items: center; gap: 0.5rem; }
+  .color-input-wrap input[type="color"] {
+    width: 32px; height: 32px; border: 1px solid var(--g200);
+    padding: 0; cursor: pointer; background: none;
+    -webkit-appearance: none; appearance: none;
+  }
+  .color-input-wrap input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
+  .color-input-wrap input[type="color"]::-webkit-color-swatch { border: none; }
+  .color-hex-input {
+    font-family: var(--sans); font-size: 0.75rem; width: 76px;
+    padding: 0.4rem 0.5rem; border: 1px solid var(--g200);
+    background: transparent; color: var(--black); outline: none;
+  }
+  .contrast-warning { font-size: 0.68rem; color: #c44; margin-top: 0.4rem; font-style: italic; }
+  .font-results {
+    max-height: 140px; overflow-y: auto; border: 1px solid var(--g200);
+    display: none; margin-top: 0.3rem;
+  }
+  .font-results.active { display: block; }
+  .font-result-item {
+    padding: 0.55rem 0.8rem; cursor: pointer; font-size: 0.82rem;
+    transition: background 0.15s;
+  }
+  .font-result-item:hover { background: var(--g100); }
+  .font-selected { font-size: 0.75rem; margin-top: 0.5rem; color: var(--g600); }
+  .font-preview-text { font-size: 1.1rem; display: block; margin-top: 0.3rem; color: var(--black); }
+  .layout-options { display: flex; gap: 0.6rem; }
+  .layout-opt {
+    flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+    padding: 0.8rem 0.5rem; border: 1px solid var(--g200); cursor: pointer;
+    font-size: 0.68rem; color: var(--g400); transition: all 0.2s;
+    letter-spacing: 0.06em;
+  }
+  .layout-opt:hover { border-color: var(--g400); color: var(--g600); }
+  .layout-opt.selected { border-color: var(--black); color: var(--black); }
+  .layout-icon { width: 36px; height: 26px; position: relative; opacity: 0.6; }
+  .layout-opt.selected .layout-icon { opacity: 1; }
+  .layout-icon-masonry { display: flex; gap: 2px; align-items: flex-start; }
+  .layout-icon-masonry::before, .layout-icon-masonry::after {
+    content: ''; display: block; flex: 1; background: currentColor;
+  }
+  .layout-icon-masonry::before { height: 16px; }
+  .layout-icon-masonry::after { height: 24px; }
+  .layout-icon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; }
+  .layout-icon-grid::before, .layout-icon-grid::after {
+    content: ''; display: block; background: currentColor; aspect-ratio: 1;
+  }
+  .layout-icon-slideshow { display: flex; align-items: center; justify-content: center; }
+  .layout-icon-slideshow::before {
+    content: ''; display: block; width: 28px; height: 18px;
+    border: 1.5px solid currentColor;
+  }
+  .save-default-label {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-size: 0.75rem; color: var(--g600); cursor: pointer;
+    padding-top: 0.8rem; border-top: 1px solid var(--g200);
+  }
+  .save-default-label input[type="checkbox"] { accent-color: var(--black); }
+
+  /* SLIDESHOW */
+  .slideshow-container {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 70vh; position: relative; padding: 2rem;
+    max-width: 1200px; margin: 0 auto; width: 100%;
+  }
+  .slideshow-media { display: flex; align-items: center; justify-content: center; flex: 1; }
+  .slideshow-img { max-width: 85vw; max-height: 70vh; object-fit: contain; }
+  .slideshow-video { max-width: 85vw; max-height: 70vh; }
+  .slideshow-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 48px; height: 48px; border-radius: 50%;
+    background: none; border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.5); font-size: 1.3rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s; backdrop-filter: blur(8px);
+  }
+  .slideshow-nav:hover { color: white; border-color: rgba(255,255,255,0.3); }
+  .slideshow-prev { left: 1.5rem; }
+  .slideshow-next { right: 1.5rem; }
+  .slideshow-bottom {
+    position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 2rem;
+  }
+  .slideshow-counter {
+    font-size: 0.68rem; color: rgba(255,255,255,0.35); letter-spacing: 0.1em;
+  }
+  .slideshow-dl {
+    font-family: var(--sans); font-size: 0.65rem; font-weight: 400;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    background: none; color: rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 0.5rem 1.2rem; cursor: pointer; transition: all 0.3s;
+  }
+  .slideshow-dl:hover { color: white; border-color: rgba(255,255,255,0.4); }
+
   /* GALLERY SCREEN */
-  #gallery-screen { background: var(--black); flex-direction: column; }
+  #gallery-screen {
+    background: var(--gal-bg, var(--black)); flex-direction: column;
+  }
 
   .gallery-header {
     text-align: center; padding: 7rem 2rem 4rem;
   }
   .gallery-brand {
-    font-family: var(--serif); font-size: 0.75rem; color: var(--g600);
-    letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 2.5rem;
+    font-family: var(--gal-font, var(--serif)); font-size: 0.75rem; color: var(--gal-accent, var(--g600));
+    letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 2.5rem; opacity: 0.5;
   }
+  .gallery-brand-logo { max-height: 48px; max-width: 200px; margin-bottom: 2.5rem; }
   .gallery-project-name {
-    font-family: var(--serif); font-size: 3.5rem; color: var(--white);
+    font-family: var(--gal-font, var(--serif)); font-size: 3.5rem; color: var(--gal-accent, var(--white));
     font-style: italic; font-weight: 400; line-height: 1.15;
   }
   .gallery-meta {
-    font-size: 0.68rem; color: var(--g400); letter-spacing: 0.2em;
-    text-transform: uppercase; margin-top: 1.2rem;
+    font-size: 0.68rem; color: var(--gal-accent, var(--g400)); opacity: 0.5;
+    letter-spacing: 0.2em; text-transform: uppercase; margin-top: 1.2rem;
   }
   .gallery-divider {
-    width: 30px; height: 1px; background: rgba(255,255,255,0.15);
+    width: 30px; height: 1px; background: var(--gal-accent, rgba(255,255,255,0.15)); opacity: 0.15;
     margin: 2.5rem auto 0;
   }
   .gallery-download-all {
     display: inline-block; margin-top: 2.5rem;
     font-family: var(--sans); font-size: 0.68rem; font-weight: 400;
     letter-spacing: 0.15em; text-transform: uppercase;
-    color: var(--white); background: none;
-    border: 1px solid rgba(255,255,255,0.2);
+    color: var(--gal-accent, var(--white)); background: none;
+    border: 1px solid; border-color: var(--gal-accent, rgba(255,255,255,0.2)); opacity: 0.8;
     padding: 0.8rem 2.2rem; cursor: pointer;
     transition: all 0.3s ease;
   }
   .gallery-download-all:hover {
-    background: var(--white); color: var(--black);
+    background: var(--gal-accent, var(--white)); color: var(--gal-bg, var(--black)); opacity: 1;
   }
 
-  /* GALLERY GRID — masonry */
+  /* GALLERY GRID — masonry (default) */
   .gallery-grid {
     column-count: 3; column-gap: 12px;
     padding: 0 3rem 5rem; max-width: 1400px; margin: 0 auto; width: 100%;
+  }
+  /* GALLERY GRID — uniform grid layout */
+  .gallery-grid.layout-grid {
+    column-count: unset; display: grid;
+    grid-template-columns: repeat(3, 1fr); gap: 12px;
+  }
+  .gallery-grid.layout-grid .gallery-item img,
+  .gallery-grid.layout-grid .gallery-item .video-placeholder {
+    width: 100%; aspect-ratio: 1; object-fit: cover;
   }
   .gallery-item {
     break-inside: avoid; margin-bottom: 12px;
@@ -388,14 +537,15 @@
   /* GALLERY FOOTER */
   .gallery-footer {
     text-align: center; padding: 4rem 2rem 5rem;
-    border-top: 1px solid rgba(255,255,255,0.05);
+    border-top: 1px solid; border-color: var(--gal-accent, rgba(255,255,255,0.05)); opacity: 0.8;
   }
   .gallery-footer-logo {
-    font-family: var(--serif); font-size: 0.9rem; color: rgba(255,255,255,0.2);
-    letter-spacing: 0.08em;
+    font-family: var(--gal-font, var(--serif)); font-size: 0.9rem; color: var(--gal-accent, rgba(255,255,255,0.2));
+    letter-spacing: 0.08em; opacity: 0.3;
   }
+  .gallery-footer-logo-img { max-height: 32px; max-width: 150px; opacity: 0.3; }
   .gallery-footer-sub {
-    font-size: 0.6rem; color: rgba(255,255,255,0.1);
+    font-size: 0.6rem; color: var(--gal-accent, rgba(255,255,255,0.1)); opacity: 0.2;
     letter-spacing: 0.15em; text-transform: uppercase; margin-top: 0.5rem;
   }
 
@@ -494,14 +644,18 @@
 
   @media(max-width:768px) {
     .gallery-grid { column-count: 2; column-gap: 8px; padding: 0 1rem 3rem; }
+    .gallery-grid.layout-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
     .gallery-item { margin-bottom: 8px; }
     .gallery-project-name { font-size: 2.2rem; }
     .gallery-header { padding: 4rem 1.5rem 2.5rem; }
     .lightbox-prev { left: 0.8rem; }
     .lightbox-next { right: 0.8rem; }
+    .slideshow-prev { left: 0.8rem; }
+    .slideshow-next { right: 0.8rem; }
   }
   @media(max-width:480px) {
     .gallery-grid { column-count: 1; column-gap: 0; max-width: 500px; }
+    .gallery-grid.layout-grid { grid-template-columns: 1fr; }
     .gallery-item { margin-bottom: 10px; }
     .gallery-project-name { font-size: 1.8rem; }
     .gallery-header { padding: 3.5rem 1.2rem 2rem; }
@@ -657,6 +811,73 @@
       <div class="delivery-preview-label">Message Preview</div>
       <div class="delivery-preview-text" id="delivery-preview-text"></div>
     </div>
+    <div class="delivery-customize-toggle" onclick="toggleCustomize()">
+      <span>Customize Gallery</span>
+      <span class="customize-arrow" id="customize-arrow">&#9662;</span>
+    </div>
+    <div class="delivery-customize" id="delivery-customize" style="display:none">
+      <div class="customize-section">
+        <label class="customize-label">Your Logo</label>
+        <div class="logo-upload-area" onclick="document.getElementById('logo-file-input').click()">
+          <div class="logo-preview" id="logo-preview" style="display:none">
+            <img id="logo-preview-img" src="" alt="Logo">
+            <button class="logo-remove-btn" onclick="event.stopPropagation();removeLogo()">&#10005;</button>
+          </div>
+          <div class="logo-placeholder" id="logo-placeholder">Upload logo (PNG, SVG, or JPG)</div>
+          <input type="file" id="logo-file-input" accept="image/png,image/jpeg,image/svg+xml,image/webp" style="display:none" onchange="handleLogoUpload(event)">
+        </div>
+      </div>
+      <div class="customize-section">
+        <label class="customize-label">Colors</label>
+        <div class="color-pickers-row">
+          <div class="color-picker-group">
+            <label class="color-label">Background</label>
+            <div class="color-input-wrap">
+              <input type="color" id="gallery-bg-color" value="#0a0a0a" onchange="syncColor('bg')">
+              <input type="text" class="color-hex-input" id="gallery-bg-hex" value="#0a0a0a" maxlength="7" onchange="syncColorFromHex('bg')">
+            </div>
+          </div>
+          <div class="color-picker-group">
+            <label class="color-label">Text / Accent</label>
+            <div class="color-input-wrap">
+              <input type="color" id="gallery-accent-color" value="#fafafa" onchange="syncColor('accent')">
+              <input type="text" class="color-hex-input" id="gallery-accent-hex" value="#fafafa" maxlength="7" onchange="syncColorFromHex('accent')">
+            </div>
+          </div>
+        </div>
+        <div class="contrast-warning" id="contrast-warning" style="display:none">Low contrast — text may be hard to read.</div>
+      </div>
+      <div class="customize-section">
+        <label class="customize-label">Typography</label>
+        <input type="text" class="customize-input" id="font-search" placeholder="Search Google Fonts..." oninput="searchFonts(this.value)">
+        <div class="font-results" id="font-results"></div>
+        <div class="font-selected" id="font-selected" style="display:none">
+          Selected: <strong id="font-selected-name"></strong>
+          <span class="font-preview-text" id="font-preview-sample">The quick brown fox jumps over the lazy dog</span>
+        </div>
+      </div>
+      <div class="customize-section">
+        <label class="customize-label">Layout</label>
+        <div class="layout-options">
+          <div class="layout-opt selected" data-layout="masonry" onclick="selectLayout(this)">
+            <div class="layout-icon layout-icon-masonry"></div>
+            <span>Masonry</span>
+          </div>
+          <div class="layout-opt" data-layout="grid" onclick="selectLayout(this)">
+            <div class="layout-icon layout-icon-grid"></div>
+            <span>Grid</span>
+          </div>
+          <div class="layout-opt" data-layout="slideshow" onclick="selectLayout(this)">
+            <div class="layout-icon layout-icon-slideshow"></div>
+            <span>Slideshow</span>
+          </div>
+        </div>
+      </div>
+      <label class="save-default-label">
+        <input type="checkbox" id="save-as-default"> Save as default for all future projects
+      </label>
+    </div>
+
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeDelivery()">Cancel</button>
       <button class="modal-confirm" id="delivery-send-btn" onclick="sendDelivery()">Generate Link &amp; Send</button>
@@ -730,6 +951,8 @@ async function loadGallery(token) {
     return;
   }
 
+  applyGalleryCustomization(project);
+
   document.getElementById('gallery-project-name').textContent = project.name;
 
   const { data: files, error: filesErr } = await sb
@@ -759,7 +982,12 @@ async function loadGallery(token) {
   if (videoCount) parts.push(`${videoCount} video${videoCount !== 1 ? 's' : ''}`);
   document.getElementById('gallery-meta').textContent = parts.join(' · ');
 
-  renderGalleryGrid();
+  const layout = project.gallery_layout || 'masonry';
+  if (layout === 'slideshow') {
+    renderSlideshow();
+  } else {
+    renderGalleryGrid(layout);
+  }
   generateVideoThumbnails();
   } catch (err) {
     console.error('loadGallery crash:', err);
@@ -768,8 +996,40 @@ async function loadGallery(token) {
   }
 }
 
-function renderGalleryGrid() {
+function applyGalleryCustomization(project) {
+  const root = document.getElementById('gallery-screen');
+  const bg = project.gallery_bg_color || '#0a0a0a';
+  const accent = project.gallery_accent_color || '#fafafa';
+  const font = project.gallery_font_family || 'Playfair Display';
+  const logoPath = project.gallery_logo_path;
+
+  root.style.setProperty('--gal-bg', bg);
+  root.style.setProperty('--gal-accent', accent);
+  root.style.setProperty('--gal-font', `'${font}', serif`);
+  root.style.background = bg;
+
+  // Load Google Font if not default
+  if (font && font !== 'Playfair Display') {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@300;400;500;600;700&display=swap`;
+    document.head.appendChild(link);
+  }
+
+  // Replace brand text with logo if set
+  const brandEl = document.querySelector('.gallery-brand');
+  const footerLogoEl = document.querySelector('.gallery-footer-logo');
+  if (logoPath) {
+    const logoUrl = `${SUPABASE_URL}/storage/v1/object/public/logos/${logoPath}`;
+    if (brandEl) brandEl.innerHTML = `<img src="${logoUrl}" alt="Brand" class="gallery-brand-logo">`;
+    if (footerLogoEl) footerLogoEl.innerHTML = `<img src="${logoUrl}" alt="Brand" class="gallery-footer-logo-img">`;
+  }
+}
+
+function renderGalleryGrid(layout) {
   const grid = document.getElementById('gallery-grid');
+  grid.className = 'gallery-grid' + (layout === 'grid' ? ' layout-grid' : '');
+
   grid.innerHTML = galleryFiles.map((f, i) => {
     if (f.type?.startsWith('video/')) {
       const thumbSrc = f.thumb_path ? `${SUPABASE_URL}/storage/v1/object/public/projects/${f.thumb_path}` : '';
@@ -793,6 +1053,73 @@ function renderGalleryGrid() {
       </div>
     </div>`;
   }).join('');
+}
+
+let slideshowIndex = 0;
+
+function renderSlideshow() {
+  const grid = document.getElementById('gallery-grid');
+  grid.className = 'gallery-grid';
+  grid.innerHTML = '';
+
+  if (!galleryFiles.length) return;
+
+  slideshowIndex = 0;
+  const container = document.createElement('div');
+  container.className = 'slideshow-container';
+  container.id = 'slideshow';
+
+  container.innerHTML = `
+    <button class="slideshow-nav slideshow-prev" onclick="slideshowNav(-1)">&#8249;</button>
+    <div class="slideshow-media" id="slideshow-media"></div>
+    <button class="slideshow-nav slideshow-next" onclick="slideshowNav(1)">&#8250;</button>
+    <div class="slideshow-bottom">
+      <span class="slideshow-counter" id="slideshow-counter"></span>
+      <button class="slideshow-dl" onclick="slideshowDownload()">Download</button>
+    </div>
+  `;
+  grid.appendChild(container);
+  updateSlideshow();
+
+  // Keyboard nav (only when lightbox not open)
+  document.addEventListener('keydown', slideshowKeyHandler);
+
+  // Touch swipe
+  let touchStartX = 0;
+  container.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+  container.addEventListener('touchend', e => {
+    const diff = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(diff) > 50) slideshowNav(diff < 0 ? 1 : -1);
+  }, { passive: true });
+}
+
+function slideshowKeyHandler(e) {
+  if (document.getElementById('lightbox')?.classList.contains('active')) return;
+  if (e.key === 'ArrowLeft') slideshowNav(-1);
+  else if (e.key === 'ArrowRight') slideshowNav(1);
+}
+
+function slideshowNav(dir) {
+  slideshowIndex = (slideshowIndex + dir + galleryFiles.length) % galleryFiles.length;
+  updateSlideshow();
+}
+
+function updateSlideshow() {
+  const f = galleryFiles[slideshowIndex];
+  const media = document.getElementById('slideshow-media');
+  if (!media) return;
+
+  if (f.type?.startsWith('video/')) {
+    media.innerHTML = `<video class="slideshow-video" src="${f.publicUrl}" controls></video>`;
+  } else {
+    media.innerHTML = `<img class="slideshow-img" src="${f.publicUrl}" alt="${escHtml(f.name)}" onclick="openLightbox(${slideshowIndex})">`;
+  }
+  document.getElementById('slideshow-counter').textContent = `${slideshowIndex + 1} / ${galleryFiles.length}`;
+}
+
+function slideshowDownload() {
+  const f = galleryFiles[slideshowIndex];
+  if (f) downloadFile(f.publicUrl, f.name);
 }
 
 function generateUploadThumb(file) {
@@ -1242,9 +1569,34 @@ dropZone.addEventListener('drop', e => {
 });
 
 // ─── DELIVERY ───
-function openDelivery() {
+let currentGallerySettings = {
+  logo_path: null, bg_color: '#0a0a0a', accent_color: '#fafafa',
+  font_family: 'Playfair Display', layout: 'masonry'
+};
+
+const FONT_LIST = [
+  'Playfair Display','Poppins','Inter','Montserrat','Lora','Raleway','Oswald',
+  'Merriweather','Roboto','Open Sans','Lato','Source Sans 3','Nunito',
+  'PT Serif','Libre Baskerville','Cormorant Garamond','DM Sans','Space Grotesk',
+  'Crimson Text','EB Garamond','Josefin Sans','Work Sans','Karla','Quicksand',
+  'Bitter','Abril Fatface','Comfortaa','Dancing Script','Caveat','Pacifico',
+  'Great Vibes','Sacramento','Cinzel','Forum','Tenor Sans','Julius Sans One',
+  'Yeseva One','Bodoni Moda','Antic Didone','Spectral','Fraunces','Instrument Serif',
+  'Outfit','Sora','Manrope','Plus Jakarta Sans','Figtree','Geist','Urbanist',
+  'Cormorant','Noto Serif Display','Lexend','Albert Sans','Red Hat Display',
+  'Kaisei Opti','Gilda Display','Sorts Mill Goudy','Cardo','Old Standard TT',
+  'Vollkorn','Alegreya','Neuton','Amiri','Gentium Book Plus','Literata',
+  'Source Serif 4','IBM Plex Serif','Zilla Slab','Arvo','Rokkitt','Coustard',
+  'DM Serif Display','DM Serif Text','Noto Sans','Rubik','Nunito Sans',
+  'Barlow','Jost','Archivo','Cabin','Mulish','Be Vietnam Pro','Exo 2',
+  'Overpass','Sarabun','Prompt','Kanit','Heebo','Assistant','Alata',
+  'Geologica','Onest','General Sans'
+];
+
+async function openDelivery() {
   updateDeliveryPreview('standard');
   loadShareLink();
+  await loadGallerySettings();
   document.getElementById('delivery-modal').classList.add('active');
 }
 
@@ -1262,9 +1614,172 @@ async function loadShareLink() {
   }
 }
 
+async function loadGallerySettings() {
+  const defaults = { logo_path: null, bg_color: '#0a0a0a', accent_color: '#fafafa', font_family: 'Playfair Display', layout: 'masonry' };
+
+  const { data: profile } = await sb.from('profiles')
+    .select('gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout')
+    .eq('id', currentUser.id).single();
+
+  const { data: proj } = await sb.from('projects')
+    .select('gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout')
+    .eq('id', currentProject.id).single();
+
+  const p = profile || {};
+  currentGallerySettings = {
+    logo_path: proj?.gallery_logo_path ?? p.gallery_logo_path ?? defaults.logo_path,
+    bg_color: proj?.gallery_bg_color ?? p.gallery_bg_color ?? defaults.bg_color,
+    accent_color: proj?.gallery_accent_color ?? p.gallery_accent_color ?? defaults.accent_color,
+    font_family: proj?.gallery_font_family ?? p.gallery_font_family ?? defaults.font_family,
+    layout: proj?.gallery_layout ?? p.gallery_layout ?? defaults.layout
+  };
+
+  populateCustomizeUI();
+}
+
+function populateCustomizeUI() {
+  const s = currentGallerySettings;
+  if (s.logo_path) {
+    document.getElementById('logo-preview-img').src = `${SUPABASE_URL}/storage/v1/object/public/logos/${s.logo_path}`;
+    document.getElementById('logo-preview').style.display = 'inline-block';
+    document.getElementById('logo-placeholder').style.display = 'none';
+  } else {
+    document.getElementById('logo-preview').style.display = 'none';
+    document.getElementById('logo-placeholder').style.display = 'block';
+  }
+  document.getElementById('gallery-bg-color').value = s.bg_color;
+  document.getElementById('gallery-bg-hex').value = s.bg_color;
+  document.getElementById('gallery-accent-color').value = s.accent_color;
+  document.getElementById('gallery-accent-hex').value = s.accent_color;
+  checkContrast();
+  if (s.font_family && s.font_family !== 'Playfair Display') {
+    loadGoogleFont(s.font_family);
+    document.getElementById('font-selected').style.display = 'block';
+    document.getElementById('font-selected-name').textContent = s.font_family;
+    document.getElementById('font-preview-sample').style.fontFamily = `'${s.font_family}', serif`;
+  } else {
+    document.getElementById('font-selected').style.display = 'none';
+  }
+  document.querySelectorAll('.layout-opt').forEach(o => {
+    o.classList.toggle('selected', o.dataset.layout === s.layout);
+  });
+}
+
+function toggleCustomize() {
+  const panel = document.getElementById('delivery-customize');
+  const arrow = document.getElementById('customize-arrow');
+  const isOpen = panel.style.display !== 'none';
+  panel.style.display = isOpen ? 'none' : 'block';
+  arrow.classList.toggle('open', !isOpen);
+}
+
+// Logo
+async function handleLogoUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { showToast('Logo must be under 2MB.'); return; }
+  const ext = file.name.split('.').pop().toLowerCase();
+  const path = `${currentUser.id}/logo.${ext}`;
+  const { error } = await sb.storage.from('logos').upload(path, file, { upsert: true });
+  if (error) { showToast('Logo upload failed.'); return; }
+  document.getElementById('logo-preview-img').src = `${SUPABASE_URL}/storage/v1/object/public/logos/${path}`;
+  document.getElementById('logo-preview').style.display = 'inline-block';
+  document.getElementById('logo-placeholder').style.display = 'none';
+  currentGallerySettings.logo_path = path;
+  showToast('Logo uploaded.');
+}
+
+function removeLogo() {
+  document.getElementById('logo-preview').style.display = 'none';
+  document.getElementById('logo-placeholder').style.display = 'block';
+  currentGallerySettings.logo_path = null;
+}
+
+// Colors
+function syncColor(which) {
+  const id = which === 'bg' ? 'gallery-bg-color' : 'gallery-accent-color';
+  const hexId = which === 'bg' ? 'gallery-bg-hex' : 'gallery-accent-hex';
+  document.getElementById(hexId).value = document.getElementById(id).value;
+  currentGallerySettings[which === 'bg' ? 'bg_color' : 'accent_color'] = document.getElementById(id).value;
+  checkContrast();
+}
+
+function syncColorFromHex(which) {
+  const hexId = which === 'bg' ? 'gallery-bg-hex' : 'gallery-accent-hex';
+  const id = which === 'bg' ? 'gallery-bg-color' : 'gallery-accent-color';
+  const hex = document.getElementById(hexId).value;
+  if (/^#[0-9a-fA-F]{6}$/.test(hex)) {
+    document.getElementById(id).value = hex;
+    currentGallerySettings[which === 'bg' ? 'bg_color' : 'accent_color'] = hex;
+  }
+  checkContrast();
+}
+
+function checkContrast() {
+  const bg = document.getElementById('gallery-bg-color').value;
+  const accent = document.getElementById('gallery-accent-color').value;
+  const lum = hex => {
+    const c = [1,3,5].map(i => parseInt(hex.slice(i, i+2), 16) / 255)
+      .map(v => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2];
+  };
+  const L1 = lum(bg), L2 = lum(accent);
+  const ratio = (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05);
+  document.getElementById('contrast-warning').style.display = ratio < 3 ? 'block' : 'none';
+}
+
+// Fonts
+let fontSearchTimeout = null;
+function searchFonts(query) {
+  clearTimeout(fontSearchTimeout);
+  const results = document.getElementById('font-results');
+  if (!query.trim()) { results.classList.remove('active'); return; }
+  fontSearchTimeout = setTimeout(() => {
+    const matches = FONT_LIST.filter(f => f.toLowerCase().includes(query.toLowerCase())).slice(0, 8);
+    if (!matches.length) {
+      results.innerHTML = '<div class="font-result-item" style="color:var(--g400)">No matches</div>';
+    } else {
+      results.innerHTML = matches.map(f => {
+        loadGoogleFont(f);
+        return `<div class="font-result-item" style="font-family:'${f}',serif" onclick="selectFont('${f}')">${f}</div>`;
+      }).join('');
+    }
+    results.classList.add('active');
+  }, 200);
+}
+
+function selectFont(fontName) {
+  loadGoogleFont(fontName);
+  document.getElementById('font-results').classList.remove('active');
+  document.getElementById('font-search').value = '';
+  document.getElementById('font-selected').style.display = 'block';
+  document.getElementById('font-selected-name').textContent = fontName;
+  document.getElementById('font-preview-sample').style.fontFamily = `'${fontName}', serif`;
+  currentGallerySettings.font_family = fontName;
+}
+
+function loadGoogleFont(fontName) {
+  const id = 'gfont-' + fontName.replace(/\s+/g, '-').toLowerCase();
+  if (document.getElementById(id)) return;
+  const link = document.createElement('link');
+  link.id = id;
+  link.rel = 'stylesheet';
+  link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName)}:wght@300;400;500;700&display=swap`;
+  document.head.appendChild(link);
+}
+
+// Layout
+function selectLayout(el) {
+  document.querySelectorAll('.layout-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  currentGallerySettings.layout = el.dataset.layout;
+}
+
 function closeDelivery() {
   document.getElementById('delivery-modal').classList.remove('active');
   document.getElementById('client-email').value = '';
+  document.getElementById('delivery-customize').style.display = 'none';
+  document.getElementById('customize-arrow').classList.remove('open');
 }
 
 function selectDelivery(el) {
@@ -1305,6 +1820,27 @@ async function sendDelivery() {
     }
   }
 
+  // Save gallery customization to project
+  const galUpdate = {
+    gallery_logo_path: currentGallerySettings.logo_path,
+    gallery_bg_color: currentGallerySettings.bg_color,
+    gallery_accent_color: currentGallerySettings.accent_color,
+    gallery_font_family: currentGallerySettings.font_family,
+    gallery_layout: currentGallerySettings.layout
+  };
+  await sb.from('projects').update(galUpdate).eq('id', currentProject.id);
+
+  // Save as default if checked
+  if (document.getElementById('save-as-default').checked) {
+    await sb.from('profiles').update({
+      gallery_logo_path: currentGallerySettings.logo_path,
+      gallery_bg_color: currentGallerySettings.bg_color,
+      gallery_accent_color: currentGallerySettings.accent_color,
+      gallery_font_family: currentGallerySettings.font_family,
+      gallery_layout: currentGallerySettings.layout
+    }).eq('id', currentUser.id);
+  }
+
   const galleryUrl = `${window.location.origin}${window.location.pathname}?gallery=${token}`;
   document.getElementById('delivery-link-input').value = galleryUrl;
   document.getElementById('delivery-link-box').classList.add('active');
@@ -1315,16 +1851,21 @@ async function sendDelivery() {
   btn.textContent = 'Sending...';
   const style = document.querySelector('.delivery-opt.selected')?.dataset.style || 'standard';
   const message = deliveryMessages[style]?.(currentProject?.name) || '';
+  const logoUrl = currentGallerySettings.logo_path
+    ? `${SUPABASE_URL}/storage/v1/object/public/logos/${currentGallerySettings.logo_path}` : null;
 
   try {
     const resp = await fetch('/api/send-delivery', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        email,
-        projectName: currentProject.name,
-        message,
-        galleryUrl
+        email, projectName: currentProject.name, message, galleryUrl,
+        branding: {
+          bgColor: currentGallerySettings.bg_color,
+          accentColor: currentGallerySettings.accent_color,
+          fontFamily: currentGallerySettings.font_family,
+          logoUrl
+        }
       })
     });
     const result = await resp.json();
