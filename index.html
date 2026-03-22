@@ -1385,25 +1385,37 @@ async function loadProjects() {
   if (!grid) return;
   grid.innerHTML = '<div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>';
 
-  const timeout = setTimeout(() => {
-    if (grid.querySelector('.loader')) {
-      grid.innerHTML = `<div class="empty-state">
-        <div class="empty-title">Connection timed out.</div>
-        <div class="empty-sub">Could not reach the database.</div>
-        <button onclick="loadProjects()" style="margin-top:1rem;font-family:var(--sans);font-size:0.75rem;padding:0.6rem 1.5rem;background:var(--black);color:var(--white);border:1px solid var(--g200);cursor:pointer">Retry</button>
-        <button onclick="localStorage.clear();sessionStorage.clear();location.reload()" style="margin-top:0.5rem;font-family:var(--sans);font-size:0.65rem;padding:0.5rem 1rem;background:none;color:var(--g400);border:1px solid var(--g200);cursor:pointer;display:block;margin-left:auto;margin-right:auto">Reset Session</button>
-      </div>`;
-    }
-  }, 8000);
-
   try {
-    const { data: projects, error } = await sb.from('projects').select('id,name,file_count,created_at').eq('user_id', currentUser.id).order('created_at', { ascending: false });
-    clearTimeout(timeout);
-
-    if (error) {
-      grid.innerHTML = `<div class="empty-state"><div class="empty-title">Error loading projects.</div><div class="empty-sub">${error.message}</div></div>`;
+    // Get fresh access token
+    const { data: sessionData } = await sb.auth.getSession();
+    const accessToken = sessionData?.session?.access_token;
+    if (!accessToken) {
+      grid.innerHTML = `<div class="empty-state"><div class="empty-title">Not authenticated.</div>
+        <div class="empty-sub">Please sign in again.</div>
+        <button onclick="localStorage.clear();sessionStorage.clear();location.reload()" style="margin-top:1rem;font-family:var(--sans);font-size:0.75rem;padding:0.6rem 1.5rem;background:var(--black);color:var(--white);border:1px solid var(--g200);cursor:pointer">Sign In</button>
+      </div>`;
       return;
     }
+
+    // Direct REST call with timeout instead of Supabase client
+    const controller = new AbortController();
+    const fetchTimeout = setTimeout(() => controller.abort(), 8000);
+    const url = `${SUPABASE_URL}/rest/v1/projects?select=id,name,file_count,created_at&user_id=eq.${currentUser.id}&order=created_at.desc`;
+    const resp = await fetch(url, {
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${accessToken}`,
+        'Accept': 'application/json'
+      },
+      signal: controller.signal
+    });
+    clearTimeout(fetchTimeout);
+    if (!resp.ok) {
+      const errData = await resp.json().catch(() => ({}));
+      grid.innerHTML = `<div class="empty-state"><div class="empty-title">Error loading projects.</div><div class="empty-sub">${errData.message || resp.statusText}</div></div>`;
+      return;
+    }
+    const projects = await resp.json();
 
     if (!projects?.length) {
       grid.innerHTML = `<div class="empty-state">
@@ -1421,10 +1433,12 @@ async function loadProjects() {
       </div>`;
     }).join('');
 
-    // Load thumbnails in background
+    // Load thumbnails in background via REST
     projects.forEach(async p => {
       try {
-        const { data: files } = await sb.from('files').select('path,type,thumb_path').eq('project_id', p.id).limit(1);
+        const fUrl = `${SUPABASE_URL}/rest/v1/files?select=path,type,thumb_path&project_id=eq.${p.id}&limit=1`;
+        const fResp = await fetch(fUrl, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${accessToken}` } });
+        const files = await fResp.json();
         const el = document.getElementById(`pthumb-${p.id}`);
         if (!el) return;
         if (files?.[0]?.type?.startsWith('image/')) {
@@ -1435,9 +1449,10 @@ async function loadProjects() {
       } catch {}
     });
   } catch (err) {
-    clearTimeout(timeout);
-    grid.innerHTML = `<div class="empty-state"><div class="empty-title">Error loading projects.</div><div class="empty-sub">${err.message}</div>
+    grid.innerHTML = `<div class="empty-state"><div class="empty-title">${err.name === 'AbortError' ? 'Connection timed out.' : 'Error loading projects.'}</div>
+      <div class="empty-sub">${err.name === 'AbortError' ? 'Could not reach the database.' : err.message}</div>
       <button onclick="loadProjects()" style="margin-top:1rem;font-family:var(--sans);font-size:0.75rem;padding:0.6rem 1.5rem;background:var(--black);color:var(--white);border:1px solid var(--g200);cursor:pointer">Retry</button>
+      <button onclick="localStorage.clear();sessionStorage.clear();location.reload()" style="margin-top:0.5rem;font-family:var(--sans);font-size:0.65rem;padding:0.5rem 1rem;background:none;color:var(--g400);border:1px solid var(--g200);cursor:pointer;display:block;margin-left:auto;margin-right:auto">Reset Session</button>
     </div>`;
   }
 }
