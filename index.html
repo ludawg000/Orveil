@@ -714,7 +714,7 @@
       linear-gradient(90deg, #0e4a18 0%, #1a7a2a 20%, #22a038 38%, #28b840 50%, #22a038 62%, #1a7a2a 80%, #0e4a18 100%);
     box-shadow: 2px 3px 8px rgba(0,0,0,0.7), inset -1px 0 3px rgba(0,0,0,0.2);
   }
-  .soda-can.sc1 { right: 34%; bottom: 31%; }
+  .soda-can.sc1 { left: 60%; top: 54%; }
 
   /* Red can — slightly crushed, subtle dent */
   .soda-can.sc2 .can-body {
@@ -729,7 +729,7 @@
   .soda-can.sc2 .can-top {
     width: 14px;
   }
-  .soda-can.sc2 { right: 37%; bottom: 31%; }
+  .soda-can.sc2 { left: 56%; top: 54%; }
 
   /* Cable, pen, chip bag on desk */
   .desk-cable { position: absolute; z-index: 4; pointer-events: none; border-radius: 50%; }
@@ -763,10 +763,9 @@
      =========================== */
   .mac-computer {
     position: absolute; z-index: 10;
-    width: 36%;
-    /* Sits on desk, pushed back against wall */
-    left: 50%; bottom: calc(100% - 28px);
-    transform: translateX(-50%);
+    width: 14%;
+    /* Room-scene coordinates — sits visually on desk */
+    left: 43%; top: 42%;
   }
   /* Glow from screen on the desk surface */
   .mac-computer::before {
@@ -2041,7 +2040,7 @@
 
   /* === ROOM SCENE RESPONSIVE === */
   @media(max-width:1024px) {
-    .mac-computer { width: 22%; }
+    .mac-computer { width: 16%; left: 42%; }
     .tv-screen { height: 120px; }
     .room-poster { width: 45px; height: 58px; }
     .room-poster.p2 { width: 40px; height: 52px; }
@@ -2058,7 +2057,7 @@
       55% { transform: scale(1); filter: blur(0) brightness(1); transform-origin: 50% 50%; }
       100% { transform: scale(2.8); filter: blur(0) brightness(1); transform-origin: 50% 44%; }
     }
-    .mac-computer { width: 24%; }
+    .mac-computer { width: 18%; left: 41%; }
     .tv-screen { height: 110px; }
     .mac-power-btn { width: 20px; height: 20px; bottom: 6px; right: 8px; }
     .room-poster { width: 38px; height: 48px; }
@@ -2084,7 +2083,7 @@
       55% { transform: scale(1); filter: blur(0) brightness(1); transform-origin: 50% 50%; }
       100% { transform: scale(3.5); filter: blur(0) brightness(1); transform-origin: 50% 44%; }
     }
-    .mac-computer { width: 28%; }
+    .mac-computer { width: 22%; left: 39%; }
     .tv-screen { height: 90px; }
     .mac-power-btn { width: 24px; height: 24px; }
     .tv-screen .project-card { padding: 0.35rem; gap: 0.25rem; }
@@ -2200,22 +2199,22 @@
           <div class="desk-top"></div>
           <div class="desk-leg dl"></div>
           <div class="desk-leg dr"></div>
-          <!-- Computer sits ON the desk -->
-          <div class="mac-computer">
-            <div class="mac-case">
-              <div class="mac-top-vent"></div>
-              <div class="mac-screen-well">
-                <div class="tv-screen" id="tv-screen"></div>
-                <div class="mac-screen-glare"></div>
-                <div class="crt-shutdown" id="crt-shutdown"></div>
-              </div>
-              <div class="mac-label">Orveil</div>
-              <div class="mac-floppy"><div class="mac-floppy-slot"></div></div>
-              <button class="mac-power-btn" id="room-exit-btn" onclick="shutdownRoom()"></button>
+        </div>
+        <!-- Computer — independent from desk, room-scene child -->
+        <div class="mac-computer" data-draggable="computer">
+          <div class="mac-case">
+            <div class="mac-top-vent"></div>
+            <div class="mac-screen-well">
+              <div class="tv-screen" id="tv-screen"></div>
+              <div class="mac-screen-glare"></div>
+              <div class="crt-shutdown" id="crt-shutdown"></div>
             </div>
-            <div class="mac-base">
-              <div class="mac-base-ridge"></div>
-            </div>
+            <div class="mac-label">Orveil</div>
+            <div class="mac-floppy"><div class="mac-floppy-slot"></div></div>
+            <button class="mac-power-btn" id="room-exit-btn" onclick="shutdownRoom()"></button>
+          </div>
+          <div class="mac-base">
+            <div class="mac-base-ridge"></div>
           </div>
         </div>
         <!-- Soda cans — room-scene children for free positioning -->
