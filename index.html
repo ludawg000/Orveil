@@ -646,6 +646,13 @@ let currentUser = null;
 let currentProject = null;
 let isGalleryMode = false;
 
+// Emergency reset: add ?reset to the URL to clear stuck sessions
+if (window.location.search.includes('reset')) {
+  localStorage.clear();
+  sessionStorage.clear();
+  window.location.href = window.location.pathname;
+}
+
 const deliveryMessages = {
   standard: (name) => `Hi! Your gallery is ready — I'm so excited for you to see it. Here's your link to view and download everything. Enjoy!`,
   professional: (name) => `Your gallery is now ready for viewing. It was a pleasure working with you, and I hope every image brings back the feeling of the moment it was taken.`,
@@ -899,31 +906,38 @@ async function loadProjects() {
   const grid = document.getElementById('projects-grid');
   grid.innerHTML = '<div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>';
 
-  const { data: projects, error } = await sb.from('projects').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+  try {
+    const { data: projects, error } = await sb.from('projects').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
 
-  if (error || !projects?.length) {
-    grid.innerHTML = `<div class="empty-state">
-      <div class="empty-title">No projects yet.</div>
-      <div class="empty-sub">Hit "New Project" to create your first one.</div>
-    </div>`;
-    return;
-  }
+    if (error) { console.error('loadProjects error:', error); }
 
-  const cards = await Promise.all(projects.map(async p => {
-    const { data: files } = await sb.from('files').select('path,type').eq('project_id', p.id).limit(1);
-    let thumbHtml = `<div class="project-thumb-placeholder">${p.file_count || 0} files</div>`;
-    if (files?.[0]?.type?.startsWith('image/')) {
-      const { data: url } = sb.storage.from('projects').getPublicUrl(files[0].path);
-      if (url) thumbHtml = `<img src="${url.publicUrl}" alt="" loading="lazy">`;
+    if (!projects?.length) {
+      grid.innerHTML = `<div class="empty-state">
+        <div class="empty-title">No projects yet.</div>
+        <div class="empty-sub">Hit "New Project" to create your first one.</div>
+      </div>`;
+      return;
     }
-    return `<div class="project-card" onclick="openProject('${p.id}','${escHtml(p.name)}')">
-      <div class="project-thumb">${thumbHtml}</div>
-      <div class="project-name">${escHtml(p.name)}</div>
-      <div class="project-meta">${p.file_count || 0} files · ${timeAgo(p.created_at)}</div>
-    </div>`;
-  }));
 
-  grid.innerHTML = cards.join('');
+    const cards = await Promise.all(projects.map(async p => {
+      const { data: files } = await sb.from('files').select('path,type').eq('project_id', p.id).limit(1);
+      let thumbHtml = `<div class="project-thumb-placeholder">${p.file_count || 0} files</div>`;
+      if (files?.[0]?.type?.startsWith('image/')) {
+        const { data: url } = sb.storage.from('projects').getPublicUrl(files[0].path);
+        if (url) thumbHtml = `<img src="${url.publicUrl}" alt="" loading="lazy">`;
+      }
+      return `<div class="project-card" onclick="openProject('${p.id}','${escHtml(p.name)}')">
+        <div class="project-thumb">${thumbHtml}</div>
+        <div class="project-name">${escHtml(p.name)}</div>
+        <div class="project-meta">${p.file_count || 0} files · ${timeAgo(p.created_at)}</div>
+      </div>`;
+    }));
+
+    grid.innerHTML = cards.join('');
+  } catch (err) {
+    console.error('loadProjects crash:', err);
+    grid.innerHTML = `<div class="empty-state"><div class="empty-title">Error loading projects.</div><div class="empty-sub">${err.message}</div></div>`;
+  }
 }
 
 function openNewProject() {
