@@ -482,11 +482,12 @@
     font-family: var(--sans); font-size: 0.62rem; color: rgba(255,255,255,0.35);
     letter-spacing: 0.1em; text-transform: uppercase;
   }
-  .color-pickers-row { display: flex; gap: 1.5rem; }
+  .color-pickers-row { display: flex; gap: 1.5rem; justify-content: center; }
   .color-picker-group {
-    flex: 1; padding: 0.8rem; cursor: pointer; transition: all 0.2s;
+    flex: 1; padding: 1.2rem 0.8rem; cursor: pointer; transition: all 0.2s;
     background: var(--black); color: var(--white);
     display: flex; flex-direction: column; align-items: center; text-align: center;
+    border-radius: 50%; aspect-ratio: 1; justify-content: center; max-width: 120px;
   }
   .color-picker-group:hover { background: var(--white); color: var(--black); }
   .color-picker-group:hover .color-label { color: var(--g600); }
