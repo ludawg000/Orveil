@@ -711,6 +711,7 @@ let galleryFiles = [];
 let lightboxIndex = 0;
 
 async function loadGallery(token) {
+  try {
   const { data: project, error } = await sb
     .from('projects')
     .select('*')
@@ -718,6 +719,7 @@ async function loadGallery(token) {
     .single();
 
   if (error || !project) {
+    console.error('Gallery project error:', error);
     document.getElementById('gallery-screen').innerHTML = `
       <div class="gallery-not-found">
         <div class="gallery-not-found-title">Gallery not found</div>
@@ -728,11 +730,13 @@ async function loadGallery(token) {
 
   document.getElementById('gallery-project-name').textContent = project.name;
 
-  const { data: files } = await sb
+  const { data: files, error: filesErr } = await sb
     .from('files')
     .select('*')
     .eq('project_id', project.id)
     .order('created_at', { ascending: true });
+
+  if (filesErr) console.error('Gallery files error:', filesErr);
 
   if (!files || files.length === 0) {
     document.getElementById('gallery-grid').innerHTML =
@@ -742,8 +746,10 @@ async function loadGallery(token) {
   }
 
   galleryFiles = files.map(f => {
-    const { data: url } = sb.storage.from('projects').getPublicUrl(f.path);
-    return { ...f, publicUrl: url?.publicUrl || '' };
+    const { data } = sb.storage.from('projects').getPublicUrl(f.path);
+    const publicUrl = data?.publicUrl || '';
+    console.log('File:', f.name, 'URL:', publicUrl);
+    return { ...f, publicUrl };
   });
 
   const imageCount = files.filter(f => f.type?.startsWith('image/')).length;
@@ -754,6 +760,11 @@ async function loadGallery(token) {
   document.getElementById('gallery-meta').textContent = parts.join(' · ');
 
   renderGalleryGrid();
+  } catch (err) {
+    console.error('loadGallery crash:', err);
+    document.getElementById('gallery-grid').innerHTML =
+      `<div class="gallery-empty">Error loading gallery: ${err.message}</div>`;
+  }
 }
 
 function renderGalleryGrid() {
