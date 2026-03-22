@@ -403,7 +403,13 @@
 <script>
 const SUPABASE_URL = 'https://nconnthnchpmzzmbwuvv.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jb25udGhuY2hwbXp6bWJ3dXZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMzMzMTUsImV4cCI6MjA4OTcwOTMxNX0.xoJ4-atYnd5_mcB1gUr3XqBBlwYahWm8REytpHllmDo';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: {
+    detectSessionInUrl: true,
+    persistSession: true,
+    autoRefreshToken: true
+  }
+});
 
 const STORAGE_LIMIT = 15 * 1024 * 1024 * 1024; // 15GB
 let currentUser = null;
@@ -419,7 +425,7 @@ const deliveryMessages = {
 async function signInWithGoogle() {
   const { error } = await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.href }
+    options: { redirectTo: 'https://orveil.vercel.app' }
   });
   if (error) showToast('Sign in failed. Please try again.');
 }
@@ -731,4 +737,3 @@ document.addEventListener('keydown', e => {
 </script>
 </body>
 </html>
-
