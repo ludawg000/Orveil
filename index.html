@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orveil</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --black: #0a0a0a;
+    --white: #fafafa;
+    --g100: #f2f2f0;
+    --g200: #e4e4e0;
+    --g400: #9a9a94;
+    --g600: #5c5c58;
+    --serif: 'Playfair Display', Georgia, serif;
+    --sans: 'Poppins', sans-serif;
+  }
+  body { font-family: var(--sans); background: var(--white); color: var(--black); font-weight: 300; line-height: 1.6; overflow-x: hidden; }
+
+  /* SCREENS */
+  .screen { display: none; min-height: 100vh; }
+  .screen.active { display: flex; }
+
+  /* LOGIN */
+  #login-screen {
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: var(--black);
+    gap: 2rem;
+  }
+  .login-logo { font-family: var(--serif); font-size: 3rem; color: var(--white); font-weight: 400; letter-spacing: 0.02em; }
+  .login-sub { font-size: 0.8rem; color: var(--g400); letter-spacing: 0.12em; text-transform: uppercase; }
+  .google-btn {
+    display: flex; align-items: center; gap: 0.8rem;
+    background: var(--white); color: var(--black);
+    font-family: var(--sans); font-size: 0.85rem; font-weight: 500;
+    padding: 0.85rem 1.8rem; border: none; cursor: pointer;
+    border-radius: 2px; transition: background 0.2s; margin-top: 1rem;
+  }
+  .google-btn:hover { background: var(--g100); }
+  .google-btn svg { width: 18px; height: 18px; }
+
+  /* APP LAYOUT */
+  #app-screen { flex-direction: column; }
+
+  /* NAV */
+  .app-nav {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 2rem;
+    background: var(--white);
+    border-bottom: 1px solid var(--g200);
+  }
+  .app-nav-logo { font-family: var(--serif); font-size: 1.3rem; font-weight: 500; color: var(--black); }
+  .nav-right { display: flex; align-items: center; gap: 1rem; }
+  .nav-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--g200); overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 500; color: var(--g600);
+    cursor: pointer;
+  }
+  .nav-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .sign-out-btn {
+    font-family: var(--sans); font-size: 0.72rem; font-weight: 400;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--g600); background: none; border: none; cursor: pointer;
+    padding: 0.4rem 0.8rem; transition: color 0.2s;
+  }
+  .sign-out-btn:hover { color: var(--black); }
+
+  /* MAIN */
+  .app-main { flex: 1; padding: 2.5rem 2rem; max-width: 1100px; margin: 0 auto; width: 100%; }
+
+  /* DASHBOARD HEADER */
+  .dash-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 2rem; }
+  .dash-title { font-family: var(--serif); font-size: 2rem; font-weight: 400; }
+  .dash-title span { font-style: italic; }
+  .storage-bar-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 0.3rem; }
+  .storage-label { font-size: 0.7rem; color: var(--g400); letter-spacing: 0.08em; }
+  .storage-bar { width: 160px; height: 3px; background: var(--g200); border-radius: 2px; overflow: hidden; }
+  .storage-fill { height: 100%; background: var(--black); border-radius: 2px; transition: width 0.4s; }
+
+  /* NEW PROJECT BTN */
+  .new-project-btn {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-family: var(--sans); font-size: 0.78rem; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    background: var(--black); color: var(--white);
+    border: none; padding: 0.7rem 1.2rem; cursor: pointer;
+    border-radius: 2px; transition: background 0.2s;
+  }
+  .new-project-btn:hover { background: var(--g600); }
+
+  /* PROJECTS GRID */
+  .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1px; background: var(--g200); border: 1px solid var(--g200); }
+  .project-card {
+    background: var(--white); padding: 1.6rem;
+    cursor: pointer; transition: background 0.15s;
+    display: flex; flex-direction: column; gap: 0.8rem;
+  }
+  .project-card:hover { background: var(--g100); }
+  .project-thumb {
+    width: 100%; aspect-ratio: 16/9;
+    background: var(--g100); border-radius: 1px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; position: relative;
+  }
+  .project-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .project-thumb-placeholder { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--g400); }
+  .project-name { font-size: 0.95rem; font-weight: 500; }
+  .project-meta { font-size: 0.72rem; color: var(--g400); }
+
+  /* EMPTY STATE */
+  .empty-state {
+    grid-column: 1/-1;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 6rem 2rem; gap: 1rem; background: var(--white);
+  }
+  .empty-title { font-family: var(--serif); font-size: 1.6rem; font-weight: 400; font-style: italic; }
+  .empty-sub { font-size: 0.82rem; color: var(--g400); text-align: center; max-width: 280px; line-height: 1.7; }
+
+  /* PROJECT VIEW */
+  #project-screen { flex-direction: column; }
+
+  .project-nav {
+    display: flex; align-items: center; gap: 1rem;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--g200);
+    background: var(--white);
+    position: sticky; top: 0; z-index: 50;
+  }
+  .back-btn {
+    font-family: var(--sans); font-size: 0.72rem; font-weight: 400;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--g600); background: none; border: none; cursor: pointer;
+    display: flex; align-items: center; gap: 0.4rem; padding: 0;
+    transition: color 0.2s;
+  }
+  .back-btn:hover { color: var(--black); }
+  .project-nav-title { font-family: var(--serif); font-size: 1.1rem; font-weight: 400; }
+  .project-nav-actions { margin-left: auto; display: flex; gap: 0.8rem; }
+
+  .upload-btn {
+    display: flex; align-items: center; gap: 0.5rem;
+    font-family: var(--sans); font-size: 0.75rem; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    background: var(--black); color: var(--white);
+    border: none; padding: 0.6rem 1.1rem; cursor: pointer;
+    border-radius: 2px; transition: background 0.2s;
+  }
+  .upload-btn:hover { background: var(--g600); }
+
+  .deliver-btn {
+    font-family: var(--sans); font-size: 0.75rem; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    background: transparent; color: var(--black);
+    border: 1px solid var(--black); padding: 0.6rem 1.1rem; cursor: pointer;
+    border-radius: 2px; transition: all 0.2s;
+  }
+  .deliver-btn:hover { background: var(--black); color: var(--white); }
+
+  .project-main { flex: 1; padding: 2rem; max-width: 1100px; margin: 0 auto; width: 100%; }
+
+  /* FILES GRID */
+  .files-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1px; background: var(--g200); border: 1px solid var(--g200); }
+  .file-card {
+    background: var(--white); cursor: pointer;
+    transition: background 0.15s; position: relative; overflow: hidden;
+  }
+  .file-card:hover { background: var(--g100); }
+  .file-card:hover .file-delete { opacity: 1; }
+  .file-thumb { width: 100%; aspect-ratio: 1; overflow: hidden; }
+  .file-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .file-thumb-placeholder {
+    width: 100%; height: 100%; background: var(--g100);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem; color: var(--g400); letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .file-info { padding: 0.6rem 0.7rem; }
+  .file-name { font-size: 0.7rem; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .file-size { font-size: 0.62rem; color: var(--g400); margin-top: 0.1rem; }
+  .file-delete {
+    position: absolute; top: 0.4rem; right: 0.4rem;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: rgba(10,10,10,0.7); color: white;
+    border: none; cursor: pointer; font-size: 0.7rem;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.15s;
+  }
+
+  /* DROP ZONE */
+  .drop-zone {
+    border: 1.5px dashed var(--g200); border-radius: 2px;
+    padding: 3rem; text-align: center; margin-bottom: 1.5rem;
+    transition: all 0.2s; cursor: pointer;
+  }
+  .drop-zone.dragover { border-color: var(--black); background: var(--g100); }
+  .drop-zone-text { font-size: 0.82rem; color: var(--g400); }
+  .drop-zone-text strong { color: var(--black); font-weight: 500; }
+  #file-input { display: none; }
+
+  /* UPLOAD PROGRESS */
+  .upload-progress {
+    background: var(--g100); border: 1px solid var(--g200);
+    border-radius: 2px; padding: 1rem 1.2rem; margin-bottom: 1rem;
+    display: none;
+  }
+  .upload-progress.active { display: block; }
+  .progress-label { font-size: 0.75rem; color: var(--g600); margin-bottom: 0.5rem; }
+  .progress-bar { height: 2px; background: var(--g200); border-radius: 1px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--black); border-radius: 1px; transition: width 0.3s; width: 0%; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(10,10,10,0.6);
+    display: none; align-items: center; justify-content: center; z-index: 200;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--white); width: 100%; max-width: 460px;
+    padding: 2.4rem; border-radius: 2px; position: relative;
+  }
+  .modal-title { font-family: var(--serif); font-size: 1.5rem; font-weight: 400; margin-bottom: 1.4rem; }
+  .modal-input {
+    width: 100%; font-family: var(--sans); font-size: 0.85rem; font-weight: 300;
+    padding: 0.85rem 1rem; border: 1px solid var(--g200); background: transparent;
+    color: var(--black); outline: none; border-radius: 0; transition: border-color 0.2s;
+    display: block; margin-bottom: 0.8rem;
+  }
+  .modal-input:focus { border-color: var(--black); }
+  .modal-input::placeholder { color: var(--g400); }
+  .modal-actions { display: flex; gap: 0.8rem; margin-top: 1.4rem; }
+  .modal-confirm {
+    flex: 1; font-family: var(--sans); font-size: 0.78rem; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    background: var(--black); color: var(--white);
+    border: none; padding: 0.85rem; cursor: pointer; transition: background 0.2s;
+  }
+  .modal-confirm:hover { background: var(--g600); }
+  .modal-cancel {
+    font-family: var(--sans); font-size: 0.78rem; font-weight: 400;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    background: transparent; color: var(--g600);
+    border: 1px solid var(--g200); padding: 0.85rem 1.2rem; cursor: pointer;
+  }
+
+  /* DELIVERY MODAL */
+  .delivery-options { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
+  .delivery-opt {
+    padding: 0.9rem 1rem; border: 1px solid var(--g200); cursor: pointer;
+    display: flex; align-items: center; justify-content: space-between;
+    transition: all 0.15s;
+  }
+  .delivery-opt:hover, .delivery-opt.selected { border-color: var(--black); background: var(--g100); }
+  .delivery-opt-name { font-size: 0.85rem; font-weight: 500; }
+  .delivery-opt-desc { font-size: 0.72rem; color: var(--g400); margin-top: 0.15rem; }
+  .delivery-check { width: 16px; height: 16px; border-radius: 50%; border: 1px solid var(--g200); flex-shrink: 0; }
+  .delivery-opt.selected .delivery-check { background: var(--black); border-color: var(--black); }
+  .delivery-preview-box { background: var(--g100); padding: 1rem; border-radius: 1px; margin-bottom: 1rem; }
+  .delivery-preview-label { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--g400); margin-bottom: 0.5rem; }
+  .delivery-preview-text { font-family: var(--serif); font-size: 0.85rem; color: var(--g600); line-height: 1.7; font-style: italic; }
+  .delivery-email-input { width: 100%; font-family: var(--sans); font-size: 0.82rem; padding: 0.75rem 1rem; border: 1px solid var(--g200); background: transparent; color: var(--black); outline: none; margin-bottom: 0.8rem; }
+  .delivery-email-input:focus { border-color: var(--black); }
+
+  /* TOAST */
+  #toast {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(60px);
+    background: var(--black); color: var(--white); font-size: 0.78rem;
+    padding: 0.7rem 1.4rem; border-radius: 2px; opacity: 0;
+    transition: all 0.3s; pointer-events: none; z-index: 999; white-space: nowrap;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  /* LOADING */
+  .loader { display: flex; align-items: center; justify-content: center; padding: 4rem; width: 100%; }
+  .loader-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--g200); margin: 0 3px; animation: pulse 1.2s ease-in-out infinite; }
+  .loader-dot:nth-child(2) { animation-delay: 0.2s; }
+  .loader-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes pulse { 0%,80%,100%{background:var(--g200)} 40%{background:var(--black)} }
+
+  @media(max-width:600px) {
+    .app-main, .project-main { padding: 1.2rem; }
+    .dash-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
+    .project-nav-actions { gap: 0.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen" class="screen active">
+  <div class="login-logo">Orveil</div>
+  <div class="login-sub">For photographers &amp; videographers</div>
+  <button class="google-btn" onclick="signInWithGoogle()">
+    <svg viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+    Continue with Google
+  </button>
+</div>
+
+<!-- MAIN APP -->
+<div id="app-screen" class="screen">
+  <nav class="app-nav">
+    <div class="app-nav-logo">Orveil</div>
+    <div class="nav-right">
+      <button class="sign-out-btn" onclick="signOut()">Sign out</button>
+      <div class="nav-avatar" id="nav-avatar"></div>
+    </div>
+  </nav>
+  <main class="app-main">
+    <div class="dash-header">
+      <div>
+        <div class="dash-title">Good to see you, <span id="user-name">—</span></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:1.5rem">
+        <div class="storage-bar-wrap">
+          <div class="storage-label" id="storage-label">0 MB of 15 GB used</div>
+          <div class="storage-bar"><div class="storage-fill" id="storage-fill" style="width:0%"></div></div>
+        </div>
+        <button class="new-project-btn" onclick="openNewProject()">+ New Project</button>
+      </div>
+    </div>
+    <div class="projects-grid" id="projects-grid">
+      <div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
+    </div>
+  </main>
+</div>
+
+<!-- PROJECT VIEW -->
+<div id="project-screen" class="screen">
+  <nav class="project-nav">
+    <button class="back-btn" onclick="showDashboard()">← Projects</button>
+    <div class="project-nav-title" id="project-nav-title"></div>
+    <div class="project-nav-actions">
+      <button class="deliver-btn" onclick="openDelivery()">Deliver to Client</button>
+      <button class="upload-btn" onclick="document.getElementById('file-input').click()">+ Upload</button>
+    </div>
+  </nav>
+  <div class="project-main">
+    <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
+      <div class="drop-zone-text"><strong>Click to upload</strong> or drag and drop files here</div>
+    </div>
+    <input type="file" id="file-input" multiple accept="image/*,video/*" onchange="handleFileSelect(this.files)">
+    <div class="upload-progress" id="upload-progress">
+      <div class="progress-label" id="progress-label">Uploading...</div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+    <div class="files-grid" id="files-grid">
+      <div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- NEW PROJECT MODAL -->
+<div class="modal-overlay" id="new-project-modal">
+  <div class="modal">
+    <div class="modal-title">New Project</div>
+    <input class="modal-input" id="project-name-input" type="text" placeholder="Project name (e.g. Monroe Wedding)" maxlength="60">
+    <input class="modal-input" id="project-desc-input" type="text" placeholder="Description (optional)" maxlength="120">
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeNewProject()">Cancel</button>
+      <button class="modal-confirm" onclick="createProject()">Create Project</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELIVERY MODAL -->
+<div class="modal-overlay" id="delivery-modal">
+  <div class="modal" style="max-width:500px">
+    <div class="modal-title">Deliver to Client</div>
+    <input class="delivery-email-input" id="client-email" type="email" placeholder="Client email address">
+    <div class="delivery-options" id="delivery-options">
+      <div class="delivery-opt selected" data-style="standard" onclick="selectDelivery(this)">
+        <div><div class="delivery-opt-name">Standard</div><div class="delivery-opt-desc">Friendly and warm</div></div>
+        <div class="delivery-check"></div>
+      </div>
+      <div class="delivery-opt" data-style="professional" onclick="selectDelivery(this)">
+        <div><div class="delivery-opt-name">Professional</div><div class="delivery-opt-desc">Polished and refined</div></div>
+        <div class="delivery-check"></div>
+      </div>
+      <div class="delivery-opt" data-style="toptier" onclick="selectDelivery(this)">
+        <div><div class="delivery-opt-name">Top Tier</div><div class="delivery-opt-desc">Luxury studio experience</div></div>
+        <div class="delivery-check"></div>
+      </div>
+    </div>
+    <div class="delivery-preview-box">
+      <div class="delivery-preview-label">Message Preview</div>
+      <div class="delivery-preview-text" id="delivery-preview-text"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeDelivery()">Cancel</button>
+      <button class="modal-confirm" onclick="sendDelivery()">Send Delivery</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://nconnthnchpmzzmbwuvv.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jb25udGhuY2hwbXp6bWJ3dXZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMzMzMTUsImV4cCI6MjA4OTcwOTMxNX0.xoJ4-atYnd5_mcB1gUr3XqBBlwYahWm8REytpHllmDo';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const STORAGE_LIMIT = 15 * 1024 * 1024 * 1024; // 15GB
+let currentUser = null;
+let currentProject = null;
+
+const deliveryMessages = {
+  standard: (name) => `Hi! Your gallery is ready — I'm so excited for you to see it. Here's your link to view and download everything. Enjoy!`,
+  professional: (name) => `Your gallery is now ready for viewing. It was a pleasure working with you, and I hope every image brings back the feeling of the moment it was taken.`,
+  toptier: (name) => `Your gallery has been thoughtfully prepared and is now available for your viewing. It has been a privilege to document these moments, and I hope this collection reflects the care put into every frame.`
+};
+
+// AUTH
+async function signInWithGoogle() {
+  const { error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href }
+  });
+  if (error) showToast('Sign in failed. Please try again.');
+}
+
+async function signOut() {
+  await sb.auth.signOut();
+  currentUser = null;
+  showScreen('login-screen');
+}
+
+// INIT
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (session?.user) {
+    currentUser = session.user;
+    await initApp();
+  } else {
+    showScreen('login-screen');
+  }
+});
+
+async function initApp() {
+  const meta = currentUser.user_metadata;
+  const name = meta?.full_name?.split(' ')[0] || meta?.name?.split(' ')[0] || 'there';
+  document.getElementById('user-name').textContent = name;
+
+  const avatar = document.getElementById('nav-avatar');
+  if (meta?.avatar_url) {
+    avatar.innerHTML = `<img src="${meta.avatar_url}" alt="">`;
+  } else {
+    avatar.textContent = name[0].toUpperCase();
+  }
+
+  showScreen('app-screen');
+  await loadProjects();
+  await updateStorage();
+}
+
+// STORAGE
+async function updateStorage() {
+  const { data } = await sb.from('profiles').select('storage_used').eq('id', currentUser.id).single();
+  if (!data) return;
+  const used = data.storage_used || 0;
+  const pct = Math.min((used / STORAGE_LIMIT) * 100, 100);
+  document.getElementById('storage-fill').style.width = pct + '%';
+  document.getElementById('storage-label').textContent = `${formatBytes(used)} of 15 GB used`;
+}
+
+// PROJECTS
+async function loadProjects() {
+  const grid = document.getElementById('projects-grid');
+  grid.innerHTML = '<div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>';
+
+  const { data: projects, error } = await sb.from('projects').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+
+  if (error || !projects?.length) {
+    grid.innerHTML = `<div class="empty-state">
+      <div class="empty-title">No projects yet.</div>
+      <div class="empty-sub">Hit "New Project" to create your first one.</div>
+    </div>`;
+    return;
+  }
+
+  // Get cover images for each project
+  const cards = await Promise.all(projects.map(async p => {
+    const { data: files } = await sb.from('files').select('path,type').eq('project_id', p.id).limit(1);
+    let thumbHtml = `<div class="project-thumb-placeholder">${p.file_count || 0} files</div>`;
+    if (files?.[0]?.type?.startsWith('image/')) {
+      const { data: url } = sb.storage.from('projects').getPublicUrl(files[0].path);
+      if (url) thumbHtml = `<img src="${url.publicUrl}" alt="" loading="lazy">`;
+    }
+    return `<div class="project-card" onclick="openProject('${p.id}','${escHtml(p.name)}')">
+      <div class="project-thumb">${thumbHtml}</div>
+      <div class="project-name">${escHtml(p.name)}</div>
+      <div class="project-meta">${p.file_count || 0} files · ${timeAgo(p.created_at)}</div>
+    </div>`;
+  }));
+
+  grid.innerHTML = cards.join('');
+}
+
+function openNewProject() {
+  document.getElementById('new-project-modal').classList.add('active');
+  document.getElementById('project-name-input').focus();
+}
+
+function closeNewProject() {
+  document.getElementById('new-project-modal').classList.remove('active');
+  document.getElementById('project-name-input').value = '';
+  document.getElementById('project-desc-input').value = '';
+}
+
+async function createProject() {
+  const name = document.getElementById('project-name-input').value.trim();
+  if (!name) { showToast('Please enter a project name.'); return; }
+
+  const { data, error } = await sb.from('projects').insert({
+    user_id: currentUser.id,
+    name,
+    description: document.getElementById('project-desc-input').value.trim()
+  }).select().single();
+
+  if (error) { showToast('Could not create project.'); return; }
+  closeNewProject();
+  showToast('Project created.');
+  await loadProjects();
+  openProject(data.id, data.name);
+}
+
+// PROJECT / FILES
+async function openProject(id, name) {
+  currentProject = { id, name };
+  document.getElementById('project-nav-title').textContent = name;
+  showScreen('project-screen');
+  await loadFiles();
+}
+
+async function loadFiles() {
+  const grid = document.getElementById('files-grid');
+  grid.innerHTML = '<div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>';
+
+  const { data: files } = await sb.from('files').select('*').eq('project_id', currentProject.id).order('created_at', { ascending: false });
+
+  if (!files?.length) {
+    grid.innerHTML = `<div class="empty-state"><div class="empty-title">No files yet.</div><div class="empty-sub">Upload photos or videos to get started.</div></div>`;
+    return;
+  }
+
+  grid.innerHTML = files.map(f => {
+    const isImage = f.type?.startsWith('image/');
+    let thumb = `<div class="file-thumb-placeholder">${f.type?.split('/')[1]?.toUpperCase() || 'FILE'}</div>`;
+    if (isImage) {
+      const { data: url } = sb.storage.from('projects').getPublicUrl(f.path);
+      if (url) thumb = `<img src="${url.publicUrl}" alt="" loading="lazy">`;
+    }
+    return `<div class="file-card">
+      <div class="file-thumb">${thumb}</div>
+      <div class="file-info">
+        <div class="file-name">${escHtml(f.name)}</div>
+        <div class="file-size">${formatBytes(f.size)}</div>
+      </div>
+      <button class="file-delete" onclick="deleteFile('${f.id}','${f.path}',${f.size},event)" title="Delete">✕</button>
+    </div>`;
+  }).join('');
+}
+
+async function handleFileSelect(fileList) {
+  const files = Array.from(fileList);
+  if (!files.length) return;
+
+  const progress = document.getElementById('upload-progress');
+  const fill = document.getElementById('progress-fill');
+  const label = document.getElementById('progress-label');
+
+  progress.classList.add('active');
+  let uploaded = 0;
+
+  for (const file of files) {
+    label.textContent = `Uploading ${file.name}...`;
+    const path = `${currentUser.id}/${currentProject.id}/${Date.now()}-${file.name}`;
+
+    const { error: storageErr } = await sb.storage.from('projects').upload(path, file);
+    if (storageErr) { showToast(`Failed: ${file.name}`); continue; }
+
+    await sb.from('files').insert({
+      project_id: currentProject.id,
+      user_id: currentUser.id,
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      path
+    });
+
+    // Update storage used
+    await sb.rpc('increment_storage', { user_id: currentUser.id, bytes: file.size }).catch(() => {
+      sb.from('profiles').update({ storage_used: supabase.raw('storage_used + ' + file.size) }).eq('id', currentUser.id);
+    });
+
+    // Update file count
+    await sb.from('projects').update({ file_count: supabase.raw('file_count + 1') }).eq('id', currentProject.id).catch(() => {});
+
+    uploaded++;
+    fill.style.width = ((uploaded / files.length) * 100) + '%';
+  }
+
+  label.textContent = `${uploaded} file${uploaded !== 1 ? 's' : ''} uploaded.`;
+  setTimeout(() => {
+    progress.classList.remove('active');
+    fill.style.width = '0%';
+  }, 2000);
+
+  document.getElementById('file-input').value = '';
+  await loadFiles();
+  await updateStorage();
+}
+
+async function deleteFile(fileId, path, size, e) {
+  e.stopPropagation();
+  await sb.storage.from('projects').remove([path]);
+  await sb.from('files').delete().eq('id', fileId);
+  await sb.from('profiles').update({ storage_used: supabase.raw('storage_used - ' + size) }).eq('id', currentUser.id).catch(() => {});
+  showToast('File deleted.');
+  await loadFiles();
+  await updateStorage();
+}
+
+// DRAG & DROP
+const dropZone = document.getElementById('drop-zone');
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.classList.remove('dragover');
+  handleFileSelect(e.dataTransfer.files);
+});
+
+// DELIVERY
+function openDelivery() {
+  updateDeliveryPreview('standard');
+  document.getElementById('delivery-modal').classList.add('active');
+}
+
+function closeDelivery() {
+  document.getElementById('delivery-modal').classList.remove('active');
+  document.getElementById('client-email').value = '';
+}
+
+function selectDelivery(el) {
+  document.querySelectorAll('.delivery-opt').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+  updateDeliveryPreview(el.dataset.style);
+}
+
+function updateDeliveryPreview(style) {
+  const msg = deliveryMessages[style]?.(currentProject?.name) || '';
+  document.getElementById('delivery-preview-text').textContent = `"${msg}"`;
+}
+
+function sendDelivery() {
+  const email = document.getElementById('client-email').value.trim();
+  if (!email || !email.includes('@')) { showToast('Please enter a valid email.'); return; }
+  closeDelivery();
+  showToast(`Delivery sent to ${email}`);
+}
+
+// NAVIGATION
+function showDashboard() {
+  showScreen('app-screen');
+  loadProjects();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// UTILS
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function formatBytes(bytes) {
+  if (!bytes) return '0 KB';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+}
+
+function timeAgo(dateStr) {
+  const diff = Date.now() - new Date(dateStr);
+  const days = Math.floor(diff / 86400000);
+  if (days === 0) return 'Today';
+  if (days === 1) return 'Yesterday';
+  if (days < 30) return `${days}d ago`;
+  if (days < 365) return `${Math.floor(days/30)}mo ago`;
+  return `${Math.floor(days/365)}y ago`;
+}
+
+function escHtml(str) {
+  return str?.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') || '';
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+  }
+  if (e.key === 'Enter' && document.getElementById('new-project-modal').classList.contains('active')) {
+    createProject();
+  }
+});
+</script>
+</body>
+</html>
