@@ -1309,6 +1309,7 @@ async function signOut() {
 let appStarted = false;
 
 sb.auth.onAuthStateChange(async (event, session) => {
+  console.log('[Orveil] auth event:', event, 'hasSession:', !!session, 'isGallery:', isGalleryMode, 'appStarted:', appStarted);
   if (isGalleryMode) return;
   try {
     if (session?.user) {
@@ -1333,6 +1334,7 @@ sb.auth.onAuthStateChange(async (event, session) => {
 
 async function initApp() {
   try {
+    console.log('[Orveil v3] initApp start, user:', currentUser?.id);
     const meta = currentUser.user_metadata || {};
     const name = meta.full_name?.split(' ')[0] || meta.name?.split(' ')[0] || 'there';
     document.getElementById('user-name').textContent = name;
@@ -1369,11 +1371,22 @@ async function loadProjects() {
   if (!grid) return;
   grid.innerHTML = '<div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>';
 
+  const timeout = setTimeout(() => {
+    if (grid.querySelector('.loader')) {
+      grid.innerHTML = `<div class="empty-state">
+        <div class="empty-title">Connection timed out.</div>
+        <div class="empty-sub">Could not reach the database.</div>
+        <button onclick="loadProjects()" style="margin-top:1rem;font-family:var(--sans);font-size:0.75rem;padding:0.6rem 1.5rem;background:var(--black);color:var(--white);border:1px solid var(--g200);cursor:pointer">Retry</button>
+        <button onclick="localStorage.clear();sessionStorage.clear();location.reload()" style="margin-top:0.5rem;font-family:var(--sans);font-size:0.65rem;padding:0.5rem 1rem;background:none;color:var(--g400);border:1px solid var(--g200);cursor:pointer;display:block;margin-left:auto;margin-right:auto">Reset Session</button>
+      </div>`;
+    }
+  }, 8000);
+
   try {
     const { data: projects, error } = await sb.from('projects').select('id,name,file_count,created_at').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+    clearTimeout(timeout);
 
     if (error) {
-      console.error('loadProjects error:', error);
       grid.innerHTML = `<div class="empty-state"><div class="empty-title">Error loading projects.</div><div class="empty-sub">${error.message}</div></div>`;
       return;
     }
@@ -1386,7 +1399,6 @@ async function loadProjects() {
       return;
     }
 
-    // Render cards immediately without waiting for thumbnails
     grid.innerHTML = projects.map(p => {
       return `<div class="project-card" onclick="openProject('${p.id}','${escHtml(p.name)}')">
         <div class="project-thumb" id="pthumb-${p.id}"><div class="project-thumb-placeholder">${p.file_count || 0} files</div></div>
@@ -1395,7 +1407,7 @@ async function loadProjects() {
       </div>`;
     }).join('');
 
-    // Load thumbnails in background (non-blocking)
+    // Load thumbnails in background
     projects.forEach(async p => {
       try {
         const { data: files } = await sb.from('files').select('path,type,thumb_path').eq('project_id', p.id).limit(1);
@@ -1409,8 +1421,10 @@ async function loadProjects() {
       } catch {}
     });
   } catch (err) {
-    console.error('loadProjects crash:', err);
-    grid.innerHTML = `<div class="empty-state"><div class="empty-title">Error loading projects.</div><div class="empty-sub">${err.message}</div></div>`;
+    clearTimeout(timeout);
+    grid.innerHTML = `<div class="empty-state"><div class="empty-title">Error loading projects.</div><div class="empty-sub">${err.message}</div>
+      <button onclick="loadProjects()" style="margin-top:1rem;font-family:var(--sans);font-size:0.75rem;padding:0.6rem 1.5rem;background:var(--black);color:var(--white);border:1px solid var(--g200);cursor:pointer">Retry</button>
+    </div>`;
   }
 }
 
