@@ -431,16 +431,11 @@ async function signOut() {
 }
 
 // INIT
-sb.auth.onAuthStateChange(async (event, session) => {
-  if (session?.user) {
-    currentUser = session.user;
-    await initApp();
-  } else if (event === 'SIGNED_OUT') {
-    showScreen('login-screen');
-  }
-});
-
 (async () => {
+  if (window.location.hash && window.location.hash.includes('access_token')) {
+    await sb.auth.getSession();
+    window.history.replaceState(null, '', window.location.pathname);
+  }
   const { data: { session } } = await sb.auth.getSession();
   if (session?.user) {
     currentUser = session.user;
@@ -449,6 +444,16 @@ sb.auth.onAuthStateChange(async (event, session) => {
     showScreen('login-screen');
   }
 })();
+
+sb.auth.onAuthStateChange(async (event, session) => {
+  if (event === 'SIGNED_IN' && session?.user && !currentUser) {
+    currentUser = session.user;
+    await initApp();
+  } else if (event === 'SIGNED_OUT') {
+    currentUser = null;
+    showScreen('login-screen');
+  }
+});
 
 async function initApp() {
   const meta = currentUser.user_metadata;
@@ -726,3 +731,4 @@ document.addEventListener('keydown', e => {
 </script>
 </body>
 </html>
+
