@@ -668,31 +668,47 @@
     background: rgba(255,255,255,0.04); border-radius: 1px; }
   .desk-scratch.sc1 { width: 45px; height: 1px; top: 35%; left: 8%; transform: rotate(-3deg); }
 
-  /* Beer bottles on desk */
-  .beer-bottle { position: absolute; z-index: 9; }
-  .beer-bottle .bottle-body {
-    width: 13px; height: 30px;
-    background: linear-gradient(90deg, #1a4a20, #2a7a30 30%, #3a8a40 50%, #2a6a2a 70%, #1a4a1a);
-    border-radius: 0 0 4px 4px;
+  /* Soda cans on desk */
+  .soda-can { position: absolute; z-index: 9; }
+  .soda-can .can-body {
+    width: 14px; height: 24px;
+    border-radius: 3px 3px 4px 4px;
     box-shadow: 2px 3px 8px rgba(0,0,0,0.7);
+    position: relative;
   }
-  .beer-bottle .bottle-neck {
-    width: 6px; height: 10px; margin: 0 auto;
-    background: linear-gradient(90deg, #1a4a20, #2a7a30 50%, #1a4a20);
-    border-radius: 2px 2px 0 0;
+  .soda-can .can-top {
+    width: 14px; height: 4px; margin: 0 auto;
+    background: linear-gradient(180deg, #c0c0c0, #909090);
+    border-radius: 3px 3px 0 0;
+    position: relative;
   }
-  .beer-bottle .bottle-cap {
-    width: 8px; height: 3px; margin: 0 auto;
-    background: linear-gradient(180deg, #c0a840, #8a7a30);
-    border-radius: 2px 2px 0 0;
+  /* Pull tab */
+  .soda-can .can-top::after {
+    content: ''; position: absolute; top: 1px; left: 50%; transform: translateX(-50%);
+    width: 6px; height: 2px; border-radius: 2px;
+    background: #a0a0a0; border: 0.5px solid #808080;
   }
-  .beer-bottle .bottle-label {
-    position: absolute; bottom: 7px; left: 2px; right: 2px; height: 10px;
-    background: rgba(230,210,170,0.2); border-radius: 1px;
+  /* Shine stripe */
+  .soda-can .can-body::before {
+    content: ''; position: absolute; top: 0; left: 25%; width: 2px; height: 100%;
+    background: rgba(255,255,255,0.15); border-radius: 1px;
   }
-  /* Bottles sit on desk surface */
-  .beer-bottle.bb1 { right: 8%; bottom: calc(100% - 20px); }
-  .beer-bottle.bb2 { right: 20%; bottom: calc(100% - 20px); }
+  /* Green can (normal, upright) */
+  .soda-can.sc1 .can-body {
+    background: linear-gradient(90deg, #1a6a28, #28a040 30%, #30b848 50%, #28a040 70%, #1a6a28);
+  }
+  .soda-can.sc1 { right: 8%; bottom: calc(100% - 20px); }
+  /* Red can (slightly crushed) */
+  .soda-can.sc2 .can-body {
+    background: linear-gradient(90deg, #8a1a1a, #c02828 30%, #d83030 50%, #c02828 70%, #8a1a1a);
+    height: 20px;
+    border-radius: 4px 5px 4px 3px;
+    transform: rotate(-6deg) scaleY(0.85);
+  }
+  .soda-can.sc2 .can-top {
+    transform: rotate(-2deg);
+  }
+  .soda-can.sc2 { right: 20%; bottom: calc(100% - 20px); }
 
   /* Cable, pen, chip bag on desk */
   .desk-cable { position: absolute; z-index: 4; pointer-events: none; border-radius: 50%; }
@@ -728,7 +744,7 @@
     position: absolute; z-index: 10;
     width: 36%;
     /* Sits on desk, pushed back against wall */
-    left: 50%; bottom: calc(100% - 18px);
+    left: 50%; bottom: calc(100% - 28px);
     transform: translateX(-50%);
   }
   /* Glow from screen on the desk surface */
@@ -818,7 +834,7 @@
   /* Desk lamp — tall brass with moody orange glow, proportional to computer */
   .desk-lamp {
     position: absolute; z-index: 11;
-    left: 6%; bottom: calc(100% - 20px);
+    left: 14%; bottom: calc(100% - 20px);
   }
   /* Shade — wide dark shade with warm orange inner glow */
   .lamp-shade {
@@ -1899,18 +1915,14 @@
               <div class="mac-base-ridge"></div>
             </div>
           </div>
-          <!-- Bottles on desk surface -->
-          <div class="beer-bottle bb1">
-            <div class="bottle-cap"></div>
-            <div class="bottle-neck"></div>
-            <div class="bottle-body"></div>
-            <div class="bottle-label"></div>
+          <!-- Soda cans on desk -->
+          <div class="soda-can sc1">
+            <div class="can-top"></div>
+            <div class="can-body"></div>
           </div>
-          <div class="beer-bottle bb2">
-            <div class="bottle-cap"></div>
-            <div class="bottle-neck"></div>
-            <div class="bottle-body"></div>
-            <div class="bottle-label"></div>
+          <div class="soda-can sc2">
+            <div class="can-top"></div>
+            <div class="can-body"></div>
           </div>
           <!-- Desk lamp -->
           <div class="desk-lamp">
