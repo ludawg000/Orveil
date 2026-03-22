@@ -827,13 +827,7 @@
       <div>
         <div class="dash-title">Good to see you, <input class="dash-name-input" id="user-name" type="text" placeholder="_____" maxlength="30" spellcheck="false"></div>
       </div>
-      <div style="display:flex;align-items:center;gap:1.5rem">
-        <div class="storage-bar-wrap">
-          <div class="storage-label" id="storage-label">0 MB of 15 GB used</div>
-          <div class="storage-bar"><div class="storage-fill" id="storage-fill" style="width:0%"></div></div>
-        </div>
-        <button class="new-project-btn" onclick="openNewProject()">+ New Project</button>
-      </div>
+      <button class="new-project-btn" onclick="openNewProject()">+ New Project</button>
     </div>
     <div class="projects-grid" id="projects-grid">
       <div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
@@ -929,6 +923,15 @@
             <div class="settings-row-sub">Manage your subscription and billing</div>
           </div>
           <span class="plan-badge" id="plan-badge">Free</span>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Storage</div>
+            <div class="settings-row-sub" id="storage-label">0 MB of 15 GB used</div>
+          </div>
+          <div style="width:140px">
+            <div class="storage-bar"><div class="storage-fill" id="storage-fill" style="width:0%"></div></div>
+          </div>
         </div>
         <div class="settings-row">
           <div>
@@ -2318,6 +2321,8 @@ function openSettings() {
   const dm = document.getElementById('dark-mode-toggle');
   if (document.body.classList.contains('dark-mode')) dm.classList.add('active');
   else dm.classList.remove('active');
+
+  updateStorage();
 }
 
 async function loadSettingsAvatar() {
