@@ -1513,7 +1513,7 @@ async function loadFiles() {
     return;
   }
 
-  grid.innerHTML = files.map(f => {
+  grid.innerHTML = files.map((f, i) => {
     const isImage = f.type?.startsWith('image/');
     const isVideo = f.type?.startsWith('video/');
     let thumb = `<div class="file-thumb-placeholder">${f.type?.split('/')[1]?.toUpperCase() || 'FILE'}</div>`;
@@ -1521,6 +1521,8 @@ async function loadFiles() {
       thumb = `<img src="${SUPABASE_URL}/storage/v1/object/public/projects/${f.path}" alt="" loading="lazy">`;
     } else if (isVideo && f.thumb_path) {
       thumb = `<img src="${SUPABASE_URL}/storage/v1/object/public/projects/${f.thumb_path}" alt="" loading="lazy">`;
+    } else if (isVideo) {
+      thumb = `<div class="file-thumb-placeholder" id="fthumb-${i}">Generating...</div>`;
     }
     return `<div class="file-card">
       <div class="file-thumb">${thumb}</div>
@@ -1531,6 +1533,21 @@ async function loadFiles() {
       <button class="file-delete" onclick="deleteFile('${f.id}','${f.path}',${f.size},event)" title="Delete">&#10005;</button>
     </div>`;
   }).join('');
+
+  // Generate thumbnails for videos without thumb_path
+  files.forEach((f, i) => {
+    if (!f.type?.startsWith('video/') || f.thumb_path) return;
+    const el = document.getElementById(`fthumb-${i}`);
+    if (!el) return;
+    const vidUrl = `${SUPABASE_URL}/storage/v1/object/public/projects/${f.path}`;
+    genThumb(vidUrl, f.name).then(dataUrl => {
+      if (dataUrl && document.getElementById(`fthumb-${i}`)) {
+        el.replaceWith(Object.assign(document.createElement('img'), { src: dataUrl, alt: f.name, loading: 'lazy' }));
+      } else if (el) {
+        el.textContent = f.type?.split('/')[1]?.toUpperCase() || 'VIDEO';
+      }
+    });
+  });
 }
 
 async function handleFileSelect(fileList) {
