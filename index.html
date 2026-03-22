@@ -176,9 +176,9 @@
     /* Phase 2: Full room view — hold here briefly */
     35% { transform: scale(1) translateY(0); filter: blur(0) brightness(1); }
     60% { transform: scale(1) translateY(0); filter: blur(0) brightness(1); }
-    /* Phase 3: Zoom into the computer screen (upper-center of view) */
+    /* Phase 3: Zoom into the smaller computer screen */
     100% {
-      transform: scale(3.5) translate(0%, -30%);
+      transform: scale(5.5) translate(0%, -26%);
       filter: blur(0) brightness(1);
     }
   }
@@ -187,7 +187,7 @@
   }
   /* After zoom completes, lock on the screen */
   .tv-frame.zoomed-in {
-    transform: scale(3.5) translate(0%, -30%);
+    transform: scale(5.5) translate(0%, -26%);
   }
 
   /* === 3D ROOM — straight-on view from doorway === */
