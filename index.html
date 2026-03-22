@@ -225,8 +225,8 @@
   .room-wall::before {
     content: ''; position: absolute; inset: 0;
     background:
-      radial-gradient(ellipse at 50% 70%, rgba(51,255,51,0.07) 0%, transparent 25%),
-      radial-gradient(ellipse at 50% 75%, rgba(51,255,51,0.03) 0%, transparent 45%);
+      radial-gradient(ellipse at 50% 70%, rgba(100,140,255,0.07) 0%, transparent 25%),
+      radial-gradient(ellipse at 50% 75%, rgba(100,140,255,0.03) 0%, transparent 45%);
     pointer-events: none;
   }
   /* Baseboard */
@@ -368,7 +368,7 @@
   /* Monitor glow on floor */
   .room-floor::after {
     content: ''; position: absolute; top: 0; left: 35%; right: 25%; height: 40%;
-    background: radial-gradient(ellipse at 55% 0%, rgba(51,255,51,0.02) 0%, transparent 70%);
+    background: radial-gradient(ellipse at 55% 0%, rgba(100,140,255,0.02) 0%, transparent 70%);
     pointer-events: none;
   }
 
@@ -488,45 +488,45 @@
   /* =========================================
      DESK — the centerpiece, 3D angled
      ========================================= */
-  /* Desk — solid wood, retro/nostalgic feel.
-     Surface at top, chunky legs hang down. */
+  /* Desk — 3D solid wood with perspective depth */
   .room-desk {
     top: 58%; left: 30%; right: 30%; z-index: 8;
     height: 14%;
+    transform-style: preserve-3d;
+    perspective: 400px;
   }
-  /* Desk surface — thick solid wood slab */
+  /* Desk surface — 3D tilted slab, you see the top */
   .desk-top {
-    position: absolute; top: 0; left: -3%; right: -3%; height: 10px;
+    position: absolute; top: 0; left: -5%; right: -5%; height: 18px;
     background:
-      repeating-linear-gradient(90deg, transparent 0px, transparent 18px, rgba(0,0,0,0.04) 18px, rgba(0,0,0,0.04) 19px),
-      linear-gradient(180deg, #5a4a38 0%, #4a3c2e 50%, #3e3226 100%);
+      repeating-linear-gradient(90deg, transparent 0px, transparent 22px, rgba(0,0,0,0.05) 22px, rgba(0,0,0,0.05) 23px),
+      radial-gradient(ellipse at 30% 50%, rgba(90,70,40,0.15) 0%, transparent 40%),
+      linear-gradient(180deg, #6a5842 0%, #5a4a38 30%, #4a3c2e 70%, #3e3226 100%);
     border-radius: 2px;
+    transform: rotateX(25deg);
+    transform-origin: bottom center;
     box-shadow:
-      0 3px 10px rgba(0,0,0,0.7),
-      inset 0 1px 0 rgba(255,255,255,0.08),
+      0 -2px 8px rgba(0,0,0,0.4),
+      inset 0 1px 0 rgba(255,255,255,0.1),
       inset 0 -1px 0 rgba(0,0,0,0.2);
   }
   /* Desk front edge — thick visible apron */
   .desk-top::after {
-    content: ''; position: absolute; top: 100%; left: 0; right: 0; height: 10px;
+    content: ''; position: absolute; top: 100%; left: 1%; right: 1%; height: 12px;
     background:
-      repeating-linear-gradient(90deg, transparent 0px, transparent 18px, rgba(0,0,0,0.03) 18px, rgba(0,0,0,0.03) 19px),
-      linear-gradient(180deg, #3e3226 0%, #342a20 40%, #2e241c 100%);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+      repeating-linear-gradient(90deg, transparent 0px, transparent 22px, rgba(0,0,0,0.04) 22px, rgba(0,0,0,0.04) 23px),
+      linear-gradient(180deg, #4a3c2e 0%, #3e3226 30%, #342a20 100%);
+    box-shadow: 0 5px 14px rgba(0,0,0,0.7);
+    border-radius: 0 0 2px 2px;
   }
   /* Desk legs — chunky solid wood */
   .desk-leg {
-    position: absolute; width: 12px; top: 20px; bottom: 0;
+    position: absolute; width: 14px; top: 28px; bottom: 0;
     background:
-      linear-gradient(90deg, #2e261e 0%, #3e3428 30%, #4a3e32 50%, #3e3428 70%, #2e261e 100%);
-    border-radius: 0 0 2px 2px;
-    box-shadow: 3px 3px 8px rgba(0,0,0,0.6);
-  }
-  /* Wood grain on legs */
-  .desk-leg::after {
-    content: ''; position: absolute; inset: 0;
-    background: repeating-linear-gradient(180deg, transparent 0px, transparent 6px, rgba(0,0,0,0.06) 6px, rgba(0,0,0,0.06) 7px);
-    border-radius: inherit;
+      repeating-linear-gradient(180deg, transparent 0px, transparent 5px, rgba(0,0,0,0.05) 5px, rgba(0,0,0,0.05) 6px),
+      linear-gradient(90deg, #2e261e 0%, #3e3428 25%, #4a3e32 50%, #3e3428 75%, #2e261e 100%);
+    border-radius: 0 0 3px 3px;
+    box-shadow: 3px 4px 10px rgba(0,0,0,0.6);
   }
   .desk-leg.dl { left: 6%; }
   .desk-leg.dr { right: 6%; }
@@ -612,7 +612,7 @@
   /* Glow from screen on the desk surface */
   .mac-computer::before {
     content: ''; position: absolute; bottom: -8px; left: -10%; right: -10%; height: 14px;
-    background: radial-gradient(ellipse, rgba(51,255,51,0.08) 0%, transparent 70%);
+    background: radial-gradient(ellipse, rgba(100,140,255,0.1) 0%, transparent 70%);
     border-radius: 50%; z-index: -1;
   }
 
@@ -623,8 +623,8 @@
     position: relative;
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,0.5),
-      0 0 60px rgba(51,255,51,0.1),
-      0 0 120px rgba(51,255,51,0.04),
+      0 0 60px rgba(100,140,255,0.1),
+      0 0 120px rgba(100,140,255,0.04),
       0 6px 20px rgba(0,0,0,0.6);
   }
   .mac-case::before {
@@ -633,7 +633,7 @@
   }
   .mac-case::after {
     content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
-    background: radial-gradient(ellipse at 50% 40%, rgba(51,255,51,0.025) 0%, transparent 60%);
+    background: radial-gradient(ellipse at 50% 40%, rgba(100,140,255,0.025) 0%, transparent 60%);
   }
   .mac-top-vent {
     height: 5px; margin-bottom: 0.5rem;
@@ -649,16 +649,16 @@
   /* The screen — FIXED height, scrollable */
   .tv-screen {
     width: 100%; height: 200px;
-    background: #0d1f0d; border-radius: 3px;
+    background: #0a0e1a; border-radius: 3px;
     overflow-y: auto; overflow-x: hidden;
     position: relative;
     display: grid; grid-template-columns: 1fr; gap: 1px;
     align-content: start;
   }
   .tv-screen::-webkit-scrollbar { width: 4px; }
-  .tv-screen::-webkit-scrollbar-track { background: #0a1a0a; }
-  .tv-screen::-webkit-scrollbar-thumb { background: #1a4a1a; border-radius: 3px; }
-  .tv-screen::-webkit-scrollbar-thumb:hover { background: #33ff33; }
+  .tv-screen::-webkit-scrollbar-track { background: #080c18; }
+  .tv-screen::-webkit-scrollbar-thumb { background: #1a2a4a; border-radius: 3px; }
+  .tv-screen::-webkit-scrollbar-thumb:hover { background: #6090ff; }
   .tv-screen::after {
     content: ''; position: absolute; inset: 0; z-index: 5; pointer-events: none;
     border-radius: 3px;
@@ -693,41 +693,48 @@
     border-radius: 1px; opacity: 0.3;
   }
 
-  /* Desk lamp — classic brass banker's lamp */
+  /* Desk lamp — classic brass with moody orange glow */
   .desk-lamp {
     position: absolute; z-index: 11;
     left: 12%; bottom: 100%;
   }
-  /* Shade — classic rectangular banker's shade with warm glow */
+  /* Shade — dark with warm orange inner glow */
   .lamp-shade {
-    width: 36px; height: 16px;
-    background: linear-gradient(180deg, #1a3a1a 0%, #2a5a28 30%, #1a4a1a 100%);
-    border-radius: 2px 2px 0 0;
+    width: 38px; height: 18px;
+    background: linear-gradient(180deg, #2a2018 0%, #3a2a1a 40%, #2a2018 100%);
+    border-radius: 3px 3px 0 0;
     box-shadow:
-      0 -2px 8px rgba(180,160,80,0.06),
-      inset 0 -3px 6px rgba(180,160,80,0.08),
+      0 8px 25px rgba(220,140,40,0.12),
+      0 4px 12px rgba(220,140,40,0.08),
+      inset 0 -4px 8px rgba(220,140,40,0.15),
       0 2px 6px rgba(0,0,0,0.5);
-    border-bottom: 2px solid #8a7a50;
+    border-bottom: 2px solid #8a6a30;
     position: relative;
   }
-  /* Warm light spill from bottom of shade */
+  /* Warm orange light cone from bottom of shade */
   .lamp-shade::after {
-    content: ''; position: absolute; bottom: -12px; left: -30%; right: -30%; height: 12px;
-    background: radial-gradient(ellipse, rgba(200,170,80,0.06) 0%, transparent 70%);
+    content: ''; position: absolute; bottom: -20px; left: -50%; right: -50%; height: 20px;
+    background: radial-gradient(ellipse, rgba(220,140,40,0.1) 0%, rgba(220,140,40,0.04) 40%, transparent 70%);
     pointer-events: none;
+  }
+  /* Orange glow on wall behind lamp */
+  .lamp-shade::before {
+    content: ''; position: absolute; top: -40px; left: -60px; width: 160px; height: 80px;
+    background: radial-gradient(ellipse, rgba(220,140,40,0.04) 0%, transparent 60%);
+    pointer-events: none; z-index: -1;
   }
   /* Neck — thin brass stem */
   .lamp-neck {
-    width: 3px; height: 22px; margin: 0 auto;
-    background: linear-gradient(90deg, #6a5a38, #9a8a58 50%, #6a5a38);
+    width: 3px; height: 24px; margin: 0 auto;
+    background: linear-gradient(90deg, #5a4a28, #8a7a48 50%, #5a4a28);
     box-shadow: 1px 1px 3px rgba(0,0,0,0.4);
   }
   /* Base — heavy brass oval */
   .lamp-base {
-    width: 24px; height: 6px; margin: 0 auto;
-    background: linear-gradient(180deg, #8a7a50 0%, #6a5a38 100%);
+    width: 26px; height: 7px; margin: 0 auto;
+    background: linear-gradient(180deg, #8a7a48 0%, #6a5a30 100%);
     border-radius: 50%;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.15);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5), 0 1px 8px rgba(220,140,40,0.05), inset 0 1px 0 rgba(255,255,255,0.12);
   }
 
   /* === DESK CHAIR === */
@@ -794,65 +801,65 @@
     border-radius: 2px 2px 0 0;
   }
 
-  /* Cards inside the screen — green phosphor CRT look */
+  /* Cards inside the screen — blue CRT look */
   .tv-screen .project-card {
-    background: #0f280f; padding: 1.2rem;
+    background: #0c1028; padding: 1.2rem;
     cursor: pointer; transition: background 0.2s;
     display: flex; flex-direction: column; gap: 0.6rem;
-    position: relative; border-bottom: 1px solid #1a3a1a;
+    position: relative; border-bottom: 1px solid #1a2440;
   }
-  .tv-screen .project-card:hover { background: #1a3a1a; }
+  .tv-screen .project-card:hover { background: #141c38; }
   .tv-screen .project-name {
-    font-family: 'Courier New', monospace; color: #33ff33;
+    font-family: 'Courier New', monospace; color: #6090ff;
     font-size: 0.85rem; font-weight: 700;
-    text-shadow: 0 0 6px rgba(51,255,51,0.3);
+    text-shadow: 0 0 6px rgba(96,144,255,0.3);
   }
   .tv-screen .project-meta {
     font-family: 'Courier New', monospace;
-    font-size: 0.65rem; color: #33ff33; opacity: 0.5;
+    font-size: 0.65rem; color: #6090ff; opacity: 0.5;
   }
   .tv-screen .project-thumb {
     width: 100%; aspect-ratio: 16/9;
-    background: #0a1f0a; border-radius: 2px;
+    background: #080c1a; border-radius: 2px;
     display: flex; align-items: center; justify-content: center;
     overflow: hidden;
     filter: saturate(0) brightness(0.7) contrast(1.1);
-    border: 1px solid #1a3a1a;
+    border: 1px solid #1a2440;
   }
   .tv-screen .project-thumb img {
     width: 100%; height: 100%; object-fit: cover;
     mix-blend-mode: luminosity;
     filter: brightness(1.2) contrast(1.1);
   }
-  /* Green tint overlay on thumbnails */
+  /* Blue tint overlay on thumbnails */
   .tv-screen .project-thumb::after {
     content: ''; position: absolute; inset: 0;
-    background: rgba(51,255,51,0.08); pointer-events: none;
+    background: rgba(100,140,255,0.06); pointer-events: none;
   }
   .tv-screen .project-thumb-placeholder {
     font-family: 'Courier New', monospace;
     font-size: 0.6rem; letter-spacing: 0.08em; text-transform: uppercase;
-    color: #33ff33; opacity: 0.35;
+    color: #6090ff; opacity: 0.35;
   }
   .tv-screen .project-card:hover .manage-actions { display: flex; }
   .tv-screen .empty-state {
     grid-column: 1/-1; display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    padding: 4rem 2rem; gap: 1rem; background: #0f280f;
+    padding: 4rem 2rem; gap: 1rem; background: #0c1028;
   }
   .tv-screen .empty-title {
-    font-family: 'Courier New', monospace; color: #33ff33;
-    text-shadow: 0 0 8px rgba(51,255,51,0.3);
+    font-family: 'Courier New', monospace; color: #6090ff;
+    text-shadow: 0 0 8px rgba(96,144,255,0.3);
   }
   .tv-screen .empty-sub {
     font-family: 'Courier New', monospace;
-    color: #33ff33; opacity: 0.45; font-size: 0.75rem;
+    color: #6090ff; opacity: 0.45; font-size: 0.75rem;
   }
 
   /* Manage action buttons on cards */
   .manage-actions {
     display: none; position: absolute; inset: 0;
-    z-index: 10; background: rgba(10,20,10,0.88);
+    z-index: 10; background: rgba(8,12,26,0.9);
     flex-direction: column; align-items: center; justify-content: center; gap: 0.6rem;
   }
   .retro-tv .project-card { position: relative; }
@@ -860,13 +867,13 @@
   .manage-action-btn {
     font-family: 'Courier New', monospace; font-size: 0.65rem; font-weight: 700;
     letter-spacing: 0.08em; text-transform: uppercase;
-    padding: 0.6rem 1.4rem; border: 1px solid #33ff33; cursor: pointer;
+    padding: 0.6rem 1.4rem; border: 1px solid #6090ff; cursor: pointer;
     transition: all 0.2s; width: 160px; text-align: center;
   }
   .manage-delete-btn { background: transparent; color: #ff4444; border-color: #ff4444; }
   .manage-delete-btn:hover { background: #ff4444; color: #000; }
-  .manage-invite-btn { background: transparent; color: #33ff33; border-color: #33ff33; }
-  .manage-invite-btn:hover { background: #33ff33; color: #000; }
+  .manage-invite-btn { background: transparent; color: #6090ff; border-color: #6090ff; }
+  .manage-invite-btn:hover { background: #6090ff; color: #000; }
 
   /* EMPTY STATE */
   .empty-state {
