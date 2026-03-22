@@ -483,11 +483,20 @@
     letter-spacing: 0.1em; text-transform: uppercase;
   }
   .color-pickers-row { display: flex; gap: 1.5rem; }
-  .color-picker-group { flex: 1; }
-  .color-label { font-size: 0.68rem; color: var(--g600); margin-bottom: 0.3rem; display: block; }
+  .color-picker-group {
+    flex: 1; padding: 0.8rem; cursor: pointer; transition: all 0.2s;
+    background: var(--black); color: var(--white);
+  }
+  .color-picker-group:hover { background: var(--white); color: var(--black); }
+  .color-picker-group:hover .color-label { color: var(--g600); }
+  .color-picker-group:hover .color-hex-input { color: var(--black); border-color: var(--g200); }
+  .color-label {
+    font-size: 0.6rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--white); margin-bottom: 0.5rem; display: block; transition: color 0.2s;
+  }
   .color-input-wrap { display: flex; align-items: center; gap: 0.5rem; }
   .color-input-wrap input[type="color"] {
-    width: 32px; height: 32px; border: 1px solid var(--g200);
+    width: 32px; height: 32px; border: 1px solid rgba(255,255,255,0.2);
     padding: 0; cursor: pointer; background: none;
     -webkit-appearance: none; appearance: none;
   }
@@ -495,8 +504,8 @@
   .color-input-wrap input[type="color"]::-webkit-color-swatch { border: none; }
   .color-hex-input {
     font-family: var(--sans); font-size: 0.75rem; width: 76px;
-    padding: 0.4rem 0.5rem; border: 1px solid var(--g200);
-    background: transparent; color: var(--black); outline: none;
+    padding: 0.4rem 0.5rem; border: 1px solid rgba(255,255,255,0.2);
+    background: transparent; color: var(--white); outline: none; transition: all 0.2s;
   }
   .contrast-warning { font-size: 0.68rem; color: #c44; margin-top: 0.4rem; font-style: italic; }
   .font-results {
@@ -2253,11 +2262,11 @@ function populateCustomizeUI() {
   const s = currentGallerySettings;
   if (s.logo_path) {
     document.getElementById('logo-preview-img').src = `${SUPABASE_URL}/storage/v1/object/public/logos/${s.logo_path}`;
-    document.getElementById('logo-preview').style.display = 'inline-block';
+    document.getElementById('logo-preview').style.display = 'flex';
     document.getElementById('logo-placeholder').style.display = 'none';
   } else {
     document.getElementById('logo-preview').style.display = 'none';
-    document.getElementById('logo-placeholder').style.display = 'block';
+    document.getElementById('logo-placeholder').style.display = 'flex';
   }
   document.getElementById('gallery-bg-color').value = s.bg_color;
   document.getElementById('gallery-bg-hex').value = s.bg_color;
