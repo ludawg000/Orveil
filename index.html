@@ -992,7 +992,7 @@ async function handleFileSelect(fileList) {
     const path = `${currentUser.id}/${currentProject.id}/${Date.now()}-${file.name}`;
 
     const { error: storageErr } = await sb.storage.from('projects').upload(path, file);
-    if (storageErr) { showToast(`Failed: ${file.name}`); continue; }
+    if (storageErr) { console.error('Upload error:', storageErr); showToast(`Failed: ${file.name} — ${storageErr.message}`); continue; }
 
     await sb.from('files').insert({
       project_id: currentProject.id,
