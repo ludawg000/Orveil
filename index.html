@@ -332,11 +332,9 @@
   }
   .gallery-item img {
     width: 100%; display: block;
-    opacity: 0; transform: translateY(8px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
+    transition: transform 0.5s ease;
   }
-  .gallery-item img.loaded { opacity: 1; transform: translateY(0); }
-  .gallery-item:hover img.loaded { transform: scale(1.02); transition: transform 0.5s ease; }
+  .gallery-item:hover img { transform: scale(1.02); }
   .gallery-item:hover .gallery-item-overlay { opacity: 1; }
   .gallery-item-overlay {
     position: absolute; inset: 0;
@@ -362,19 +360,16 @@
 
   .gallery-video-item video {
     width: 100%; display: block;
-    opacity: 0; transform: translateY(8px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
+    transition: transform 0.5s ease;
   }
-  .gallery-video-item video.loaded { opacity: 1; transform: translateY(0); }
-  .gallery-video-item:hover video.loaded { transform: scale(1.02); transition: transform 0.5s ease; }
+  .gallery-video-item:hover video { transform: scale(1.02); }
   .video-placeholder {
     width: 100%; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center;
     background: rgba(255,255,255,0.04); color: rgba(255,255,255,0.3);
     font-size: 0.72rem; letter-spacing: 0.05em; padding: 1rem;
     word-break: break-all; text-align: center;
-    opacity: 0; transition: opacity 0.8s ease;
+
   }
-  .video-placeholder.loaded { opacity: 1; }
   .gallery-video-badge {
     position: absolute; top: 0.8rem; left: 0.8rem;
     font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase;
@@ -770,7 +765,7 @@ function renderGalleryGrid() {
   grid.innerHTML = galleryFiles.map((f, i) => {
     if (f.type?.startsWith('video/')) {
       return `<div class="gallery-item gallery-video-item" onclick="openLightbox(${i})">
-        <video src="${f.publicUrl}" muted playsinline preload="metadata" onloadeddata="this.currentTime=0.5;this.classList.add('loaded')" onerror="this.outerHTML='<div class=\\'video-placeholder loaded\\'>${escHtml(f.name)}</div>'"></video>
+        <video src="${f.publicUrl}" muted playsinline preload="metadata" onloadeddata="this.currentTime=0.5" onerror="this.outerHTML='<div class=\\'video-placeholder\\'>${escHtml(f.name)}</div>'"></video>
         <div class="gallery-video-badge">Video</div>
         <div class="gallery-item-overlay">
           <div class="gallery-item-name">${escHtml(f.name)}</div>
@@ -779,8 +774,7 @@ function renderGalleryGrid() {
       </div>`;
     }
     return `<div class="gallery-item" onclick="openLightbox(${i})">
-      <img src="${f.publicUrl}" alt="${escHtml(f.name)}" loading="lazy"
-        onload="this.classList.add('loaded')">
+      <img src="${f.publicUrl}" alt="${escHtml(f.name)}" loading="lazy">
       <div class="gallery-item-overlay">
         <div class="gallery-item-name">${escHtml(f.name)}</div>
         <button class="gallery-dl-btn" onclick="event.stopPropagation();downloadFile('${f.publicUrl}','${escHtml(f.name)}')">&#8595;</button>
