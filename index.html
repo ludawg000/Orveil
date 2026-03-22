@@ -123,6 +123,74 @@
   .project-name { font-size: 0.95rem; font-weight: 500; }
   .project-meta { font-size: 0.72rem; color: var(--g400); }
 
+  /* MANAGE MODE BTN */
+  .manage-btn {
+    font-family: 'Courier New', monospace; font-size: 0.72rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    background: none; color: var(--g400);
+    border: 1px solid var(--g200); padding: 0.55rem 1rem; cursor: pointer;
+    transition: all 0.3s;
+  }
+  .manage-btn:hover { border-color: var(--black); color: var(--black); }
+  .manage-btn.active {
+    background: #1a1a1a; color: #33ff33; border-color: #33ff33;
+    text-shadow: 0 0 6px #33ff33;
+  }
+
+  /* RETRO TV MODE */
+  .retro-tv .projects-grid {
+    background: #0a0a0a; border-color: #333;
+    border-radius: 18px; overflow: hidden;
+    position: relative; box-shadow: 0 0 40px rgba(0,255,0,0.05), inset 0 0 80px rgba(0,0,0,0.4);
+  }
+  .retro-tv .projects-grid::before {
+    content: ''; position: absolute; inset: 0; z-index: 5; pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px
+    );
+  }
+  .retro-tv .projects-grid::after {
+    content: ''; position: absolute; inset: 0; z-index: 4; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.6) 100%);
+  }
+  .retro-tv .project-card {
+    background: #111; border: 1px solid #2a2a2a;
+    position: relative;
+  }
+  .retro-tv .project-card:hover { background: #1a1a1a; }
+  .retro-tv .project-name {
+    font-family: 'Courier New', monospace; color: #33ff33;
+    text-shadow: 0 0 4px #33ff33;
+  }
+  .retro-tv .project-meta {
+    font-family: 'Courier New', monospace; color: #33ff33; opacity: 0.5;
+  }
+  .retro-tv .project-thumb-placeholder {
+    font-family: 'Courier New', monospace; color: #33ff33; opacity: 0.4;
+  }
+  .retro-tv .project-thumb { border: 1px solid #2a2a2a; }
+  .retro-tv .empty-state { background: #111; }
+  .retro-tv .empty-title { color: #33ff33; font-family: 'Courier New', monospace; text-shadow: 0 0 6px #33ff33; }
+  .retro-tv .empty-sub { color: #33ff33; opacity: 0.5; font-family: 'Courier New', monospace; }
+
+  /* Manage action buttons on cards */
+  .manage-actions {
+    display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 6; background: rgba(0,0,0,0.7);
+    flex-direction: column; align-items: center; justify-content: center; gap: 0.6rem;
+  }
+  .retro-tv .project-card:hover .manage-actions { display: flex; }
+  .manage-action-btn {
+    font-family: 'Courier New', monospace; font-size: 0.68rem; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.6rem 1.4rem; border: 1px solid; cursor: pointer;
+    background: none; transition: all 0.2s; width: 160px; text-align: center;
+  }
+  .manage-delete-btn { color: #ff4444; border-color: #ff4444; }
+  .manage-delete-btn:hover { background: #ff4444; color: #0a0a0a; }
+  .manage-invite-btn { color: #33ff33; border-color: #33ff33; }
+  .manage-invite-btn:hover { background: #33ff33; color: #0a0a0a; }
+
   /* EMPTY STATE */
   .empty-state {
     grid-column: 1/-1;
@@ -827,7 +895,10 @@
       <div>
         <div class="dash-title">Good to see you, <input class="dash-name-input" id="user-name" type="text" placeholder="_____" maxlength="30" spellcheck="false"></div>
       </div>
-      <button class="new-project-btn" onclick="openNewProject()">+ New Project</button>
+      <div style="display:flex;align-items:center;gap:0.8rem">
+        <button class="manage-btn" id="manage-btn" onclick="toggleManageMode()">Manage</button>
+        <button class="new-project-btn" onclick="openNewProject()">+ New Project</button>
+      </div>
     </div>
     <div class="projects-grid" id="projects-grid">
       <div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
@@ -974,6 +1045,31 @@
     <span class="lightbox-counter" id="lightbox-counter"></span>
     <span class="lightbox-filename" id="lightbox-filename"></span>
     <button class="lightbox-download" onclick="lightboxDownload()">Download</button>
+  </div>
+</div>
+
+<!-- INVITE COLLABORATOR MODAL -->
+<div class="modal-overlay" id="invite-modal">
+  <div class="modal" style="background:#111;border:1px solid #33ff33">
+    <div class="modal-title" style="font-family:'Courier New',monospace;color:#33ff33;text-shadow:0 0 6px #33ff33">Invite Collaborator</div>
+    <div style="font-family:'Courier New',monospace;font-size:0.72rem;color:#33ff33;opacity:0.5;margin-bottom:1rem" id="invite-project-name"></div>
+    <input class="modal-input" id="invite-email-input" type="email" placeholder="collaborator@email.com" style="font-family:'Courier New',monospace;background:#0a0a0a;color:#33ff33;border-color:#2a2a2a">
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeInviteModal()" style="font-family:'Courier New',monospace;color:#33ff33;border-color:#2a2a2a">Cancel</button>
+      <button class="modal-confirm" onclick="sendInvite()" style="font-family:'Courier New',monospace;background:#33ff33;color:#0a0a0a">Send Invite</button>
+    </div>
+  </div>
+</div>
+
+<!-- DELETE CONFIRM MODAL -->
+<div class="modal-overlay" id="delete-project-modal">
+  <div class="modal" style="background:#111;border:1px solid #ff4444">
+    <div class="modal-title" style="font-family:'Courier New',monospace;color:#ff4444;text-shadow:0 0 6px #ff4444">Delete Project</div>
+    <div style="font-family:'Courier New',monospace;font-size:0.82rem;color:#ff4444;opacity:0.8;margin-bottom:1rem">This will permanently delete <strong id="delete-project-name"></strong> and all its files. This cannot be undone.</div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeDeleteModal()" style="font-family:'Courier New',monospace;color:#ff4444;border-color:#2a2a2a">Cancel</button>
+      <button class="modal-confirm" onclick="confirmDeleteProject()" style="font-family:'Courier New',monospace;background:#ff4444;color:#0a0a0a">Delete Forever</button>
+    </div>
   </div>
 </div>
 
@@ -1739,8 +1835,12 @@ async function loadProjects() {
     }
 
     grid.innerHTML = projects.map(p => {
-      return `<div class="project-card" onclick="openProject('${p.id}','${escHtml(p.name)}')">
-        <div class="project-thumb" id="pthumb-${p.id}"><div class="project-thumb-placeholder">${p.file_count ? p.file_count + ' files' : (() => { const q = randomQuip(); return q.emoji + '<br><span style="font-size:0.55rem;letter-spacing:0.05em;opacity:0.7">' + q.text + '</span>'; })()}</div></div>
+      const manageOverlay = manageMode ? `<div class="manage-actions">
+        <button class="manage-action-btn manage-invite-btn" onclick="openInviteModal('${p.id}','${escHtml(p.name)}',event)">+ Invite</button>
+        <button class="manage-action-btn manage-delete-btn" onclick="openDeleteModal('${p.id}','${escHtml(p.name)}',event)">Delete</button>
+      </div>` : '';
+      return `<div class="project-card" onclick="${manageMode ? '' : `openProject('${p.id}','${escHtml(p.name)}')`}" style="${manageMode ? 'cursor:default' : ''}">
+        <div class="project-thumb" id="pthumb-${p.id}" style="position:relative">${manageOverlay}<div class="project-thumb-placeholder">${p.file_count ? p.file_count + ' files' : (() => { const q = randomQuip(); return q.emoji + '<br><span style="font-size:0.55rem;letter-spacing:0.05em;opacity:0.7">' + q.text + '</span>'; })()}</div></div>
         <div class="project-name">${escHtml(p.name)}</div>
         <div class="project-meta">${p.file_count || 0} files · ${timeAgo(p.created_at)}</div>
       </div>`;
@@ -2294,6 +2394,100 @@ async function sendDelivery() {
 function copyGalleryLink() {
   const url = document.getElementById('delivery-link-input').value;
   navigator.clipboard.writeText(url).then(() => showToast('Link copied to clipboard.'));
+}
+
+// ─── MANAGE MODE ───
+let manageMode = false;
+let pendingDeleteId = null;
+let pendingDeleteName = '';
+let pendingInviteId = null;
+
+function toggleManageMode() {
+  manageMode = !manageMode;
+  const main = document.querySelector('.app-main');
+  const btn = document.getElementById('manage-btn');
+  if (manageMode) {
+    main.classList.add('retro-tv');
+    btn.classList.add('active');
+    btn.textContent = '< Exit >';
+  } else {
+    main.classList.remove('retro-tv');
+    btn.classList.remove('active');
+    btn.textContent = 'Manage';
+  }
+  loadProjects();
+}
+
+function openDeleteModal(id, name, e) {
+  e.stopPropagation();
+  pendingDeleteId = id;
+  pendingDeleteName = name;
+  document.getElementById('delete-project-name').textContent = name;
+  document.getElementById('delete-project-modal').classList.add('active');
+}
+
+function closeDeleteModal() {
+  document.getElementById('delete-project-modal').classList.remove('active');
+  pendingDeleteId = null;
+}
+
+async function confirmDeleteProject() {
+  if (!pendingDeleteId) return;
+  const btn = document.querySelector('#delete-project-modal .modal-confirm');
+  btn.textContent = 'Deleting...';
+  btn.disabled = true;
+
+  try {
+    // Delete all files from storage
+    const { data: files } = await dbSelect('files', 'path,size', `project_id=eq.${pendingDeleteId}`);
+    if (files?.length) {
+      const paths = files.map(f => f.path);
+      await storageRemove('projects', paths);
+      // Update storage usage
+      const totalSize = files.reduce((sum, f) => sum + (f.size || 0), 0);
+      if (totalSize > 0) {
+        const { data: profile } = await dbSelect('profiles', 'storage_used', `id=eq.${currentUser.id}`, { single: true });
+        await dbUpdate('profiles', { storage_used: Math.max(0, (profile?.storage_used || 0) - totalSize) }, `id=eq.${currentUser.id}`);
+      }
+    }
+
+    // Delete file records
+    await dbDelete('files', `project_id=eq.${pendingDeleteId}`);
+    // Delete the project
+    await dbDelete('projects', `id=eq.${pendingDeleteId}`);
+
+    closeDeleteModal();
+    showToast(`"${pendingDeleteName}" deleted`);
+    loadProjects();
+  } catch (err) {
+    console.error('Delete project error:', err);
+    showToast('Failed to delete project');
+  } finally {
+    btn.textContent = 'Delete Forever';
+    btn.disabled = false;
+  }
+}
+
+function openInviteModal(id, name, e) {
+  e.stopPropagation();
+  pendingInviteId = id;
+  document.getElementById('invite-project-name').textContent = '> ' + name;
+  document.getElementById('invite-email-input').value = '';
+  document.getElementById('invite-modal').classList.add('active');
+  setTimeout(() => document.getElementById('invite-email-input').focus(), 100);
+}
+
+function closeInviteModal() {
+  document.getElementById('invite-modal').classList.remove('active');
+  pendingInviteId = null;
+}
+
+async function sendInvite() {
+  const email = document.getElementById('invite-email-input').value.trim();
+  if (!email || !email.includes('@')) { showToast('Enter a valid email'); return; }
+  // TODO: implement collaborator invites (store in DB, send email)
+  showToast(`Invite sent to ${email}`);
+  closeInviteModal();
 }
 
 // ─── NAVIGATION ───
