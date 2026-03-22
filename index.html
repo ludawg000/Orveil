@@ -830,8 +830,9 @@ async function handleSignUp() {
 }
 
 async function signOut() {
-  await sb.auth.signOut();
+  try { await sb.auth.signOut(); } catch {}
   currentUser = null;
+  appStarted = false;
   showScreen('login-screen');
 }
 
@@ -853,20 +854,25 @@ sb.auth.onAuthStateChange(async (event, session) => {
 });
 
 async function initApp() {
-  const meta = currentUser.user_metadata;
-  const name = meta?.full_name?.split(' ')[0] || meta?.name?.split(' ')[0] || 'there';
-  document.getElementById('user-name').textContent = name;
+  try {
+    const meta = currentUser.user_metadata || {};
+    const name = meta.full_name?.split(' ')[0] || meta.name?.split(' ')[0] || 'there';
+    document.getElementById('user-name').textContent = name;
 
-  const avatar = document.getElementById('nav-avatar');
-  if (meta?.avatar_url) {
-    avatar.innerHTML = `<img src="${meta.avatar_url}" alt="">`;
-  } else {
-    avatar.textContent = name[0].toUpperCase();
+    const avatar = document.getElementById('nav-avatar');
+    if (meta.avatar_url) {
+      avatar.innerHTML = `<img src="${meta.avatar_url}" alt="">`;
+    } else {
+      avatar.textContent = name[0].toUpperCase();
+    }
+
+    showScreen('app-screen');
+    await loadProjects();
+    await updateStorage();
+  } catch (err) {
+    console.error('initApp error:', err);
+    showToast('Something went wrong loading the app.');
   }
-
-  showScreen('app-screen');
-  await loadProjects();
-  await updateStorage();
 }
 
 // ─── STORAGE ───
