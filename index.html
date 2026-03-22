@@ -286,60 +286,66 @@
     background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
   }
 
-  /* === BED (left side) === */
+  /* === BED (left side, against wall) === */
   .room-bed {
-    bottom: 2%; left: 1%; z-index: 3;
-    width: 28%; height: 42%;
-    /* Angled into left wall — shows side + top */
-    transform: perspective(600px) rotateY(12deg) rotateX(-3deg);
-    transform-origin: left bottom;
+    bottom: 5%; left: 1%; z-index: 3;
+    width: 26%; height: 40%;
   }
   .bed-frame {
     position: absolute; inset: 0;
-    background: linear-gradient(180deg, #3a3028, #2e2620);
-    border-radius: 4px;
-    box-shadow: 8px 8px 25px rgba(0,0,0,0.7);
+    background: linear-gradient(180deg, #3e3428 0%, #342a22 100%);
+    border-radius: 3px;
+    box-shadow: 5px 5px 18px rgba(0,0,0,0.7);
   }
+  /* Headboard flat against wall (top edge) */
   .bed-frame::before {
-    content: ''; position: absolute; top: -18%; left: -1%; width: 102%; height: 22%;
-    background: linear-gradient(180deg, #4a3e30, #3a3028);
-    border-radius: 5px 5px 0 0;
-    box-shadow: 0 -2px 8px rgba(0,0,0,0.4);
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 18%;
+    background: linear-gradient(180deg, #4a3e32 0%, #403428 100%);
+    border-radius: 3px 3px 0 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+  /* Side rail visible */
+  .bed-frame::after {
+    content: ''; position: absolute; top: 0; right: -4px; bottom: 0; width: 4px;
+    background: linear-gradient(180deg, #3e3428, #342a22);
+    border-radius: 0 2px 2px 0;
+    box-shadow: 2px 0 4px rgba(0,0,0,0.3);
   }
   .bed-mattress {
-    position: absolute; top: 5%; left: 3%; right: 3%; bottom: 8%;
-    background: linear-gradient(180deg, #d8d0c0, #c8c0b0);
-    border-radius: 3px;
-    box-shadow: inset 0 3px 8px rgba(0,0,0,0.12);
+    position: absolute; top: 16%; left: 4%; right: 4%; bottom: 6%;
+    background: linear-gradient(180deg, #dcd4c4 0%, #d0c8b8 100%);
+    border-radius: 2px;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.1);
   }
   .bed-pillow {
-    position: absolute; top: 8%; left: 6%; width: 38%; height: 18%;
-    background: linear-gradient(135deg, #ece4d8, #d8d0c0);
-    border-radius: 10px 10px 8px 8px;
-    box-shadow: 2px 3px 6px rgba(0,0,0,0.2);
+    position: absolute; top: 18%; left: 8%; width: 36%; height: 14%;
+    background: linear-gradient(135deg, #ece4d8, #dcd4c4);
+    border-radius: 6px;
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.15);
   }
-  /* Second pillow */
   .bed-pillow::after {
-    content: ''; position: absolute; top: 2px; left: 105%; width: 90%; height: 90%;
-    background: linear-gradient(135deg, #e8e0d4, #d4ccbc);
-    border-radius: 10px 10px 8px 8px;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.15);
+    content: ''; position: absolute; top: 1px; left: 110%; width: 85%; height: 90%;
+    background: linear-gradient(135deg, #e8e0d4, #d8d0c0);
+    border-radius: 6px;
+    box-shadow: 1px 2px 4px rgba(0,0,0,0.12);
   }
   .bed-blanket {
-    position: absolute; top: 30%; left: 4%; right: 4%; bottom: 8%;
-    background: linear-gradient(180deg, #2a3a6a 0%, #1a2a5a 60%, #182850 100%);
-    border-radius: 3px;
-    box-shadow: 3px 4px 12px rgba(0,0,0,0.35);
+    position: absolute; top: 35%; left: 5%; right: 5%; bottom: 8%;
+    background: linear-gradient(180deg, #2a3a6a 0%, #1e2e5a 50%, #1a2850 100%);
+    border-radius: 2px;
+    box-shadow: 2px 3px 10px rgba(0,0,0,0.3);
   }
+  /* Blanket pulled back / messy */
   .bed-blanket::after {
-    content: ''; position: absolute; top: -8px; right: -4px; width: 45%; height: 35%;
-    background: linear-gradient(135deg, #3a4a7a, #2a3a6a);
-    border-radius: 12px 5px 15px 5px; transform: rotate(4deg);
+    content: ''; position: absolute; top: -6px; right: 0; width: 55%; height: 25%;
+    background: linear-gradient(135deg, #364a7a, #2a3a6a);
+    border-radius: 8px 2px 12px 4px;
+    transform: rotate(2deg);
   }
   .bed-blanket-fold {
-    position: absolute; top: 26%; left: 4%; right: 35%; height: 10%;
+    position: absolute; top: 32%; left: 5%; width: 55%; height: 8%;
     background: linear-gradient(180deg, #3a4a7a, #2a3a6a);
-    border-radius: 2px 18px 2px 2px;
+    border-radius: 2px 14px 2px 2px;
   }
 
   /* === LAUNDRY HAMPER === */
@@ -479,10 +485,10 @@
     position: absolute; bottom: 7px; left: 2px; right: 2px; height: 10px;
     background: rgba(230,210,170,0.2); border-radius: 1px;
   }
-  .beer-bottle.bb1 { top: 6%; right: 6%; }
-  .beer-bottle.bb2 { top: 3%; right: 14%; }
+  .beer-bottle.bb1 { top: 25%; right: 5%; }
+  .beer-bottle.bb2 { top: 20%; right: 13%; }
   .beer-bottle.bb3.fallen {
-    top: 12%; right: 1%;
+    top: 35%; right: 1%;
     transform: rotate(85deg); transform-origin: bottom center;
   }
   .beer-bottle .spill {
@@ -499,14 +505,14 @@
     transform: rotate(-6deg);
   }
   .desk-pen {
-    position: absolute; bottom: 15%; left: 6%; z-index: 5;
+    position: absolute; bottom: 20%; left: 6%; z-index: 5;
     width: 36px; height: 3px;
     background: linear-gradient(90deg, #2a2a5a, #3a3a7a 40%, #2a2a5a 80%, #e8a020 92%);
     border-radius: 2px; transform: rotate(-8deg);
     box-shadow: 1px 1px 3px rgba(0,0,0,0.5);
   }
   .chip-bag {
-    position: absolute; top: 8%; left: 2%; z-index: 5;
+    position: absolute; top: 22%; left: 2%; z-index: 5;
     width: 24px; height: 32px;
     background: linear-gradient(180deg, #e84020, #c83018 30%, #a82010 60%, #882010);
     border-radius: 3px 3px 4px 4px; transform: rotate(-6deg);
@@ -522,17 +528,16 @@
      THE COMPUTER on the desk
      =========================== */
   .mac-computer {
-    position: relative; z-index: 10;
-    width: 55%; max-width: 260px;
-    margin: 0 auto;
-    /* Computer sits on the tilted desk surface — counteract parent tilt slightly
-       so it looks upright while still feeling grounded */
-    transform: translateY(-8px);
+    position: absolute; z-index: 10;
+    width: 50%; max-width: 240px;
+    /* Centered on desk, pushed toward the BACK (top = toward wall) */
+    left: 50%; top: 2%;
+    transform: translateX(-50%);
   }
   /* Shadow underneath the computer on the desk */
   .mac-computer::before {
-    content: ''; position: absolute; bottom: -6px; left: 5%; right: 5%; height: 10px;
-    background: radial-gradient(ellipse, rgba(0,0,0,0.4) 0%, transparent 70%);
+    content: ''; position: absolute; bottom: -4px; left: 8%; right: 8%; height: 8px;
+    background: radial-gradient(ellipse, rgba(0,0,0,0.5) 0%, transparent 70%);
     border-radius: 50%; z-index: -1;
   }
 
@@ -613,15 +618,15 @@
     border-radius: 1px; opacity: 0.3;
   }
 
-  /* Keyboard in front of computer */
+  /* Keyboard in front of computer on desk */
   .desk-keyboard {
-    position: relative; z-index: 8;
-    width: 80%; max-width: 200px; margin: 0.6rem auto 0;
+    position: absolute; z-index: 8;
+    width: 42%; max-width: 190px;
+    left: 50%; bottom: 8%;
+    transform: translateX(-50%);
     background: linear-gradient(180deg, #c8bca8, #b8aa94);
     border-radius: 3px; padding: 5px 7px 7px;
     box-shadow: 2px 3px 10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
-    /* Keyboard tilted more aggressively since it's on the tilted desk */
-    transform: perspective(400px) rotateX(12deg);
   }
   .kb-row {
     height: 5px; margin-bottom: 2px; border-radius: 1px;
