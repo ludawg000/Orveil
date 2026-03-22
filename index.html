@@ -407,8 +407,8 @@
 
   /* === POSTERS on wall behind computer === */
   .room-poster {
-    top: 5%; left: 32%; width: 65px; height: 85px;
-    background: #1a1a1a; z-index: 1;
+    top: 5%; left: 30%; width: 75px; height: 95px;
+    background: #1a1a1a; z-index: 2;
     transform: rotate(-1.5deg);
     box-shadow: 2px 3px 10px rgba(0,0,0,0.7);
     border: 1px solid #2a2620;
@@ -446,7 +446,7 @@
 
   /* Sublime poster — sun logo on blue */
   .room-poster.p2 {
-    left: auto; right: 32%; top: 4%; width: 58px; height: 78px;
+    left: auto; right: 30%; top: 4%; width: 68px; height: 88px;
     transform: rotate(1deg); background: #0a0a0a;
   }
   .room-poster.p2 .room-poster-art {
@@ -472,7 +472,18 @@
   }
   .room-poster.p2 .room-poster-tape::before { display: none; }
 
-  /* Shelf removed — bookshelf covers this */
+  /* Small wall shelf — right side, above window */
+  .room-shelf {
+    top: 3%; right: 12%; width: 80px; height: 6px;
+    background: linear-gradient(180deg, #3a3228, #2a2420);
+    z-index: 2; box-shadow: 0 3px 8px rgba(0,0,0,0.6);
+    display: flex; align-items: flex-end; gap: 3px; padding: 0 4px;
+  }
+  .shelf-book { width: 13px; border-radius: 1px 1px 0 0; transform-origin: bottom; }
+  .shelf-book.b1 { height: 24px; background: #6a4a28; transform: rotate(-2deg); }
+  .shelf-book.b2 { height: 18px; background: #3a5a3a; }
+  .shelf-book.b3 { height: 28px; background: #3a3a6a; transform: rotate(3deg); }
+  .shelf-book.b4 { height: 20px; background: #6a3a3a; transform: rotate(-1deg); }
 
   /* === FLOOR — ground plane below back wall === */
   .room-floor {
@@ -556,7 +567,7 @@
   /* Bean bag on the floor */
   .bean-bag {
     bottom: 28%; right: 12%; z-index: 4;
-    width: 55px; height: 42px;
+    width: 100px; height: 75px;
     background: radial-gradient(ellipse at 45% 40%, #3a2828 0%, #2e1e1e 40%, #221414 100%);
     border-radius: 55% 50% 48% 52% / 60% 55% 50% 45%;
     box-shadow: 4px 5px 14px rgba(0,0,0,0.7), inset 0 -3px 8px rgba(0,0,0,0.3);
@@ -715,7 +726,7 @@
      =========================== */
   .mac-computer {
     position: absolute; z-index: 10;
-    width: 18%;
+    width: 36%;
     /* Sits on desk, pushed back against wall */
     left: 50%; bottom: calc(100% + 2px);
     transform: translateX(-50%);
@@ -730,7 +741,7 @@
   .mac-case {
     background: linear-gradient(180deg, #e8dcc8 0%, #d9ccb4 40%, #cfc0a6 100%);
     border-radius: 6px 6px 2px 2px;
-    padding: 0.5rem 0.6rem 0.4rem;
+    padding: 0.7rem 0.8rem 0.5rem;
     position: relative;
     box-shadow:
       inset 0 1px 0 rgba(255,255,255,0.5),
@@ -759,7 +770,7 @@
 
   /* The screen — FIXED height, scrollable */
   .tv-screen {
-    width: 100%; height: 130px;
+    width: 100%; height: 200px;
     background: #0a0e1a; border-radius: 3px;
     overflow-y: auto; overflow-x: hidden;
     position: relative;
@@ -915,7 +926,7 @@
 
   /* Cards inside the screen — blue CRT look */
   .tv-screen .project-card {
-    background: #0c1028; padding: 0.5rem;
+    background: #0c1028; padding: 0.8rem;
     cursor: pointer; transition: background 0.2s;
     display: flex; flex-direction: column; gap: 0.35rem;
     position: relative; border-bottom: 1px solid #1a2440;
@@ -923,13 +934,13 @@
   .tv-screen .project-card:hover { background: #141c38; }
   .tv-screen .project-name {
     font-family: 'Courier New', monospace; color: #6090ff;
-    font-size: 0.6rem; font-weight: 700;
+    font-size: 0.75rem; font-weight: 700;
     text-shadow: 0 0 6px rgba(96,144,255,0.3);
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
   .tv-screen .project-meta {
     font-family: 'Courier New', monospace;
-    font-size: 0.5rem; color: #6090ff; opacity: 0.5;
+    font-size: 0.6rem; color: #6090ff; opacity: 0.5;
   }
   .tv-screen .project-thumb {
     width: 100%; aspect-ratio: 16/9;
@@ -1741,7 +1752,7 @@
     .room-poster .room-poster-art::after { font-size: 4px; }
     .room-poster.p2 { width: 42px; height: 56px; }
     .room-poster.p2 .room-poster-art::after { font-size: 4px; }
-    .bean-bag { width: 45px; height: 34px; }
+    .bean-bag { width: 80px; height: 60px; }
     .room-bookshelf { width: 15%; }
     .lamp-shade { width: 50px; height: 24px; }
     .lamp-neck { height: 34px; }
@@ -1821,7 +1832,13 @@
           <div class="room-poster-tape"></div>
           <div class="room-poster-art"></div>
         </div>
-        <!-- Shelf removed — bookshelf on left wall is enough -->
+        <!-- Shelf on right wall -->
+        <div class="room-shelf">
+          <div class="shelf-book b1"></div>
+          <div class="shelf-book b2"></div>
+          <div class="shelf-book b3"></div>
+          <div class="shelf-book b4"></div>
+        </div>
         <!-- Window on wall -->
         <div class="room-window">
           <div class="window-glass" id="room-window-glass"></div>
