@@ -136,49 +136,151 @@
     background: #3d2b1a; color: #f5e6d0; border-color: #6b4c30;
   }
 
-  /* RETRO TV MODE — warm vintage */
-  .retro-tv .projects-grid {
-    background: #1c1410; border-color: #6b4c30;
-    border-radius: 24px; overflow: hidden;
-    position: relative;
-    border: 8px solid #5a3d22;
-    box-shadow:
-      0 0 0 4px #3d2b1a,
-      0 0 0 8px #2a1c0e,
-      0 8px 30px rgba(0,0,0,0.5),
-      inset 0 0 60px rgba(0,0,0,0.3);
+  /* RETRO TV MODE — realistic vintage set */
+  .retro-tv .projects-grid { display: none; }
+
+  .tv-frame { display: none; }
+  .retro-tv .tv-frame { display: block !important; }
+
+  .tv-antenna {
+    display: flex; justify-content: center; gap: 0; height: 60px; position: relative;
   }
-  .retro-tv .projects-grid::before {
+  .tv-antenna-left, .tv-antenna-right {
+    width: 3px; height: 60px; background: linear-gradient(to bottom, #888, #aaa);
+    border-radius: 2px; transform-origin: bottom center;
+  }
+  .tv-antenna-left { transform: rotate(-20deg); margin-right: -2px; }
+  .tv-antenna-right { transform: rotate(20deg); margin-left: -2px; }
+
+  .tv-cabinet {
+    background: linear-gradient(180deg, #6b4c30 0%, #5a3d22 20%, #4a3018 80%, #3d2510 100%);
+    border-radius: 12px 12px 8px 8px;
+    padding: 1.8rem;
+    display: flex; gap: 1.2rem;
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.08),
+      inset 0 -2px 4px rgba(0,0,0,0.3),
+      0 10px 40px rgba(0,0,0,0.5),
+      0 2px 8px rgba(0,0,0,0.3);
+    position: relative;
+  }
+  /* Wood grain texture */
+  .tv-cabinet::before {
+    content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+    background:
+      repeating-linear-gradient(
+        90deg,
+        transparent 0px, transparent 20px,
+        rgba(0,0,0,0.03) 20px, rgba(0,0,0,0.03) 21px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent 0px, transparent 47px,
+        rgba(255,255,255,0.02) 47px, rgba(255,255,255,0.02) 48px
+      );
+  }
+
+  .tv-screen-bezel {
+    flex: 1; background: #1a1208;
+    border-radius: 20px; padding: 12px;
+    position: relative;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.6), inset 0 0 2px rgba(0,0,0,0.8);
+  }
+  .tv-screen {
+    width: 100%; min-height: 300px;
+    background: #141210;
+    border-radius: 14px;
+    overflow-y: auto; overflow-x: hidden;
+    position: relative;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1px;
+    background-color: #2a1c0e;
+  }
+  /* Scanlines */
+  .tv-screen::after {
     content: ''; position: absolute; inset: 0; z-index: 5; pointer-events: none;
+    border-radius: 14px;
     background: repeating-linear-gradient(
-      0deg, transparent, transparent 3px, rgba(245,200,140,0.03) 3px, rgba(245,200,140,0.03) 4px
+      0deg, transparent, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px
     );
   }
-  .retro-tv .projects-grid::after {
-    content: ''; position: absolute; inset: 0; z-index: 4; pointer-events: none;
-    background: radial-gradient(ellipse at center, rgba(245,200,140,0.04) 0%, transparent 50%, rgba(0,0,0,0.5) 100%);
+  /* Screen glare */
+  .tv-glare {
+    position: absolute; top: 12px; left: 12px; right: 40%; bottom: 60%;
+    border-radius: 14px 14px 80% 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 60%);
+    pointer-events: none; z-index: 6;
   }
-  .retro-tv .project-card {
-    background: #1c1410; border: 1px solid #3d2b1a;
+
+  .tv-controls {
+    width: 80px; display: flex; flex-direction: column;
+    align-items: center; justify-content: space-between;
+    padding: 0.5rem 0;
+  }
+  .tv-brand-label {
+    font-family: var(--serif); font-size: 0.55rem; font-weight: 400;
+    letter-spacing: 0.2em; color: #c8a882; opacity: 0.6;
+    text-transform: uppercase;
+  }
+  .tv-knobs { display: flex; flex-direction: column; gap: 1.2rem; align-items: center; }
+  .tv-knob {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: radial-gradient(circle at 40% 35%, #8a7050, #5a4028 60%, #3d2b1a);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.08);
+    position: relative; cursor: pointer;
+  }
+  .tv-knob.small { width: 28px; height: 28px; }
+  .tv-knob-line {
+    position: absolute; top: 4px; left: 50%; width: 2px; height: 35%;
+    background: rgba(255,255,255,0.15); transform: translateX(-50%);
+    border-radius: 1px;
+  }
+  .tv-knob:hover { transform: rotate(30deg); transition: transform 0.3s; }
+
+  .tv-legs {
+    display: flex; justify-content: center; gap: 60%;
+    padding-top: 0;
+  }
+  .tv-leg {
+    width: 6px; height: 28px;
+    background: linear-gradient(to bottom, #5a3d22, #4a3018);
+    border-radius: 0 0 3px 3px;
+    transform: perspective(100px) rotateX(-5deg);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+  }
+
+  /* Cards inside the TV screen */
+  .tv-screen .project-card {
+    background: #1c1410; padding: 1.2rem;
+    cursor: pointer; transition: background 0.15s;
+    display: flex; flex-direction: column; gap: 0.6rem;
     position: relative;
   }
-  .retro-tv .project-card:hover { background: #2a1c0e; }
-  .retro-tv .project-name {
+  .tv-screen .project-card:hover { background: #2a1c0e; }
+  .tv-screen .project-name {
     font-family: var(--serif); color: #f5e6d0; font-style: italic;
+    font-size: 0.9rem; font-weight: 400;
   }
-  .retro-tv .project-meta {
-    color: #c8a882; opacity: 0.6;
+  .tv-screen .project-meta { font-size: 0.68rem; color: #c8a882; opacity: 0.6; }
+  .tv-screen .project-thumb {
+    width: 100%; aspect-ratio: 16/9;
+    background: #141210; border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+    filter: sepia(0.15) brightness(0.9) contrast(1.05);
   }
-  .retro-tv .project-thumb-placeholder {
+  .tv-screen .project-thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .tv-screen .project-thumb-placeholder {
+    font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
     color: #c8a882; opacity: 0.4;
   }
-  .retro-tv .project-thumb {
-    border: 1px solid #3d2b1a;
-    filter: sepia(0.2) brightness(0.9);
+  .tv-screen .project-card:hover .manage-actions { display: flex; }
+  .tv-screen .empty-state {
+    grid-column: 1/-1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 4rem 2rem; gap: 1rem; background: #1c1410;
   }
-  .retro-tv .empty-state { background: #1c1410; }
-  .retro-tv .empty-title { color: #f5e6d0; font-family: var(--serif); }
-  .retro-tv .empty-sub { color: #c8a882; opacity: 0.5; }
+  .tv-screen .empty-title { color: #f5e6d0; font-family: var(--serif); }
+  .tv-screen .empty-sub { color: #c8a882; opacity: 0.5; }
 
   /* Manage action buttons on cards */
   .manage-actions {
@@ -961,6 +1063,23 @@
         <button class="manage-btn" id="manage-btn" onclick="toggleManageMode()">Manage</button>
         <button class="new-project-btn" onclick="openNewProject()">+ New Project</button>
       </div>
+    </div>
+    <div class="tv-frame" id="tv-frame" style="display:none">
+      <div class="tv-antenna"><div class="tv-antenna-left"></div><div class="tv-antenna-right"></div></div>
+      <div class="tv-cabinet">
+        <div class="tv-screen-bezel">
+          <div class="tv-screen" id="tv-screen"></div>
+          <div class="tv-glare"></div>
+        </div>
+        <div class="tv-controls">
+          <div class="tv-brand-label">ORVEIL</div>
+          <div class="tv-knobs">
+            <div class="tv-knob"><div class="tv-knob-line"></div></div>
+            <div class="tv-knob small"><div class="tv-knob-line"></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="tv-legs"><div class="tv-leg"></div><div class="tv-leg"></div></div>
     </div>
     <div class="projects-grid" id="projects-grid">
       <div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
@@ -1881,12 +2000,16 @@ async function updateStorage() {
 // ─── PROJECTS ───
 async function loadProjects() {
   const grid = document.getElementById('projects-grid');
-  if (!grid) return;
-  grid.innerHTML = '<div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>';
+  const tvScreen = document.getElementById('tv-screen');
+  const target = manageMode ? tvScreen : grid;
+  if (!target) return;
+  target.innerHTML = '<div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>';
+  if (manageMode && grid) grid.innerHTML = '';
+  if (!manageMode && tvScreen) tvScreen.innerHTML = '';
 
   try {
     if (!accessToken) {
-      grid.innerHTML = `<div class="empty-state"><div class="empty-title">Not authenticated.</div>
+      target.innerHTML = `<div class="empty-state"><div class="empty-title">Not authenticated.</div>
         <div class="empty-sub">Please sign in again.</div>
         <button onclick="localStorage.clear();sessionStorage.clear();location.reload()" style="margin-top:1rem;font-family:var(--sans);font-size:0.75rem;padding:0.6rem 1.5rem;background:var(--black);color:var(--white);border:1px solid var(--g200);cursor:pointer">Sign In</button>
       </div>`;
@@ -1908,7 +2031,7 @@ async function loadProjects() {
     clearTimeout(fetchTimeout);
     if (!resp.ok) {
       const errData = await resp.json().catch(() => ({}));
-      grid.innerHTML = `<div class="empty-state"><div class="empty-title">Error loading projects.</div><div class="empty-sub">${errData.message || resp.statusText}</div></div>`;
+      target.innerHTML = `<div class="empty-state"><div class="empty-title">Error loading projects.</div><div class="empty-sub">${errData.message || resp.statusText}</div></div>`;
       return;
     }
     const ownProjects = await resp.json();
@@ -1932,14 +2055,14 @@ async function loadProjects() {
     const projects = [...ownProjects, ...collabProjects];
 
     if (!projects?.length) {
-      grid.innerHTML = `<div class="empty-state">
+      target.innerHTML = `<div class="empty-state">
         <div class="empty-title">No projects yet.</div>
         <div class="empty-sub">Hit "New Project" to create your first one.</div>
       </div>`;
       return;
     }
 
-    grid.innerHTML = projects.map(p => {
+    target.innerHTML = projects.map(p => {
       const manageOverlay = manageMode ? `<div class="manage-actions">
         <button class="manage-action-btn manage-invite-btn" onclick="openInviteModal('${p.id}','${escHtml(p.name)}',event)">+ Invite</button>
         <button class="manage-action-btn manage-delete-btn" onclick="openDeleteModal('${p.id}','${escHtml(p.name)}',event)">Delete</button>
@@ -1952,15 +2075,17 @@ async function loadProjects() {
       </div>`;
     }).join('');
 
-    // Make last card fill remaining grid space
-    requestAnimationFrame(() => {
-      const cols = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
-      const remainder = projects.length % cols;
-      if (remainder !== 0) {
-        const lastCard = grid.querySelector('.project-card:last-child');
-        if (lastCard) lastCard.style.gridColumn = `span ${cols - remainder + 1}`;
-      }
-    });
+    // Make last card fill remaining grid space (only in normal mode)
+    if (!manageMode) {
+      requestAnimationFrame(() => {
+        const cols = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
+        const remainder = projects.length % cols;
+        if (remainder !== 0) {
+          const lastCard = grid.querySelector('.project-card:last-child');
+          if (lastCard) lastCard.style.gridColumn = `span ${cols - remainder + 1}`;
+        }
+      });
+    }
 
     // Load thumbnails in background via REST
     projects.forEach(async p => {
@@ -1997,7 +2122,7 @@ async function loadProjects() {
       } catch {}
     });
   } catch (err) {
-    grid.innerHTML = `<div class="empty-state"><div class="empty-title">${err.name === 'AbortError' ? 'Connection timed out.' : 'Error loading projects.'}</div>
+    target.innerHTML = `<div class="empty-state"><div class="empty-title">${err.name === 'AbortError' ? 'Connection timed out.' : 'Error loading projects.'}</div>
       <div class="empty-sub">${err.name === 'AbortError' ? 'Could not reach the database.' : err.message}</div>
       <button onclick="loadProjects()" style="margin-top:1rem;font-family:var(--sans);font-size:0.75rem;padding:0.6rem 1.5rem;background:var(--black);color:var(--white);border:1px solid var(--g200);cursor:pointer">Retry</button>
       <button onclick="localStorage.clear();sessionStorage.clear();location.reload()" style="margin-top:0.5rem;font-family:var(--sans);font-size:0.65rem;padding:0.5rem 1rem;background:none;color:var(--g400);border:1px solid var(--g200);cursor:pointer;display:block;margin-left:auto;margin-right:auto">Reset Session</button>
@@ -2650,14 +2775,17 @@ function toggleManageMode() {
   manageMode = !manageMode;
   const main = document.querySelector('.app-main');
   const btn = document.getElementById('manage-btn');
+  const tvFrame = document.getElementById('tv-frame');
   if (manageMode) {
     main.classList.add('retro-tv');
     btn.classList.add('active');
     btn.textContent = 'Done';
+    if (tvFrame) tvFrame.style.display = 'block';
   } else {
     main.classList.remove('retro-tv');
     btn.classList.remove('active');
     btn.textContent = 'Manage';
+    if (tvFrame) tvFrame.style.display = 'none';
   }
   loadProjects();
 }
