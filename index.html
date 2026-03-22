@@ -789,29 +789,46 @@ function generateVideoThumbnails() {
     if (!f.type?.startsWith('video/')) return;
     const container = document.getElementById(`gallery-item-${i}`);
     if (!container) return;
+    genThumb(f.publicUrl, f.name).then(dataUrl => {
+      if (!dataUrl) return;
+      const img = document.createElement('img');
+      img.src = dataUrl;
+      img.alt = f.name;
+      const placeholder = container.querySelector('.video-placeholder');
+      if (placeholder) placeholder.replaceWith(img);
+    });
+  });
+}
+
+function genThumb(url, name) {
+  return new Promise(resolve => {
     const video = document.createElement('video');
     video.crossOrigin = 'anonymous';
     video.muted = true;
     video.playsInline = true;
-    video.preload = 'metadata';
-    video.src = f.publicUrl;
-    video.addEventListener('loadeddata', () => {
-      video.currentTime = Math.min(1, video.duration * 0.1);
-    });
-    video.addEventListener('seeked', () => {
+    video.preload = 'auto';
+
+    const timeout = setTimeout(() => { video.src = ''; resolve(null); }, 10000);
+
+    video.onloadedmetadata = () => {
+      video.currentTime = Math.min(1, video.duration * 0.1 || 0.5);
+    };
+
+    video.onseeked = () => {
+      clearTimeout(timeout);
       try {
-        const canvas = document.createElement('canvas');
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvas.getContext('2d').drawImage(video, 0, 0);
-        const img = document.createElement('img');
-        img.src = canvas.toDataURL('image/jpeg', 0.8);
-        img.alt = f.name;
-        const placeholder = container.querySelector('.video-placeholder');
-        if (placeholder) placeholder.replaceWith(img);
-      } catch (e) { /* CORS or codec fail — keep placeholder */ }
-    });
-    video.addEventListener('error', () => { /* keep placeholder */ });
+        const c = document.createElement('canvas');
+        c.width = video.videoWidth || 640;
+        c.height = video.videoHeight || 360;
+        c.getContext('2d').drawImage(video, 0, 0, c.width, c.height);
+        const dataUrl = c.toDataURL('image/jpeg', 0.75);
+        video.src = '';
+        resolve(dataUrl);
+      } catch (e) { video.src = ''; resolve(null); }
+    };
+
+    video.onerror = () => { clearTimeout(timeout); resolve(null); };
+    video.src = url;
   });
 }
 
