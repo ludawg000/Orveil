@@ -176,9 +176,9 @@
     /* Phase 2: Full room view — hold here briefly */
     35% { transform: scale(1) translateY(0); filter: blur(0) brightness(1); }
     60% { transform: scale(1) translateY(0); filter: blur(0) brightness(1); }
-    /* Phase 3: Zoom into the smaller computer screen */
+    /* Phase 3: Zoom into the computer screen (sits just above center) */
     100% {
-      transform: scale(5.5) translate(0%, -26%);
+      transform: scale(5) translate(0%, -8%);
       filter: blur(0) brightness(1);
     }
   }
@@ -187,7 +187,7 @@
   }
   /* After zoom completes, lock on the screen */
   .tv-frame.zoomed-in {
-    transform: scale(5.5) translate(0%, -26%);
+    transform: scale(5) translate(0%, -8%);
   }
 
   /* === 3D ROOM — straight-on view from doorway === */
@@ -357,10 +357,10 @@
     pointer-events: none;
   }
 
-  /* === BOOKSHELF (left of desk, against back wall) === */
+  /* === BOOKSHELF (left of desk, against back wall, on floor) === */
   .room-bookshelf {
-    bottom: 28%; left: 12%; z-index: 3;
-    width: 13%; height: 40%;
+    top: 32%; left: 12%; z-index: 3;
+    width: 13%; bottom: 28%;
   }
   /* Bookshelf body — tall wooden unit against wall */
   .bookshelf-body {
@@ -418,8 +418,8 @@
 
   /* === LAUNDRY HAMPER === */
   .laundry-hamper {
-    bottom: 28%; right: 12%; z-index: 4;
-    width: 40px; height: 55px;
+    top: 48%; right: 14%; z-index: 4;
+    width: 35px; bottom: 28%;
   }
   .hamper-body {
     position: absolute; bottom: 0; left: 0; right: 0; height: 85%;
@@ -473,29 +473,31 @@
   /* =========================================
      DESK — the centerpiece, 3D angled
      ========================================= */
+  /* Desk sits on the floor against the wall.
+     The SURFACE is at the top of this container.
+     Legs hang down. Computer sits ON TOP. */
   .room-desk {
-    bottom: 28%; left: 30%; right: 30%; z-index: 8;
-    height: 30%;
-    transform-style: preserve-3d;
+    top: 58%; left: 30%; right: 30%; z-index: 8;
+    height: 14%;
   }
-  /* Desk surface — horizontal surface, slight perspective */
+  /* Desk surface — the flat top */
   .desk-top {
-    position: absolute; top: 0; left: 0; right: 0; height: 10px;
+    position: absolute; top: 0; left: 0; right: 0; height: 8px;
     background: linear-gradient(180deg, #3a3028 0%, #342a22 100%);
     border-radius: 2px;
     box-shadow:
       0 2px 8px rgba(0,0,0,0.6),
       inset 0 1px 0 rgba(255,255,255,0.06);
   }
-  /* Desk front face — the thick visible edge below the surface */
+  /* Desk front edge */
   .desk-top::after {
-    content: ''; position: absolute; top: 100%; left: 0; right: 0; height: 8px;
+    content: ''; position: absolute; top: 100%; left: 0; right: 0; height: 6px;
     background: linear-gradient(180deg, #2e2620 0%, #261e18 100%);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.5);
   }
-  /* Desk legs */
+  /* Desk legs — hang down from surface to floor */
   .desk-leg {
-    position: absolute; width: 6px; top: 18px; bottom: 0;
+    position: absolute; width: 5px; top: 14px; bottom: 0;
     background: linear-gradient(90deg, #1e1a14, #28221c, #1e1a14);
     box-shadow: 2px 2px 6px rgba(0,0,0,0.5);
   }
@@ -539,9 +541,9 @@
     position: absolute; bottom: 7px; left: 2px; right: 2px; height: 10px;
     background: rgba(230,210,170,0.2); border-radius: 1px;
   }
-  /* Bottles sit on desk surface — bottom aligned to top of desk */
-  .beer-bottle.bb1 { right: 8%; bottom: calc(100% - 14px); }
-  .beer-bottle.bb2 { right: 18%; bottom: calc(100% - 12px); }
+  /* Bottles sit on desk surface */
+  .beer-bottle.bb1 { right: 8%; bottom: 100%; }
+  .beer-bottle.bb2 { right: 18%; bottom: 100%; }
 
   /* Cable, pen, chip bag on desk */
   .desk-cable { position: absolute; z-index: 4; pointer-events: none; border-radius: 50%; }
@@ -575,9 +577,10 @@
      =========================== */
   .mac-computer {
     position: absolute; z-index: 10;
-    width: 60%;
-    aspect-ratio: 4 / 5;
-    left: 50%; bottom: calc(100% - 10px);
+    width: 55%;
+    aspect-ratio: 5 / 4;
+    /* Bottom of computer rests on the desk surface (top of container) */
+    left: 50%; bottom: 100%;
     transform: translateX(-50%);
   }
   /* Glow from screen on the desk surface */
@@ -667,9 +670,10 @@
   /* Keyboard in front of computer on desk */
   .desk-keyboard {
     position: absolute; z-index: 11;
-    width: 40%; max-width: 140px;
-    left: 50%; bottom: calc(100% + 4px);
+    width: 35%; max-width: 120px;
+    left: 50%; bottom: 100%;
     transform: translateX(-50%);
+    margin-bottom: 2px;
     background: linear-gradient(180deg, #c8bca8, #b8aa94);
     border-radius: 3px; padding: 5px 7px 7px;
     box-shadow: 2px 3px 10px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2);
