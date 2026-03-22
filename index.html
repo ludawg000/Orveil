@@ -371,32 +371,72 @@
     border-radius: 0 0 50% 50%;
   }
 
-  /* === POSTERS on wall === */
+  /* === POSTERS on wall behind computer === */
   .room-poster {
-    top: 6%; left: 12%; width: 70px; height: 90px;
-    background: #2a2420; z-index: 1;
-    transform: rotate(-1deg);
+    top: 5%; left: 32%; width: 65px; height: 85px;
+    background: #1a1a1a; z-index: 1;
+    transform: rotate(-1.5deg);
     box-shadow: 2px 3px 10px rgba(0,0,0,0.7);
-    border: 1px solid #3a3228;
+    border: 1px solid #2a2620;
   }
+  /* Nirvana poster — yellow smiley on black */
+  .room-poster .room-poster-art {
+    position: absolute; inset: 3px;
+    background: #0a0a0a;
+  }
+  /* Smiley face */
+  .room-poster .room-poster-art::before {
+    content: ''; position: absolute; top: 22%; left: 50%; transform: translateX(-50%);
+    width: 28px; height: 28px; border-radius: 50%;
+    background: #d4a820;
+    box-shadow: inset 0 0 0 2px #b89018;
+  }
+  /* NIRVANA text */
+  .room-poster .room-poster-art::after {
+    content: 'NIRVANA'; position: absolute; bottom: 15%; left: 0; right: 0;
+    text-align: center; font-family: 'Courier New', monospace;
+    font-size: 5px; font-weight: 700; letter-spacing: 2px;
+    color: #d4a820;
+  }
+  /* Smiley eyes — X shapes via the tape element */
+  .room-poster .room-poster-tape {
+    position: absolute; top: calc(22% + 8px); left: 50%; transform: translateX(-50%);
+    width: 16px; height: 4px; z-index: 2;
+    background: none; border: none; border-radius: 0;
+  }
+  .room-poster .room-poster-tape::before {
+    content: '✕  ✕'; position: absolute; top: 0; left: 0;
+    font-size: 4px; color: #0a0a0a; font-weight: 900;
+    letter-spacing: 4px;
+  }
+
+  /* Sublime poster — sun logo on blue */
   .room-poster.p2 {
-    left: auto; right: 15%; top: 5%; width: 55px; height: 72px;
-    transform: rotate(1.5deg); background: #1a2030;
+    left: auto; right: 32%; top: 4%; width: 58px; height: 78px;
+    transform: rotate(1deg); background: #0a0a0a;
   }
-  .room-poster-tape {
+  .room-poster.p2 .room-poster-art {
+    background: linear-gradient(180deg, #0c1830 0%, #0a1228 50%, #080e20 100%);
+  }
+  /* Sun circle */
+  .room-poster.p2 .room-poster-art::before {
+    content: ''; position: absolute; top: 18%; left: 50%; transform: translateX(-50%);
+    width: 26px; height: 26px; border-radius: 50%;
+    background: radial-gradient(circle, #e8a020 0%, #d08818 60%, #a86810 100%);
+    box-shadow: 0 0 8px rgba(220,140,30,0.3);
+  }
+  /* SUBLIME text */
+  .room-poster.p2 .room-poster-art::after {
+    content: 'SUBLIME'; position: absolute; bottom: 12%; left: 0; right: 0;
+    text-align: center; font-family: 'Courier New', monospace;
+    font-size: 5px; font-weight: 700; letter-spacing: 1.5px;
+    color: #e8a020;
+  }
+  .room-poster.p2 .room-poster-tape {
     position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
-    width: 20px; height: 7px; background: rgba(220,200,160,0.2); border-radius: 1px;
+    width: 18px; height: 6px; background: rgba(220,200,160,0.15); border-radius: 1px;
   }
-  .room-poster-art {
-    position: absolute; inset: 4px;
-    background: linear-gradient(135deg, #3a2818, #201408);
-  }
-  .room-poster.p2 .room-poster-art { background: linear-gradient(135deg, #182838, #0a1420); }
-  .room-poster-art::after {
-    content: ''; position: absolute; top: 25%; left: 10%; right: 10%; height: 3px;
-    background: #c0392b; opacity: 0.5;
-  }
-  .room-poster.p2 .room-poster-art::after { background: #2980b9; top: 40%; }
+  .room-poster.p2 .room-poster-tape::before { display: none; }
 
   /* Shelf */
   .room-shelf {
@@ -626,9 +666,9 @@
     position: absolute; bottom: 7px; left: 2px; right: 2px; height: 10px;
     background: rgba(230,210,170,0.2); border-radius: 1px;
   }
-  /* Bottles sit on desk — positioned to align with 3D tilted surface */
-  .beer-bottle.bb1 { right: 10%; top: -32px; }
-  .beer-bottle.bb2 { right: 22%; top: -30px; }
+  /* Bottles sit on desk surface */
+  .beer-bottle.bb1 { right: 8%; bottom: calc(100% - 20px); }
+  .beer-bottle.bb2 { right: 20%; bottom: calc(100% - 20px); }
 
   /* Cable, pen, chip bag on desk */
   .desk-cable { position: absolute; z-index: 4; pointer-events: none; border-radius: 50%; }
@@ -663,8 +703,8 @@
   .mac-computer {
     position: absolute; z-index: 10;
     width: 40%;
-    /* Sits on the desk surface — top-anchored so it grows upward */
-    left: 50%; bottom: calc(100% - 18px);
+    /* Sits on the desk surface */
+    left: 50%; bottom: calc(100% - 20px);
     transform: translateX(-50%);
   }
   /* Glow from screen on the desk surface */
@@ -754,7 +794,7 @@
   /* Desk lamp — tall brass with moody orange glow, proportional to computer */
   .desk-lamp {
     position: absolute; z-index: 11;
-    left: 8%; top: -70px;
+    left: 6%; bottom: calc(100% - 20px);
   }
   /* Shade — wide dark shade with warm orange inner glow */
   .lamp-shade {
