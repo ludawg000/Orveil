@@ -423,25 +423,24 @@
   }
   .logo-upload-hint { font-size: 0.6rem; color: var(--g400); letter-spacing: 0.03em; }
   .logo-preview {
-    position: relative; display: flex; align-items: center; gap: 1rem; width: 100%;
+    display: flex; flex-direction: column; align-items: center; gap: 0.8rem; width: 100%;
   }
   .logo-preview img {
-    max-height: 80px; max-width: 260px; object-fit: contain; display: block;
+    max-height: 80px; max-width: 320px; object-fit: contain; display: block;
     cursor: pointer; transition: opacity 0.2s;
   }
   .logo-preview img:hover { opacity: 0.7; }
   .logo-preview-actions {
-    display: flex; flex-direction: column; gap: 0.3rem;
+    display: flex; gap: 0.4rem; align-items: center;
   }
   .logo-action-btn {
-    font-family: var(--sans); font-size: 0.6rem; font-weight: 400;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    padding: 0; border: none; background: none;
-    color: var(--g400); cursor: pointer; transition: color 0.2s;
-    text-align: left;
+    font-family: var(--sans); font-size: 0.55rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.4rem 0.9rem; border: none;
+    background: var(--black); color: var(--white);
+    cursor: pointer; transition: all 0.2s;
   }
-  .logo-action-btn:hover { color: var(--black); }
-  .logo-action-btn.remove:hover { color: #c44; }
+  .logo-action-btn:hover { background: var(--white); color: var(--black); }
 
   /* LOGO CROP MODAL */
   .crop-overlay {
