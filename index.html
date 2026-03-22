@@ -1132,10 +1132,31 @@ async function sendDelivery() {
 
   try { await navigator.clipboard.writeText(galleryUrl); } catch {}
 
+  // Send email via API
+  btn.textContent = 'Sending...';
+  const style = document.querySelector('.delivery-opt.selected')?.dataset.style || 'standard';
+  const message = deliveryMessages[style]?.(currentProject?.name) || '';
+
+  try {
+    const resp = await fetch('/api/send-delivery', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        projectName: currentProject.name,
+        message,
+        galleryUrl
+      })
+    });
+    const result = await resp.json();
+    if (!resp.ok) throw new Error(result.error || 'Send failed');
+    showToast(`Gallery delivered to ${email}!`);
+  } catch (err) {
+    showToast(`Link created but email failed: ${err.message}`);
+  }
+
   btn.textContent = 'Resend';
   btn.disabled = false;
-
-  showToast(`Gallery link created and copied! Delivery noted for ${email}`);
 }
 
 function copyGalleryLink() {
