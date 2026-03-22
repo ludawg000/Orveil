@@ -125,72 +125,79 @@
 
   /* MANAGE MODE BTN */
   .manage-btn {
-    font-family: 'Courier New', monospace; font-size: 0.72rem; font-weight: 700;
-    letter-spacing: 0.1em; text-transform: uppercase;
+    font-family: var(--serif); font-size: 0.72rem; font-weight: 400;
+    letter-spacing: 0.06em; font-style: italic;
     background: none; color: var(--g400);
     border: 1px solid var(--g200); padding: 0.55rem 1rem; cursor: pointer;
     transition: all 0.3s;
   }
   .manage-btn:hover { border-color: var(--black); color: var(--black); }
   .manage-btn.active {
-    background: #1a1a1a; color: #33ff33; border-color: #33ff33;
-    text-shadow: 0 0 6px #33ff33;
+    background: #3d2b1a; color: #f5e6d0; border-color: #6b4c30;
   }
 
-  /* RETRO TV MODE */
+  /* RETRO TV MODE — warm vintage */
   .retro-tv .projects-grid {
-    background: #0a0a0a; border-color: #333;
-    border-radius: 18px; overflow: hidden;
-    position: relative; box-shadow: 0 0 40px rgba(0,255,0,0.05), inset 0 0 80px rgba(0,0,0,0.4);
+    background: #1c1410; border-color: #6b4c30;
+    border-radius: 24px; overflow: hidden;
+    position: relative;
+    border: 8px solid #5a3d22;
+    box-shadow:
+      0 0 0 4px #3d2b1a,
+      0 0 0 8px #2a1c0e,
+      0 8px 30px rgba(0,0,0,0.5),
+      inset 0 0 60px rgba(0,0,0,0.3);
   }
   .retro-tv .projects-grid::before {
     content: ''; position: absolute; inset: 0; z-index: 5; pointer-events: none;
     background: repeating-linear-gradient(
-      0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px
+      0deg, transparent, transparent 3px, rgba(245,200,140,0.03) 3px, rgba(245,200,140,0.03) 4px
     );
   }
   .retro-tv .projects-grid::after {
     content: ''; position: absolute; inset: 0; z-index: 4; pointer-events: none;
-    background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.6) 100%);
+    background: radial-gradient(ellipse at center, rgba(245,200,140,0.04) 0%, transparent 50%, rgba(0,0,0,0.5) 100%);
   }
   .retro-tv .project-card {
-    background: #111; border: 1px solid #2a2a2a;
+    background: #1c1410; border: 1px solid #3d2b1a;
     position: relative;
   }
-  .retro-tv .project-card:hover { background: #1a1a1a; }
+  .retro-tv .project-card:hover { background: #2a1c0e; }
   .retro-tv .project-name {
-    font-family: 'Courier New', monospace; color: #33ff33;
-    text-shadow: 0 0 4px #33ff33;
+    font-family: var(--serif); color: #f5e6d0; font-style: italic;
   }
   .retro-tv .project-meta {
-    font-family: 'Courier New', monospace; color: #33ff33; opacity: 0.5;
+    color: #c8a882; opacity: 0.6;
   }
   .retro-tv .project-thumb-placeholder {
-    font-family: 'Courier New', monospace; color: #33ff33; opacity: 0.4;
+    color: #c8a882; opacity: 0.4;
   }
-  .retro-tv .project-thumb { border: 1px solid #2a2a2a; }
-  .retro-tv .empty-state { background: #111; }
-  .retro-tv .empty-title { color: #33ff33; font-family: 'Courier New', monospace; text-shadow: 0 0 6px #33ff33; }
-  .retro-tv .empty-sub { color: #33ff33; opacity: 0.5; font-family: 'Courier New', monospace; }
+  .retro-tv .project-thumb {
+    border: 1px solid #3d2b1a;
+    filter: sepia(0.2) brightness(0.9);
+  }
+  .retro-tv .empty-state { background: #1c1410; }
+  .retro-tv .empty-title { color: #f5e6d0; font-family: var(--serif); }
+  .retro-tv .empty-sub { color: #c8a882; opacity: 0.5; }
 
   /* Manage action buttons on cards */
   .manage-actions {
     display: none; position: absolute; inset: 0;
-    z-index: 10; background: rgba(0,0,0,0.8); border-radius: 0;
+    z-index: 10; background: rgba(20,12,6,0.85);
     flex-direction: column; align-items: center; justify-content: center; gap: 0.6rem;
   }
   .retro-tv .project-card { position: relative; }
   .retro-tv .project-card:hover .manage-actions { display: flex; }
   .manage-action-btn {
-    font-family: 'Courier New', monospace; font-size: 0.68rem; font-weight: 700;
+    font-family: var(--sans); font-size: 0.65rem; font-weight: 500;
     letter-spacing: 0.1em; text-transform: uppercase;
-    padding: 0.6rem 1.4rem; border: 1px solid; cursor: pointer;
-    background: none; transition: all 0.2s; width: 160px; text-align: center;
+    padding: 0.6rem 1.4rem; border: none; cursor: pointer;
+    transition: all 0.2s; width: 160px; text-align: center;
   }
-  .manage-delete-btn { color: #ff4444; border-color: #ff4444; }
-  .manage-delete-btn:hover { background: #ff4444; color: #0a0a0a; }
-  .manage-invite-btn { color: #33ff33; border-color: #33ff33; }
-  .manage-invite-btn:hover { background: #33ff33; color: #0a0a0a; }
+  .manage-delete-btn { background: #c0392b; color: #fff; }
+  .manage-delete-btn:hover { background: #e74c3c; }
+  .manage-invite-btn { background: #f5e6d0; color: #2a1c0e; }
+  .manage-invite-btn:hover { background: #fff; }
 
   /* EMPTY STATE */
   .empty-state {
@@ -1105,13 +1112,13 @@
 
 <!-- INVITE COLLABORATOR MODAL -->
 <div class="modal-overlay" id="invite-modal">
-  <div class="modal" style="background:#111;border:1px solid #33ff33">
-    <div class="modal-title" style="font-family:'Courier New',monospace;color:#33ff33;text-shadow:0 0 6px #33ff33">Invite Collaborator</div>
-    <div style="font-family:'Courier New',monospace;font-size:0.72rem;color:#33ff33;opacity:0.5;margin-bottom:1rem" id="invite-project-name"></div>
-    <input class="modal-input" id="invite-email-input" type="email" placeholder="collaborator@email.com" style="font-family:'Courier New',monospace;background:#0a0a0a;color:#33ff33;border-color:#2a2a2a">
+  <div class="modal" style="background:#1c1410;border:2px solid #6b4c30">
+    <div class="modal-title" style="color:#f5e6d0">Invite Collaborator</div>
+    <div style="font-size:0.72rem;color:#c8a882;opacity:0.6;margin-bottom:1rem" id="invite-project-name"></div>
+    <input class="modal-input" id="invite-email-input" type="email" placeholder="collaborator@email.com" style="background:#2a1c0e;color:#f5e6d0;border-color:#3d2b1a">
     <div class="modal-actions">
-      <button class="modal-cancel" onclick="closeInviteModal()" style="font-family:'Courier New',monospace;color:#33ff33;border-color:#2a2a2a">Cancel</button>
-      <button class="modal-confirm" onclick="sendInvite()" style="font-family:'Courier New',monospace;background:#33ff33;color:#0a0a0a">Send Invite</button>
+      <button class="modal-cancel" onclick="closeInviteModal()" style="color:#c8a882;border-color:#3d2b1a">Cancel</button>
+      <button class="modal-confirm" onclick="sendInvite()" style="background:#f5e6d0;color:#2a1c0e">Send Invite</button>
     </div>
   </div>
 </div>
@@ -1131,12 +1138,12 @@
 
 <!-- DELETE CONFIRM MODAL -->
 <div class="modal-overlay" id="delete-project-modal">
-  <div class="modal" style="background:#111;border:1px solid #ff4444">
-    <div class="modal-title" style="font-family:'Courier New',monospace;color:#ff4444;text-shadow:0 0 6px #ff4444">Delete Project</div>
-    <div style="font-family:'Courier New',monospace;font-size:0.82rem;color:#ff4444;opacity:0.8;margin-bottom:1rem">This will permanently delete <strong id="delete-project-name"></strong> and all its files. This cannot be undone.</div>
+  <div class="modal" style="background:#1c1410;border:2px solid #c0392b">
+    <div class="modal-title" style="color:#e74c3c">Delete Project</div>
+    <div style="font-size:0.82rem;color:#e74c3c;opacity:0.8;margin-bottom:1rem">This will permanently delete <strong id="delete-project-name"></strong> and all its files. This cannot be undone.</div>
     <div class="modal-actions">
-      <button class="modal-cancel" onclick="closeDeleteModal()" style="font-family:'Courier New',monospace;color:#ff4444;border-color:#2a2a2a">Cancel</button>
-      <button class="modal-confirm" onclick="confirmDeleteProject()" style="font-family:'Courier New',monospace;background:#ff4444;color:#0a0a0a">Delete Forever</button>
+      <button class="modal-cancel" onclick="closeDeleteModal()" style="color:#c8a882;border-color:#3d2b1a">Cancel</button>
+      <button class="modal-confirm" onclick="confirmDeleteProject()" style="background:#c0392b;color:#fff">Delete Forever</button>
     </div>
   </div>
 </div>
@@ -2646,7 +2653,7 @@ function toggleManageMode() {
   if (manageMode) {
     main.classList.add('retro-tv');
     btn.classList.add('active');
-    btn.textContent = '< Exit >';
+    btn.textContent = 'Done';
   } else {
     main.classList.remove('retro-tv');
     btn.classList.remove('active');
