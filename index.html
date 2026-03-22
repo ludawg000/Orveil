@@ -1382,12 +1382,17 @@ async function loadProjects() {
     }
 
     const cards = await Promise.all(projects.map(async p => {
-      const { data: files } = await sb.from('files').select('path,type').eq('project_id', p.id).limit(1);
       let thumbHtml = `<div class="project-thumb-placeholder">${p.file_count || 0} files</div>`;
-      if (files?.[0]?.type?.startsWith('image/')) {
-        const thumbUrl = `${SUPABASE_URL}/storage/v1/object/public/projects/${files[0].path}`;
-        thumbHtml = `<img src="${thumbUrl}" alt="" loading="lazy">`;
-      }
+      try {
+        const { data: files } = await sb.from('files').select('path,type,thumb_path').eq('project_id', p.id).limit(1);
+        if (files?.[0]?.type?.startsWith('image/')) {
+          const thumbUrl = `${SUPABASE_URL}/storage/v1/object/public/projects/${files[0].path}`;
+          thumbHtml = `<img src="${thumbUrl}" alt="" loading="lazy">`;
+        } else if (files?.[0]?.thumb_path) {
+          const thumbUrl = `${SUPABASE_URL}/storage/v1/object/public/projects/${files[0].thumb_path}`;
+          thumbHtml = `<img src="${thumbUrl}" alt="" loading="lazy">`;
+        }
+      } catch {}
       return `<div class="project-card" onclick="openProject('${p.id}','${escHtml(p.name)}')">
         <div class="project-thumb">${thumbHtml}</div>
         <div class="project-name">${escHtml(p.name)}</div>
@@ -1560,13 +1565,15 @@ async function deleteFile(fileId, path, size, e) {
 
 // ─── DRAG & DROP ───
 const dropZone = document.getElementById('drop-zone');
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
-dropZone.addEventListener('drop', e => {
-  e.preventDefault();
-  dropZone.classList.remove('dragover');
-  handleFileSelect(e.dataTransfer.files);
-});
+if (dropZone) {
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    handleFileSelect(e.dataTransfer.files);
+  });
+}
 
 // ─── DELIVERY ───
 let currentGallerySettings = {
