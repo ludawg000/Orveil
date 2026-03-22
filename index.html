@@ -176,18 +176,18 @@
     /* Phase 2: Full room view — hold here briefly */
     35% { transform: scale(1) translateY(0); filter: blur(0) brightness(1); }
     60% { transform: scale(1) translateY(0); filter: blur(0) brightness(1); }
-    /* Phase 3: Zoom into the computer screen */
+    /* Phase 3: Zoom into the computer screen (upper-center of view) */
     100% {
-      transform: scale(3.2) translate(-2%, -18%);
+      transform: scale(3.5) translate(0%, -30%);
       filter: blur(0) brightness(1);
     }
   }
   .tv-frame.zooming-in {
     animation: roomZoomIn 5s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
   }
-  /* After zoom completes, only the screen area is visible */
+  /* After zoom completes, lock on the screen */
   .tv-frame.zoomed-in {
-    transform: scale(3.2) translate(-2%, -18%);
+    transform: scale(3.5) translate(0%, -30%);
   }
 
   /* === 3D ROOM — straight-on view from doorway === */
