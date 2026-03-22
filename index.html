@@ -179,42 +179,89 @@
     animation: roomZoomIn 3s cubic-bezier(0.22, 0.9, 0.36, 1) forwards;
   }
 
-  /* === 3D ROOM — isometric diorama view === */
+  /* === 3D ROOM — immersive diorama view === */
   .room-scene {
     position: absolute; inset: 0;
     overflow: hidden;
-    /* The whole room is tilted toward the viewer */
-    perspective: 1200px;
-    perspective-origin: 50% 35%;
+    perspective: 900px;
+    perspective-origin: 50% 40%;
   }
 
-  /* Room inner container — tilted like looking down into a box */
   .room-scene > * { position: absolute; }
 
-  /* === BACK WALL === */
+  /* === BACK WALL — takes up more space for bigger room feel === */
   .room-wall {
-    top: 0; left: 0; right: 0; height: 50%;
+    top: 0; left: 0; right: 0; height: 62%;
     background:
-      linear-gradient(180deg, #141210 0%, #1a1816 20%, #201e1a 50%, #282520 80%, #302c28 100%);
+      linear-gradient(180deg, #141210 0%, #1a1816 15%, #201e1a 40%, #282520 70%, #302c28 100%);
     z-index: 0;
   }
   .room-wall::before {
     content: ''; position: absolute; inset: 0;
     background:
-      /* Side shadows for room corners */
-      linear-gradient(90deg, rgba(0,0,0,0.5) 0%, transparent 15%, transparent 85%, rgba(0,0,0,0.5) 100%),
-      /* Screen glow hitting wall */
-      radial-gradient(ellipse at 55% 80%, rgba(51,255,51,0.03) 0%, transparent 30%),
-      /* Stains */
-      radial-gradient(ellipse at 22% 55%, rgba(120,90,40,0.06) 0%, transparent 25%),
-      radial-gradient(ellipse at 78% 35%, rgba(100,80,40,0.04) 0%, transparent 20%);
+      linear-gradient(90deg, rgba(0,0,0,0.5) 0%, transparent 12%, transparent 88%, rgba(0,0,0,0.5) 100%),
+      radial-gradient(ellipse at 55% 85%, rgba(51,255,51,0.035) 0%, transparent 25%),
+      radial-gradient(ellipse at 22% 50%, rgba(120,90,40,0.06) 0%, transparent 25%),
+      radial-gradient(ellipse at 78% 30%, rgba(100,80,40,0.04) 0%, transparent 20%);
     pointer-events: none;
   }
   /* Baseboard */
   .room-wall::after {
-    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 12px;
-    background: linear-gradient(180deg, #22201c, #1a1816);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 14px;
+    background: linear-gradient(180deg, #24221e, #1c1a16);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+  }
+
+  /* === WINDOW on wall === */
+  .room-window {
+    position: absolute; top: 6%; right: 18%; width: 16%; height: 34%;
+    z-index: 1;
+  }
+  /* Window frame */
+  .window-frame {
+    position: absolute; inset: 0;
+    border: 4px solid #2a2620;
+    border-radius: 2px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.03);
+    z-index: 2;
+  }
+  /* Window cross bars */
+  .window-frame::before {
+    content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 3px;
+    background: #2a2620; transform: translateX(-50%);
+  }
+  .window-frame::after {
+    content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 3px;
+    background: #2a2620; transform: translateY(-50%);
+  }
+  /* Night sky through window */
+  .window-glass {
+    position: absolute; inset: 4px;
+    background: linear-gradient(180deg, #06080e 0%, #0a0e18 40%, #0e1220 100%);
+    z-index: 1;
+  }
+  /* Moon glow */
+  .window-glass::before {
+    content: ''; position: absolute; top: 15%; right: 20%;
+    width: 10px; height: 10px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(200,210,230,0.6) 0%, rgba(200,210,230,0.1) 50%, transparent 70%);
+  }
+  /* Stars */
+  .window-glass::after {
+    content: ''; position: absolute; top: 30%; left: 25%;
+    width: 2px; height: 2px; border-radius: 50%;
+    background: rgba(255,255,255,0.4);
+    box-shadow:
+      12px -8px 0 rgba(255,255,255,0.3),
+      -6px 5px 0 rgba(255,255,255,0.2),
+      20px 3px 0 rgba(255,255,255,0.25),
+      8px 12px 0 rgba(255,255,255,0.15);
+  }
+  /* Moonlight spill on wall around window */
+  .room-window::after {
+    content: ''; position: absolute; top: -20%; left: -30%; right: -30%; bottom: -20%;
+    background: radial-gradient(ellipse, rgba(100,120,160,0.04) 0%, transparent 60%);
+    pointer-events: none; z-index: 0;
   }
 
   /* Ceiling light */
@@ -231,15 +278,15 @@
 
   /* === POSTERS on wall === */
   .room-poster {
-    top: 6%; left: 6%; width: 65px; height: 85px;
-    background: #2c2620; z-index: 1;
+    top: 4%; left: 5%; width: 80px; height: 105px;
+    background: #3a3228; z-index: 1;
     transform: rotate(-2deg);
-    box-shadow: 2px 3px 8px rgba(0,0,0,0.7);
-    border: 1px solid #3a3228;
+    box-shadow: 2px 4px 12px rgba(0,0,0,0.7);
+    border: 1px solid #4a4238;
   }
   .room-poster.p2 {
-    left: auto; right: 10%; top: 4%; width: 50px; height: 68px;
-    transform: rotate(2deg); background: #1a2030;
+    left: auto; right: 40%; top: 3%; width: 60px; height: 82px;
+    transform: rotate(2deg); background: #1e2838;
   }
   .room-poster-tape {
     position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
@@ -258,20 +305,20 @@
 
   /* Shelf */
   .room-shelf {
-    top: 9%; left: 25%; width: 90px; height: 7px;
-    background: linear-gradient(180deg, #3a3228, #2a2420);
-    z-index: 1; box-shadow: 0 3px 8px rgba(0,0,0,0.6);
-    display: flex; align-items: flex-end; gap: 3px; padding: 0 4px;
+    top: 8%; left: 22%; width: 110px; height: 8px;
+    background: linear-gradient(180deg, #4a4038, #3a3228);
+    z-index: 1; box-shadow: 0 4px 10px rgba(0,0,0,0.6);
+    display: flex; align-items: flex-end; gap: 3px; padding: 0 5px;
   }
-  .shelf-book { width: 11px; border-radius: 1px 1px 0 0; transform-origin: bottom; }
-  .shelf-book.b1 { height: 20px; background: #5a3a20; transform: rotate(-2deg); }
-  .shelf-book.b2 { height: 15px; background: #2a4a2a; }
-  .shelf-book.b3 { height: 24px; background: #2a2a5a; transform: rotate(3deg); }
-  .shelf-book.b4 { height: 17px; background: #5a2a2a; transform: rotate(-1deg); }
+  .shelf-book { width: 13px; border-radius: 1px 1px 0 0; transform-origin: bottom; }
+  .shelf-book.b1 { height: 24px; background: #6a4a28; transform: rotate(-2deg); }
+  .shelf-book.b2 { height: 18px; background: #3a5a3a; }
+  .shelf-book.b3 { height: 28px; background: #3a3a6a; transform: rotate(3deg); }
+  .shelf-book.b4 { height: 20px; background: #6a3a3a; transform: rotate(-1deg); }
 
   /* === FLOOR — receding ground plane === */
   .room-floor {
-    top: 50%; left: 0; right: 0; bottom: 0;
+    top: 62%; left: 0; right: 0; bottom: 0;
     background:
       repeating-linear-gradient(90deg, transparent 0px, transparent 90px, rgba(0,0,0,0.04) 90px, rgba(0,0,0,0.04) 91px),
       linear-gradient(180deg, #1c1a14 0%, #18160f 40%, #14120e 70%, #100e0b 100%);
@@ -286,72 +333,98 @@
     background: linear-gradient(180deg, rgba(0,0,0,0.5) 0%, transparent 100%);
   }
 
-  /* === BED (left side, against wall) === */
+  /* === BED (left side, against wall) — 3D with visible legs === */
   .room-bed {
-    bottom: 5%; left: 1%; z-index: 3;
-    width: 26%; height: 40%;
+    bottom: 0; left: 0; z-index: 3;
+    width: 28%; height: 48%;
+    transform-style: preserve-3d;
   }
+  /* Bed legs — visible underneath */
+  .bed-leg {
+    position: absolute; width: 8px; height: 28px;
+    background: linear-gradient(90deg, #2a2218, #3e3428, #2a2218);
+    border-radius: 2px;
+    box-shadow: 2px 3px 6px rgba(0,0,0,0.7);
+  }
+  .bed-leg.bl1 { bottom: 2%; left: 4%; }
+  .bed-leg.bl2 { bottom: 2%; left: 26%; }
+  .bed-leg.bl3 { bottom: 2%; right: 4%; }
+  .bed-leg.bl4 { bottom: 2%; right: 26%; }
+  /* The bed platform sits above the legs */
   .bed-frame {
-    position: absolute; inset: 0;
+    position: absolute; left: 0; right: 0; top: 0; bottom: 14%;
     background: linear-gradient(180deg, #3e3428 0%, #342a22 100%);
     border-radius: 3px;
-    box-shadow: 5px 5px 18px rgba(0,0,0,0.7);
+    box-shadow: 5px 8px 24px rgba(0,0,0,0.7);
+    /* Slight 3D tilt — viewing from above at an angle */
+    transform: perspective(600px) rotateX(12deg);
+    transform-origin: top center;
+    transform-style: preserve-3d;
   }
-  /* Headboard flat against wall (top edge) */
+  /* Headboard — taller piece at the wall end (top) */
   .bed-frame::before {
-    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 18%;
-    background: linear-gradient(180deg, #4a3e32 0%, #403428 100%);
-    border-radius: 3px 3px 0 0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    content: ''; position: absolute; top: -20px; left: -2px; right: -2px; height: 32px;
+    background: linear-gradient(180deg, #5a4e40 0%, #4a3e32 40%, #403428 100%);
+    border-radius: 4px 4px 0 0;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
   }
-  /* Side rail visible */
+  /* Side rail — visible edge of bed frame */
   .bed-frame::after {
-    content: ''; position: absolute; top: 0; right: -4px; bottom: 0; width: 4px;
-    background: linear-gradient(180deg, #3e3428, #342a22);
-    border-radius: 0 2px 2px 0;
-    box-shadow: 2px 0 4px rgba(0,0,0,0.3);
+    content: ''; position: absolute; bottom: -10px; left: 0; right: 0; height: 10px;
+    background: linear-gradient(180deg, #342a22, #2a2218);
+    border-radius: 0 0 3px 3px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
   }
   .bed-mattress {
-    position: absolute; top: 16%; left: 4%; right: 4%; bottom: 6%;
-    background: linear-gradient(180deg, #dcd4c4 0%, #d0c8b8 100%);
-    border-radius: 2px;
-    box-shadow: inset 0 2px 6px rgba(0,0,0,0.1);
+    position: absolute; top: 8%; left: 5%; right: 5%; bottom: 18%;
+    background: linear-gradient(180deg, #e8e0d0 0%, #dcd4c4 40%, #d0c8b8 100%);
+    border-radius: 3px;
+    box-shadow: inset 0 2px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.2);
+    transform: perspective(600px) rotateX(12deg);
+    transform-origin: top center;
   }
   .bed-pillow {
-    position: absolute; top: 18%; left: 8%; width: 36%; height: 14%;
-    background: linear-gradient(135deg, #ece4d8, #dcd4c4);
-    border-radius: 6px;
-    box-shadow: 1px 2px 4px rgba(0,0,0,0.15);
+    position: absolute; top: 12%; left: 10%; width: 32%; height: 10%;
+    background: linear-gradient(135deg, #f0e8dc, #e4dcd0);
+    border-radius: 8px;
+    box-shadow: 1px 2px 5px rgba(0,0,0,0.2);
+    transform: perspective(600px) rotateX(12deg);
+    transform-origin: top center;
   }
   .bed-pillow::after {
-    content: ''; position: absolute; top: 1px; left: 110%; width: 85%; height: 90%;
-    background: linear-gradient(135deg, #e8e0d4, #d8d0c0);
-    border-radius: 6px;
-    box-shadow: 1px 2px 4px rgba(0,0,0,0.12);
+    content: ''; position: absolute; top: 2px; left: 110%; width: 80%; height: 90%;
+    background: linear-gradient(135deg, #ece4d8, #e0d8cc);
+    border-radius: 8px;
+    box-shadow: 1px 2px 5px rgba(0,0,0,0.15);
   }
   .bed-blanket {
-    position: absolute; top: 35%; left: 5%; right: 5%; bottom: 8%;
+    position: absolute; top: 25%; left: 6%; right: 6%; bottom: 18%;
     background: linear-gradient(180deg, #2a3a6a 0%, #1e2e5a 50%, #1a2850 100%);
-    border-radius: 2px;
-    box-shadow: 2px 3px 10px rgba(0,0,0,0.3);
+    border-radius: 3px;
+    box-shadow: 2px 4px 14px rgba(0,0,0,0.4);
+    transform: perspective(600px) rotateX(12deg);
+    transform-origin: top center;
   }
-  /* Blanket pulled back / messy */
+  /* Blanket messy fold */
   .bed-blanket::after {
-    content: ''; position: absolute; top: -6px; right: 0; width: 55%; height: 25%;
-    background: linear-gradient(135deg, #364a7a, #2a3a6a);
-    border-radius: 8px 2px 12px 4px;
+    content: ''; position: absolute; top: -8px; right: 5%; width: 50%; height: 22%;
+    background: linear-gradient(135deg, #3a4e80, #2a3a6a);
+    border-radius: 10px 4px 14px 6px;
     transform: rotate(2deg);
+    box-shadow: 1px 2px 6px rgba(0,0,0,0.3);
   }
   .bed-blanket-fold {
-    position: absolute; top: 32%; left: 5%; width: 55%; height: 8%;
+    position: absolute; top: 22%; left: 6%; width: 50%; height: 6%;
     background: linear-gradient(180deg, #3a4a7a, #2a3a6a);
     border-radius: 2px 14px 2px 2px;
+    transform: perspective(600px) rotateX(12deg);
+    transform-origin: top center;
   }
 
   /* === LAUNDRY HAMPER === */
   .laundry-hamper {
-    bottom: 5%; left: 31%; z-index: 4;
-    width: 48px; height: 65px;
+    bottom: 4%; left: 30%; z-index: 4;
+    width: 52px; height: 72px;
     transform: perspective(400px) rotateY(-6deg);
   }
   .hamper-body {
@@ -384,21 +457,21 @@
   /* Floor clothes */
   .floor-clothes { position: absolute; z-index: 2; pointer-events: none; }
   .floor-clothes.fc1 {
-    bottom: 15%; left: 22%; width: 32px; height: 12px;
-    background: radial-gradient(ellipse, #3a3a5a 30%, #2a2a4a 100%);
+    bottom: 10%; left: 24%; width: 36px; height: 14px;
+    background: radial-gradient(ellipse, #4a4a6a 30%, #2a2a4a 100%);
     border-radius: 40% 50% 50% 45%; transform: rotate(18deg);
     box-shadow: 1px 2px 5px rgba(0,0,0,0.5);
   }
   .floor-clothes.fc2 {
-    bottom: 4%; left: 36%; width: 26px; height: 9px;
-    background: radial-gradient(ellipse, #5a5a5a 30%, #3a3a3a 100%);
+    bottom: 3%; left: 38%; width: 30px; height: 11px;
+    background: radial-gradient(ellipse, #6a6a6a 30%, #4a4a4a 100%);
     border-radius: 50% 40% 45% 50%; transform: rotate(-6deg);
     box-shadow: 1px 1px 4px rgba(0,0,0,0.4);
   }
   .floor-shirt {
-    position: absolute; bottom: 20%; left: 12%; z-index: 2;
-    width: 28px; height: 22px;
-    background: radial-gradient(ellipse at 50% 40%, #d8d0c0 20%, #a8a090 60%, #787068 100%);
+    position: absolute; bottom: 16%; left: 14%; z-index: 2;
+    width: 32px; height: 26px;
+    background: radial-gradient(ellipse at 50% 40%, #e0d8c8 20%, #b0a898 60%, #887870 100%);
     border-radius: 35% 35% 50% 50%; transform: rotate(30deg);
     box-shadow: 1px 2px 5px rgba(0,0,0,0.5);
   }
@@ -407,8 +480,8 @@
      DESK — the centerpiece, 3D angled
      ========================================= */
   .room-desk {
-    top: 30%; right: 2%; z-index: 8;
-    width: 60%; height: 62%;
+    top: 34%; right: 5%; z-index: 8;
+    width: 52%; height: 58%;
     transform-style: preserve-3d;
   }
   /* Desk surface — you see the TOP of it (angled toward viewer) */
@@ -645,8 +718,8 @@
 
   /* === DESK CHAIR === */
   .desk-chair {
-    bottom: 3%; right: 22%; z-index: 7;
-    width: 45px;
+    bottom: 1%; right: 24%; z-index: 7;
+    width: 50px;
     transform: perspective(300px) rotateY(-12deg);
   }
   .chair-back {
@@ -1569,10 +1642,19 @@
           <div class="shelf-book b3"></div>
           <div class="shelf-book b4"></div>
         </div>
+        <!-- Window on wall -->
+        <div class="room-window">
+          <div class="window-glass"></div>
+          <div class="window-frame"></div>
+        </div>
         <!-- Floor -->
         <div class="room-floor"></div>
         <!-- Bed (left side) -->
         <div class="room-bed">
+          <div class="bed-leg bl1"></div>
+          <div class="bed-leg bl2"></div>
+          <div class="bed-leg bl3"></div>
+          <div class="bed-leg bl4"></div>
           <div class="bed-frame"></div>
           <div class="bed-mattress"></div>
           <div class="bed-pillow"></div>
