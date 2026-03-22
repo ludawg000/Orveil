@@ -267,6 +267,179 @@
   .delivery-email-input { width: 100%; font-family: var(--sans); font-size: 0.82rem; padding: 0.75rem 1rem; border: 1px solid var(--g200); background: transparent; color: var(--black); outline: none; margin-bottom: 0.8rem; }
   .delivery-email-input:focus { border-color: var(--black); }
 
+  /* DELIVERY LINK */
+  .delivery-link-box { display: none; margin-bottom: 1rem; }
+  .delivery-link-box.active { display: block; }
+  .delivery-link-label { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--g400); margin-bottom: 0.5rem; }
+  .delivery-link-row { display: flex; gap: 0.5rem; }
+  .delivery-link-input {
+    flex: 1; font-family: var(--sans); font-size: 0.75rem; padding: 0.7rem 0.8rem;
+    border: 1px solid var(--g200); background: var(--g100); color: var(--g600);
+    outline: none; cursor: text;
+  }
+  .copy-link-btn {
+    font-family: var(--sans); font-size: 0.7rem; font-weight: 500;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    background: var(--black); color: var(--white);
+    border: none; padding: 0.7rem 1rem; cursor: pointer;
+    white-space: nowrap; transition: background 0.2s;
+  }
+  .copy-link-btn:hover { background: var(--g600); }
+
+  /* GALLERY SCREEN */
+  #gallery-screen { background: var(--black); flex-direction: column; }
+
+  .gallery-header {
+    text-align: center; padding: 5rem 2rem 3rem;
+  }
+  .gallery-brand {
+    font-family: var(--serif); font-size: 0.85rem; color: var(--g600);
+    letter-spacing: 0.05em; margin-bottom: 1.5rem;
+  }
+  .gallery-project-name {
+    font-family: var(--serif); font-size: 3rem; color: var(--white);
+    font-style: italic; font-weight: 400; line-height: 1.2;
+  }
+  .gallery-meta {
+    font-size: 0.72rem; color: var(--g400); letter-spacing: 0.15em;
+    text-transform: uppercase; margin-top: 1rem;
+  }
+  .gallery-divider {
+    width: 40px; height: 1px; background: var(--g600);
+    margin: 2rem auto 0;
+  }
+
+  /* GALLERY GRID — masonry */
+  .gallery-grid {
+    column-count: 3; column-gap: 6px;
+    padding: 0 2rem 4rem; max-width: 1400px; margin: 0 auto; width: 100%;
+  }
+  .gallery-item {
+    break-inside: avoid; margin-bottom: 6px;
+    position: relative; overflow: hidden; cursor: pointer;
+  }
+  .gallery-item img {
+    width: 100%; display: block;
+    opacity: 0; transition: opacity 0.6s ease;
+  }
+  .gallery-item img.loaded { opacity: 1; }
+  .gallery-item:hover .gallery-item-overlay { opacity: 1; }
+  .gallery-item-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(transparent 60%, rgba(0,0,0,0.5));
+    opacity: 0; transition: opacity 0.25s;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    padding: 1rem;
+  }
+  .gallery-item-name {
+    font-size: 0.7rem; color: rgba(255,255,255,0.8);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    max-width: 70%;
+  }
+  .gallery-dl-btn {
+    width: 30px; height: 30px; border-radius: 50%;
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3);
+    color: white; cursor: pointer; font-size: 0.75rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s; flex-shrink: 0;
+  }
+  .gallery-dl-btn:hover { background: rgba(255,255,255,0.3); }
+
+  .gallery-video-item video {
+    width: 100%; display: block;
+    opacity: 0; transition: opacity 0.6s ease;
+  }
+  .gallery-video-item video.loaded { opacity: 1; }
+  .gallery-video-badge {
+    position: absolute; top: 0.6rem; left: 0.6rem;
+    font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+    color: white; background: rgba(0,0,0,0.5); padding: 0.25rem 0.5rem;
+    border-radius: 1px;
+  }
+
+  /* GALLERY FOOTER */
+  .gallery-footer {
+    text-align: center; padding: 3rem 2rem 4rem;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+  .gallery-footer-logo {
+    font-family: var(--serif); font-size: 1rem; color: var(--g600);
+    letter-spacing: 0.03em;
+  }
+  .gallery-footer-sub {
+    font-size: 0.65rem; color: rgba(255,255,255,0.15);
+    letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.4rem;
+  }
+
+  /* LIGHTBOX */
+  .lightbox {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.96);
+    z-index: 500; display: none; align-items: center; justify-content: center;
+    flex-direction: column;
+  }
+  .lightbox.active { display: flex; }
+  .lightbox-img {
+    max-width: 90vw; max-height: 82vh; object-fit: contain;
+    user-select: none; -webkit-user-drag: none;
+  }
+  .lightbox-video {
+    max-width: 90vw; max-height: 82vh;
+  }
+  .lightbox-close {
+    position: absolute; top: 1.5rem; right: 1.5rem;
+    width: 40px; height: 40px; border-radius: 50%;
+    background: rgba(255,255,255,0.08); border: none;
+    color: white; font-size: 1.2rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .lightbox-close:hover { background: rgba(255,255,255,0.15); }
+  .lightbox-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+    color: white; font-size: 1.1rem; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .lightbox-nav:hover { background: rgba(255,255,255,0.15); }
+  .lightbox-prev { left: 1.5rem; }
+  .lightbox-next { right: 1.5rem; }
+  .lightbox-bottom {
+    position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+    display: flex; align-items: center; gap: 1.5rem;
+  }
+  .lightbox-counter {
+    font-size: 0.72rem; color: var(--g400); letter-spacing: 0.06em;
+  }
+  .lightbox-filename {
+    font-size: 0.72rem; color: rgba(255,255,255,0.5);
+    max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .lightbox-download {
+    font-family: var(--sans); font-size: 0.68rem; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    background: rgba(255,255,255,0.1); color: white;
+    border: 1px solid rgba(255,255,255,0.2); padding: 0.5rem 1rem;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .lightbox-download:hover { background: rgba(255,255,255,0.2); }
+
+  /* GALLERY EMPTY */
+  .gallery-empty {
+    text-align: center; padding: 6rem 2rem;
+    color: var(--g400); font-style: italic;
+    font-family: var(--serif); font-size: 1.2rem;
+  }
+
+  /* GALLERY NOT FOUND */
+  .gallery-not-found {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    min-height: 100vh; background: var(--black); color: var(--white); text-align: center; gap: 1rem;
+  }
+  .gallery-not-found-title { font-family: var(--serif); font-size: 2rem; font-style: italic; }
+  .gallery-not-found-sub { font-size: 0.82rem; color: var(--g400); }
+
   /* TOAST */
   #toast {
     position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(60px);
@@ -283,6 +456,20 @@
   .loader-dot:nth-child(3) { animation-delay: 0.4s; }
   @keyframes pulse { 0%,80%,100%{background:var(--g200)} 40%{background:var(--black)} }
 
+  .loader-light .loader-dot { background: var(--g600); animation-name: pulse-light; }
+  @keyframes pulse-light { 0%,80%,100%{background:var(--g600)} 40%{background:var(--white)} }
+
+  @media(max-width:768px) {
+    .gallery-grid { column-count: 2; padding: 0 1rem 3rem; }
+    .gallery-project-name { font-size: 2rem; }
+    .gallery-header { padding: 3rem 1.5rem 2rem; }
+    .lightbox-prev { left: 0.8rem; }
+    .lightbox-next { right: 0.8rem; }
+  }
+  @media(max-width:480px) {
+    .gallery-grid { column-count: 1; max-width: 500px; }
+    .gallery-project-name { font-size: 1.6rem; }
+  }
   @media(max-width:600px) {
     .app-main, .project-main { padding: 1.2rem; }
     .dash-header { flex-direction: column; align-items: flex-start; gap: 1rem; }
@@ -317,7 +504,7 @@
   <main class="app-main">
     <div class="dash-header">
       <div>
-        <div class="dash-title">Good to see you, <span id="user-name">—</span></div>
+        <div class="dash-title">Good to see you, <span id="user-name">&mdash;</span></div>
       </div>
       <div style="display:flex;align-items:center;gap:1.5rem">
         <div class="storage-bar-wrap">
@@ -336,7 +523,7 @@
 <!-- PROJECT VIEW -->
 <div id="project-screen" class="screen">
   <nav class="project-nav">
-    <button class="back-btn" onclick="showDashboard()">← Projects</button>
+    <button class="back-btn" onclick="showDashboard()">&#8592; Projects</button>
     <div class="project-nav-title" id="project-nav-title"></div>
     <div class="project-nav-actions">
       <button class="deliver-btn" onclick="openDelivery()">Deliver to Client</button>
@@ -358,6 +545,36 @@
   </div>
 </div>
 
+<!-- GALLERY VIEW (public, no auth) -->
+<div id="gallery-screen" class="screen">
+  <div class="gallery-header">
+    <div class="gallery-brand">Orveil</div>
+    <div class="gallery-project-name" id="gallery-project-name"></div>
+    <div class="gallery-meta" id="gallery-meta"></div>
+    <div class="gallery-divider"></div>
+  </div>
+  <div class="gallery-grid" id="gallery-grid">
+    <div class="loader loader-light"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
+  </div>
+  <div class="gallery-footer">
+    <div class="gallery-footer-logo">Orveil</div>
+    <div class="gallery-footer-sub">Delivered with care</div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">&#10005;</button>
+  <button class="lightbox-nav lightbox-prev" onclick="lightboxNav(-1)">&#8249;</button>
+  <button class="lightbox-nav lightbox-next" onclick="lightboxNav(1)">&#8250;</button>
+  <div id="lightbox-media"></div>
+  <div class="lightbox-bottom">
+    <span class="lightbox-counter" id="lightbox-counter"></span>
+    <span class="lightbox-filename" id="lightbox-filename"></span>
+    <button class="lightbox-download" onclick="lightboxDownload()">Download</button>
+  </div>
+</div>
+
 <!-- NEW PROJECT MODAL -->
 <div class="modal-overlay" id="new-project-modal">
   <div class="modal">
@@ -375,6 +592,15 @@
 <div class="modal-overlay" id="delivery-modal">
   <div class="modal" style="max-width:500px">
     <div class="modal-title">Deliver to Client</div>
+
+    <div class="delivery-link-box" id="delivery-link-box">
+      <div class="delivery-link-label">Gallery Link</div>
+      <div class="delivery-link-row">
+        <input class="delivery-link-input" id="delivery-link-input" readonly>
+        <button class="copy-link-btn" onclick="copyGalleryLink()">Copy</button>
+      </div>
+    </div>
+
     <input class="delivery-email-input" id="client-email" type="email" placeholder="Client email address">
     <div class="delivery-options" id="delivery-options">
       <div class="delivery-opt selected" data-style="standard" onclick="selectDelivery(this)">
@@ -396,7 +622,7 @@
     </div>
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeDelivery()">Cancel</button>
-      <button class="modal-confirm" onclick="sendDelivery()">Send Delivery</button>
+      <button class="modal-confirm" id="delivery-send-btn" onclick="sendDelivery()">Generate Link &amp; Send</button>
     </div>
   </div>
 </div>
@@ -415,9 +641,10 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   }
 });
 
-const STORAGE_LIMIT = 15 * 1024 * 1024 * 1024; // 15GB
+const STORAGE_LIMIT = 15 * 1024 * 1024 * 1024;
 let currentUser = null;
 let currentProject = null;
+let isGalleryMode = false;
 
 const deliveryMessages = {
   standard: (name) => `Hi! Your gallery is ready — I'm so excited for you to see it. Here's your link to view and download everything. Enjoy!`,
@@ -425,12 +652,165 @@ const deliveryMessages = {
   toptier: (name) => `Your gallery has been thoughtfully prepared and is now available for your viewing. It has been a privilege to document these moments, and I hope this collection reflects the care put into every frame.`
 };
 
-// AUTH
+// ─── GALLERY MODE CHECK (runs before auth) ───
+(async function checkGalleryMode() {
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('gallery');
+  if (!token) return;
+
+  isGalleryMode = true;
+  document.getElementById('login-screen').classList.remove('active');
+  showScreen('gallery-screen');
+  await loadGallery(token);
+})();
+
+// ─── GALLERY ───
+let galleryFiles = [];
+let lightboxIndex = 0;
+
+async function loadGallery(token) {
+  const { data: project, error } = await sb
+    .from('projects')
+    .select('*')
+    .eq('share_token', token)
+    .single();
+
+  if (error || !project) {
+    document.getElementById('gallery-screen').innerHTML = `
+      <div class="gallery-not-found">
+        <div class="gallery-not-found-title">Gallery not found</div>
+        <div class="gallery-not-found-sub">This link may have expired or doesn't exist.</div>
+      </div>`;
+    return;
+  }
+
+  document.getElementById('gallery-project-name').textContent = project.name;
+
+  const { data: files } = await sb
+    .from('files')
+    .select('*')
+    .eq('project_id', project.id)
+    .order('created_at', { ascending: true });
+
+  if (!files || files.length === 0) {
+    document.getElementById('gallery-grid').innerHTML =
+      '<div class="gallery-empty">This gallery is being prepared.</div>';
+    document.getElementById('gallery-meta').textContent = '';
+    return;
+  }
+
+  galleryFiles = files.map(f => {
+    const { data: url } = sb.storage.from('projects').getPublicUrl(f.path);
+    return { ...f, publicUrl: url?.publicUrl || '' };
+  });
+
+  const imageCount = files.filter(f => f.type?.startsWith('image/')).length;
+  const videoCount = files.filter(f => f.type?.startsWith('video/')).length;
+  const parts = [];
+  if (imageCount) parts.push(`${imageCount} photograph${imageCount !== 1 ? 's' : ''}`);
+  if (videoCount) parts.push(`${videoCount} video${videoCount !== 1 ? 's' : ''}`);
+  document.getElementById('gallery-meta').textContent = parts.join(' · ');
+
+  renderGalleryGrid();
+}
+
+function renderGalleryGrid() {
+  const grid = document.getElementById('gallery-grid');
+  grid.innerHTML = galleryFiles.map((f, i) => {
+    if (f.type?.startsWith('video/')) {
+      return `<div class="gallery-item gallery-video-item" onclick="openLightbox(${i})">
+        <video src="${f.publicUrl}" muted preload="metadata" onloadeddata="this.classList.add('loaded')"></video>
+        <div class="gallery-video-badge">Video</div>
+        <div class="gallery-item-overlay">
+          <div class="gallery-item-name">${escHtml(f.name)}</div>
+          <button class="gallery-dl-btn" onclick="event.stopPropagation();downloadFile('${f.publicUrl}','${escHtml(f.name)}')">&#8595;</button>
+        </div>
+      </div>`;
+    }
+    return `<div class="gallery-item" onclick="openLightbox(${i})">
+      <img src="${f.publicUrl}" alt="${escHtml(f.name)}" loading="lazy"
+        onload="this.classList.add('loaded')">
+      <div class="gallery-item-overlay">
+        <div class="gallery-item-name">${escHtml(f.name)}</div>
+        <button class="gallery-dl-btn" onclick="event.stopPropagation();downloadFile('${f.publicUrl}','${escHtml(f.name)}')">&#8595;</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── LIGHTBOX ───
+function openLightbox(index) {
+  lightboxIndex = index;
+  renderLightbox();
+  document.getElementById('lightbox').classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+  const vid = document.querySelector('#lightbox-media video');
+  if (vid) vid.pause();
+}
+
+function renderLightbox() {
+  const f = galleryFiles[lightboxIndex];
+  const media = document.getElementById('lightbox-media');
+  if (f.type?.startsWith('video/')) {
+    media.innerHTML = `<video class="lightbox-video" src="${f.publicUrl}" controls autoplay></video>`;
+  } else {
+    media.innerHTML = `<img class="lightbox-img" src="${f.publicUrl}" alt="${escHtml(f.name)}">`;
+  }
+  document.getElementById('lightbox-counter').textContent = `${lightboxIndex + 1} / ${galleryFiles.length}`;
+  document.getElementById('lightbox-filename').textContent = f.name;
+}
+
+function lightboxNav(dir) {
+  const vid = document.querySelector('#lightbox-media video');
+  if (vid) vid.pause();
+  lightboxIndex = (lightboxIndex + dir + galleryFiles.length) % galleryFiles.length;
+  renderLightbox();
+}
+
+function lightboxDownload() {
+  const f = galleryFiles[lightboxIndex];
+  downloadFile(f.publicUrl, f.name);
+}
+
+async function downloadFile(url, filename) {
+  try {
+    const resp = await fetch(url);
+    const blob = await resp.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    URL.revokeObjectURL(blobUrl);
+    a.remove();
+  } catch {
+    window.open(url, '_blank');
+  }
+}
+
+// Touch swipe for lightbox
+let touchStartX = 0;
+document.getElementById('lightbox').addEventListener('touchstart', e => {
+  touchStartX = e.changedTouches[0].screenX;
+}, { passive: true });
+document.getElementById('lightbox').addEventListener('touchend', e => {
+  const diff = e.changedTouches[0].screenX - touchStartX;
+  if (Math.abs(diff) > 50) lightboxNav(diff < 0 ? 1 : -1);
+});
+
+// ─── AUTH ───
 async function handleSignIn() {
   const email = document.getElementById('auth-email').value.trim();
   const password = document.getElementById('auth-password').value;
   const errEl = document.getElementById('auth-error');
   errEl.textContent = '';
+  errEl.style.color = '#ff6b6b';
   if (!email || !password) { errEl.textContent = 'Please enter email and password.'; return; }
   const { error } = await sb.auth.signInWithPassword({ email, password });
   if (error) errEl.textContent = error.message;
@@ -441,11 +821,12 @@ async function handleSignUp() {
   const password = document.getElementById('auth-password').value;
   const errEl = document.getElementById('auth-error');
   errEl.textContent = '';
+  errEl.style.color = '#ff6b6b';
   if (!email || !password) { errEl.textContent = 'Please enter email and password.'; return; }
   if (password.length < 6) { errEl.textContent = 'Password must be at least 6 characters.'; return; }
   const { error } = await sb.auth.signUp({ email, password });
   if (error) errEl.textContent = error.message;
-  else errEl.style.color = '#6bff9e', errEl.textContent = 'Account created! Check your email to confirm.';
+  else { errEl.style.color = '#6bff9e'; errEl.textContent = 'Account created! Check your email to confirm.'; }
 }
 
 async function signOut() {
@@ -454,10 +835,11 @@ async function signOut() {
   showScreen('login-screen');
 }
 
-// INIT
+// ─── INIT ───
 let appStarted = false;
 
 sb.auth.onAuthStateChange(async (event, session) => {
+  if (isGalleryMode) return;
   if (session?.user && !appStarted) {
     appStarted = true;
     currentUser = session.user;
@@ -487,7 +869,7 @@ async function initApp() {
   await updateStorage();
 }
 
-// STORAGE
+// ─── STORAGE ───
 async function updateStorage() {
   const { data } = await sb.from('profiles').select('storage_used').eq('id', currentUser.id).single();
   if (!data) return;
@@ -497,7 +879,7 @@ async function updateStorage() {
   document.getElementById('storage-label').textContent = `${formatBytes(used)} of 15 GB used`;
 }
 
-// PROJECTS
+// ─── PROJECTS ───
 async function loadProjects() {
   const grid = document.getElementById('projects-grid');
   grid.innerHTML = '<div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>';
@@ -512,7 +894,6 @@ async function loadProjects() {
     return;
   }
 
-  // Get cover images for each project
   const cards = await Promise.all(projects.map(async p => {
     const { data: files } = await sb.from('files').select('path,type').eq('project_id', p.id).limit(1);
     let thumbHtml = `<div class="project-thumb-placeholder">${p.file_count || 0} files</div>`;
@@ -558,7 +939,7 @@ async function createProject() {
   openProject(data.id, data.name);
 }
 
-// PROJECT / FILES
+// ─── PROJECT / FILES ───
 async function openProject(id, name) {
   currentProject = { id, name };
   document.getElementById('project-nav-title').textContent = name;
@@ -590,7 +971,7 @@ async function loadFiles() {
         <div class="file-name">${escHtml(f.name)}</div>
         <div class="file-size">${formatBytes(f.size)}</div>
       </div>
-      <button class="file-delete" onclick="deleteFile('${f.id}','${f.path}',${f.size},event)" title="Delete">✕</button>
+      <button class="file-delete" onclick="deleteFile('${f.id}','${f.path}',${f.size},event)" title="Delete">&#10005;</button>
     </div>`;
   }).join('');
 }
@@ -623,12 +1004,16 @@ async function handleFileSelect(fileList) {
     });
 
     // Update storage used
-    await sb.rpc('increment_storage', { user_id: currentUser.id, bytes: file.size }).catch(() => {
-      sb.from('profiles').update({ storage_used: supabase.raw('storage_used + ' + file.size) }).eq('id', currentUser.id);
-    });
+    const { data: profile } = await sb.from('profiles').select('storage_used').eq('id', currentUser.id).single();
+    if (profile) {
+      await sb.from('profiles').update({ storage_used: (profile.storage_used || 0) + file.size }).eq('id', currentUser.id);
+    }
 
     // Update file count
-    await sb.from('projects').update({ file_count: supabase.raw('file_count + 1') }).eq('id', currentProject.id).catch(() => {});
+    const { data: proj } = await sb.from('projects').select('file_count').eq('id', currentProject.id).single();
+    if (proj) {
+      await sb.from('projects').update({ file_count: (proj.file_count || 0) + 1 }).eq('id', currentProject.id);
+    }
 
     uploaded++;
     fill.style.width = ((uploaded / files.length) * 100) + '%';
@@ -649,13 +1034,25 @@ async function deleteFile(fileId, path, size, e) {
   e.stopPropagation();
   await sb.storage.from('projects').remove([path]);
   await sb.from('files').delete().eq('id', fileId);
-  await sb.from('profiles').update({ storage_used: supabase.raw('storage_used - ' + size) }).eq('id', currentUser.id).catch(() => {});
+
+  // Update storage used
+  const { data: profile } = await sb.from('profiles').select('storage_used').eq('id', currentUser.id).single();
+  if (profile) {
+    await sb.from('profiles').update({ storage_used: Math.max(0, (profile.storage_used || 0) - size) }).eq('id', currentUser.id);
+  }
+
+  // Update file count
+  const { data: proj } = await sb.from('projects').select('file_count').eq('id', currentProject.id).single();
+  if (proj) {
+    await sb.from('projects').update({ file_count: Math.max(0, (proj.file_count || 0) - 1) }).eq('id', currentProject.id);
+  }
+
   showToast('File deleted.');
   await loadFiles();
   await updateStorage();
 }
 
-// DRAG & DROP
+// ─── DRAG & DROP ───
 const dropZone = document.getElementById('drop-zone');
 dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
@@ -665,10 +1062,25 @@ dropZone.addEventListener('drop', e => {
   handleFileSelect(e.dataTransfer.files);
 });
 
-// DELIVERY
+// ─── DELIVERY ───
 function openDelivery() {
   updateDeliveryPreview('standard');
+  loadShareLink();
   document.getElementById('delivery-modal').classList.add('active');
+}
+
+async function loadShareLink() {
+  const { data: proj } = await sb.from('projects').select('share_token').eq('id', currentProject.id).single();
+  const linkBox = document.getElementById('delivery-link-box');
+  if (proj?.share_token) {
+    const url = `${window.location.origin}${window.location.pathname}?gallery=${proj.share_token}`;
+    document.getElementById('delivery-link-input').value = url;
+    linkBox.classList.add('active');
+    document.getElementById('delivery-send-btn').textContent = 'Resend';
+  } else {
+    linkBox.classList.remove('active');
+    document.getElementById('delivery-send-btn').innerHTML = 'Generate Link &amp; Send';
+  }
 }
 
 function closeDelivery() {
@@ -687,14 +1099,51 @@ function updateDeliveryPreview(style) {
   document.getElementById('delivery-preview-text').textContent = `"${msg}"`;
 }
 
-function sendDelivery() {
+async function sendDelivery() {
   const email = document.getElementById('client-email').value.trim();
   if (!email || !email.includes('@')) { showToast('Please enter a valid email.'); return; }
-  closeDelivery();
-  showToast(`Delivery sent to ${email}`);
+
+  const btn = document.getElementById('delivery-send-btn');
+  btn.textContent = 'Generating...';
+  btn.disabled = true;
+
+  // Generate share token if needed
+  const { data: proj } = await sb.from('projects').select('share_token').eq('id', currentProject.id).single();
+  let token = proj?.share_token;
+
+  if (!token) {
+    const bytes = new Uint8Array(9);
+    crypto.getRandomValues(bytes);
+    token = btoa(String.fromCharCode(...bytes))
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '').slice(0, 12);
+
+    const { error } = await sb.from('projects').update({ share_token: token }).eq('id', currentProject.id);
+    if (error) {
+      showToast('Could not generate link.');
+      btn.innerHTML = 'Generate Link &amp; Send';
+      btn.disabled = false;
+      return;
+    }
+  }
+
+  const galleryUrl = `${window.location.origin}${window.location.pathname}?gallery=${token}`;
+  document.getElementById('delivery-link-input').value = galleryUrl;
+  document.getElementById('delivery-link-box').classList.add('active');
+
+  try { await navigator.clipboard.writeText(galleryUrl); } catch {}
+
+  btn.textContent = 'Resend';
+  btn.disabled = false;
+
+  showToast(`Gallery link created and copied! Delivery noted for ${email}`);
 }
 
-// NAVIGATION
+function copyGalleryLink() {
+  const url = document.getElementById('delivery-link-input').value;
+  navigator.clipboard.writeText(url).then(() => showToast('Link copied to clipboard.'));
+}
+
+// ─── NAVIGATION ───
 function showDashboard() {
   showScreen('app-screen');
   loadProjects();
@@ -705,7 +1154,7 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
 }
 
-// UTILS
+// ─── UTILS ───
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -731,13 +1180,21 @@ function timeAgo(dateStr) {
 }
 
 function escHtml(str) {
-  return str?.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') || '';
+  return str?.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;') || '';
 }
 
-// Keyboard shortcuts
+// ─── KEYBOARD ───
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
-    document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+    if (document.getElementById('lightbox').classList.contains('active')) {
+      closeLightbox();
+    } else {
+      document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+    }
+  }
+  if (document.getElementById('lightbox').classList.contains('active')) {
+    if (e.key === 'ArrowLeft') lightboxNav(-1);
+    if (e.key === 'ArrowRight') lightboxNav(1);
   }
   if (e.key === 'Enter' && document.getElementById('new-project-modal').classList.contains('active')) {
     createProject();
@@ -746,4 +1203,3 @@ document.addEventListener('keydown', e => {
 </script>
 </body>
 </html>
-
