@@ -765,8 +765,12 @@ function renderGalleryGrid() {
   const grid = document.getElementById('gallery-grid');
   grid.innerHTML = galleryFiles.map((f, i) => {
     if (f.type?.startsWith('video/')) {
+      const thumbSrc = f.thumb_path ? `${SUPABASE_URL}/storage/v1/object/public/projects/${f.thumb_path}` : '';
+      const inner = thumbSrc
+        ? `<img src="${thumbSrc}" alt="${escHtml(f.name)}" loading="lazy">`
+        : `<div class="video-placeholder">${escHtml(f.name)}</div>`;
       return `<div class="gallery-item gallery-video-item" id="gallery-item-${i}" onclick="openLightbox(${i})">
-        <div class="video-placeholder">${escHtml(f.name)}</div>
+        ${inner}
         <div class="gallery-video-badge">Video</div>
         <div class="gallery-item-overlay">
           <div class="gallery-item-name">${escHtml(f.name)}</div>
@@ -782,6 +786,30 @@ function renderGalleryGrid() {
       </div>
     </div>`;
   }).join('');
+}
+
+function generateUploadThumb(file) {
+  return new Promise(resolve => {
+    const video = document.createElement('video');
+    const url = URL.createObjectURL(file);
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = 'auto';
+    video.src = url;
+    const timeout = setTimeout(() => { URL.revokeObjectURL(url); resolve(null); }, 15000);
+    video.onloadedmetadata = () => { video.currentTime = Math.min(1, video.duration * 0.1 || 0.5); };
+    video.onseeked = () => {
+      clearTimeout(timeout);
+      try {
+        const c = document.createElement('canvas');
+        c.width = video.videoWidth || 640;
+        c.height = video.videoHeight || 360;
+        c.getContext('2d').drawImage(video, 0, 0, c.width, c.height);
+        c.toBlob(blob => { URL.revokeObjectURL(url); resolve(blob); }, 'image/jpeg', 0.75);
+      } catch (e) { URL.revokeObjectURL(url); resolve(null); }
+    };
+    video.onerror = () => { clearTimeout(timeout); URL.revokeObjectURL(url); resolve(null); };
+  });
 }
 
 function generateVideoThumbnails() {
@@ -1089,9 +1117,12 @@ async function loadFiles() {
 
   grid.innerHTML = files.map(f => {
     const isImage = f.type?.startsWith('image/');
+    const isVideo = f.type?.startsWith('video/');
     let thumb = `<div class="file-thumb-placeholder">${f.type?.split('/')[1]?.toUpperCase() || 'FILE'}</div>`;
     if (isImage) {
       thumb = `<img src="${SUPABASE_URL}/storage/v1/object/public/projects/${f.path}" alt="" loading="lazy">`;
+    } else if (isVideo && f.thumb_path) {
+      thumb = `<img src="${SUPABASE_URL}/storage/v1/object/public/projects/${f.thumb_path}" alt="" loading="lazy">`;
     }
     return `<div class="file-card">
       <div class="file-thumb">${thumb}</div>
@@ -1122,13 +1153,26 @@ async function handleFileSelect(fileList) {
     const { error: storageErr } = await sb.storage.from('projects').upload(path, file);
     if (storageErr) { console.error('Upload error:', storageErr); showToast(`Failed: ${file.name} — ${storageErr.message}`); continue; }
 
+    // Generate video thumbnail
+    let thumbPath = null;
+    if (file.type.startsWith('video/')) {
+      try {
+        const thumbBlob = await generateUploadThumb(file);
+        if (thumbBlob) {
+          thumbPath = path + '_thumb.jpg';
+          await sb.storage.from('projects').upload(thumbPath, thumbBlob, { contentType: 'image/jpeg' });
+        }
+      } catch (e) { /* no thumbnail — that's ok */ }
+    }
+
     await sb.from('files').insert({
       project_id: currentProject.id,
       user_id: currentUser.id,
       name: file.name,
       size: file.size,
       type: file.type,
-      path
+      path,
+      thumb_path: thumbPath
     });
 
     // Update storage used
