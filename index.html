@@ -407,13 +407,13 @@
   .customize-input:focus { border-color: var(--black); }
   .logo-upload-area {
     border: 1px solid var(--g200); padding: 1rem;
-    display: flex; align-items: center; gap: 1rem;
+    display: flex; flex-direction: column; align-items: center; gap: 0.8rem;
     cursor: pointer; transition: all 0.3s;
   }
   .logo-upload-area:hover { border-color: var(--black); }
   .logo-upload-area:hover .logo-upload-btn { background: var(--black); color: var(--white); }
   .logo-placeholder {
-    display: flex; align-items: center; gap: 1rem; width: 100%;
+    display: flex; align-items: center; gap: 1rem; width: 100%; justify-content: center;
   }
   .logo-upload-btn {
     font-family: var(--sans); font-size: 0.6rem; font-weight: 500;
@@ -423,8 +423,26 @@
     transition: all 0.3s; white-space: nowrap;
   }
   .logo-upload-hint { font-size: 0.6rem; color: var(--g400); letter-spacing: 0.03em; }
-  .logo-preview { position: relative; display: inline-flex; align-items: center; gap: 1rem; }
-  .logo-preview img { max-height: 40px; max-width: 160px; object-fit: contain; }
+  .logo-preview {
+    position: relative; display: flex; flex-direction: column; align-items: center; gap: 0.6rem; width: 100%;
+  }
+  .logo-preview img {
+    max-height: 80px; max-width: 320px; object-fit: contain; display: block;
+    cursor: pointer; transition: opacity 0.2s;
+  }
+  .logo-preview img:hover { opacity: 0.7; }
+  .logo-preview-actions {
+    display: flex; gap: 0.5rem; align-items: center;
+  }
+  .logo-action-btn {
+    font-family: var(--sans); font-size: 0.55rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.35rem 0.8rem; border: 1px solid var(--g200);
+    color: var(--g600); background: none; cursor: pointer;
+    transition: all 0.3s;
+  }
+  .logo-action-btn:hover { border-color: var(--black); color: var(--black); }
+  .logo-action-btn.remove:hover { border-color: #c44; color: #c44; }
   .logo-remove-btn {
     width: 22px; height: 22px; border-radius: 50%;
     background: none; color: var(--g400);
@@ -433,6 +451,43 @@
     transition: all 0.3s;
   }
   .logo-remove-btn:hover { border-color: var(--black); color: var(--black); }
+
+  /* LOGO CROP MODAL */
+  .crop-overlay {
+    position: fixed; inset: 0; background: rgba(10,10,10,0.85);
+    display: none; align-items: center; justify-content: center; z-index: 300;
+    flex-direction: column; gap: 1rem;
+  }
+  .crop-overlay.active { display: flex; }
+  .crop-container {
+    position: relative; max-width: 90vw; max-height: 70vh;
+    overflow: hidden; cursor: crosshair; background: #1a1a1a;
+    border: 1px solid #333;
+  }
+  .crop-container img {
+    display: block; max-width: 90vw; max-height: 70vh; object-fit: contain;
+    user-select: none; -webkit-user-drag: none;
+  }
+  .crop-selection {
+    position: absolute; border: 2px dashed rgba(250,250,250,0.8);
+    background: rgba(250,250,250,0.05); pointer-events: none; display: none;
+    box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+  }
+  .crop-actions {
+    display: flex; gap: 0.8rem;
+  }
+  .crop-btn {
+    font-family: var(--sans); font-size: 0.72rem; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.7rem 1.4rem; border: none; cursor: pointer; transition: all 0.2s;
+  }
+  .crop-save { background: var(--white); color: var(--black); }
+  .crop-save:hover { background: var(--g200); }
+  .crop-cancel { background: none; color: var(--white); border: 1px solid rgba(255,255,255,0.2); }
+  .crop-cancel:hover { border-color: rgba(255,255,255,0.5); }
+  .crop-hint {
+    font-size: 0.68rem; color: rgba(255,255,255,0.4); letter-spacing: 0.05em;
+  }
   .color-pickers-row { display: flex; gap: 1.5rem; }
   .color-picker-group { flex: 1; }
   .color-label { font-size: 0.68rem; color: var(--g600); margin-bottom: 0.3rem; display: block; }
@@ -1062,6 +1117,19 @@
   </div>
 </div>
 
+<!-- LOGO CROP MODAL -->
+<div class="crop-overlay" id="crop-overlay">
+  <div class="crop-hint">Click and drag to select crop area</div>
+  <div class="crop-container" id="crop-container">
+    <img id="crop-img" src="" alt="Crop">
+    <div class="crop-selection" id="crop-selection"></div>
+  </div>
+  <div class="crop-actions">
+    <button class="crop-btn crop-cancel" onclick="closeCrop()">Cancel</button>
+    <button class="crop-btn crop-save" onclick="saveCrop()">Save Crop</button>
+  </div>
+</div>
+
 <!-- DELETE CONFIRM MODAL -->
 <div class="modal-overlay" id="delete-project-modal">
   <div class="modal" style="background:#111;border:1px solid #ff4444">
@@ -1126,14 +1194,18 @@
     <div class="delivery-customize" id="delivery-customize" style="display:none">
       <div class="customize-section">
         <label class="customize-label">Your Logo</label>
-        <div class="logo-upload-area" onclick="document.getElementById('logo-file-input').click()">
+        <div class="logo-upload-area" id="logo-upload-area" onclick="document.getElementById('logo-file-input').click()">
           <div class="logo-preview" id="logo-preview" style="display:none">
-            <img id="logo-preview-img" src="" alt="Logo">
-            <button class="logo-remove-btn" onclick="event.stopPropagation();removeLogo()">&#10005;</button>
+            <img id="logo-preview-img" src="" alt="Logo" onclick="event.stopPropagation();openLogoCrop()">
+            <div class="logo-preview-actions">
+              <button class="logo-action-btn" onclick="event.stopPropagation();openLogoCrop()">Crop</button>
+              <button class="logo-action-btn" onclick="event.stopPropagation();document.getElementById('logo-file-input').click()">Replace</button>
+              <button class="logo-action-btn remove" onclick="event.stopPropagation();removeLogo()">Remove</button>
+            </div>
           </div>
           <div class="logo-placeholder" id="logo-placeholder">
             <div class="logo-upload-btn">Select Logo</div>
-            <span class="logo-upload-hint">PNG, SVG, or JPG &mdash; max 2MB</span>
+            <span class="logo-upload-hint">PNG, SVG, or JPG</span>
           </div>
           <input type="file" id="logo-file-input" accept="image/png,image/jpeg,image/svg+xml,image/webp" style="display:none" onchange="handleLogoUpload(event)">
         </div>
@@ -2269,8 +2341,111 @@ function resizeImage(file, maxW, maxH, quality) {
 
 function removeLogo() {
   document.getElementById('logo-preview').style.display = 'none';
-  document.getElementById('logo-placeholder').style.display = 'block';
+  document.getElementById('logo-placeholder').style.display = 'flex';
   currentGallerySettings.logo_path = null;
+}
+
+// Logo crop
+let cropState = { startX: 0, startY: 0, dragging: false };
+
+function openLogoCrop() {
+  const src = document.getElementById('logo-preview-img').src;
+  if (!src) return;
+  const cropImg = document.getElementById('crop-img');
+  cropImg.src = src;
+  document.getElementById('crop-selection').style.display = 'none';
+  document.getElementById('crop-overlay').classList.add('active');
+
+  const container = document.getElementById('crop-container');
+  const sel = document.getElementById('crop-selection');
+
+  container.onmousedown = container.ontouchstart = (e) => {
+    e.preventDefault();
+    const rect = container.getBoundingClientRect();
+    const pt = e.touches ? e.touches[0] : e;
+    cropState.startX = pt.clientX - rect.left;
+    cropState.startY = pt.clientY - rect.top;
+    cropState.dragging = true;
+    sel.style.display = 'block';
+    sel.style.left = cropState.startX + 'px';
+    sel.style.top = cropState.startY + 'px';
+    sel.style.width = '0'; sel.style.height = '0';
+  };
+
+  container.onmousemove = container.ontouchmove = (e) => {
+    if (!cropState.dragging) return;
+    e.preventDefault();
+    const rect = container.getBoundingClientRect();
+    const pt = e.touches ? e.touches[0] : e;
+    const x = pt.clientX - rect.left;
+    const y = pt.clientY - rect.top;
+    const left = Math.min(cropState.startX, x);
+    const top = Math.min(cropState.startY, y);
+    const w = Math.abs(x - cropState.startX);
+    const h = Math.abs(y - cropState.startY);
+    sel.style.left = left + 'px'; sel.style.top = top + 'px';
+    sel.style.width = w + 'px'; sel.style.height = h + 'px';
+  };
+
+  container.onmouseup = container.ontouchend = () => { cropState.dragging = false; };
+}
+
+function closeCrop() {
+  document.getElementById('crop-overlay').classList.remove('active');
+  const container = document.getElementById('crop-container');
+  container.onmousedown = container.onmousemove = container.onmouseup = null;
+  container.ontouchstart = container.ontouchmove = container.ontouchend = null;
+}
+
+async function saveCrop() {
+  const cropImg = document.getElementById('crop-img');
+  const sel = document.getElementById('crop-selection');
+  const container = document.getElementById('crop-container');
+
+  // Get crop rect relative to displayed image
+  const imgRect = cropImg.getBoundingClientRect();
+  const contRect = container.getBoundingClientRect();
+
+  const selLeft = parseFloat(sel.style.left) || 0;
+  const selTop = parseFloat(sel.style.top) || 0;
+  const selW = parseFloat(sel.style.width) || 0;
+  const selH = parseFloat(sel.style.height) || 0;
+
+  // If no selection or too small, just close
+  if (selW < 10 || selH < 10) { closeCrop(); return; }
+
+  // Map display coords to natural image coords
+  const imgOffX = imgRect.left - contRect.left;
+  const imgOffY = imgRect.top - contRect.top;
+  const scaleX = cropImg.naturalWidth / imgRect.width;
+  const scaleY = cropImg.naturalHeight / imgRect.height;
+
+  const sx = Math.max(0, (selLeft - imgOffX) * scaleX);
+  const sy = Math.max(0, (selTop - imgOffY) * scaleY);
+  const sw = Math.min(cropImg.naturalWidth - sx, selW * scaleX);
+  const sh = Math.min(cropImg.naturalHeight - sy, selH * scaleY);
+
+  // Draw cropped image to canvas
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(sw);
+  canvas.height = Math.round(sh);
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(cropImg, Math.round(sx), Math.round(sy), Math.round(sw), Math.round(sh), 0, 0, canvas.width, canvas.height);
+
+  // Convert to blob and upload
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png', 0.95));
+  if (!blob) { showToast('Crop failed'); return; }
+
+  const file = new File([blob], 'logo.png', { type: 'image/png' });
+  const path = `${currentUser.id}/logo.png`;
+  const { error } = await storageUpload('logos', path, file, { upsert: true });
+  if (error) { showToast('Failed to save crop'); console.error(error); return; }
+
+  const newUrl = `${SUPABASE_URL}/storage/v1/object/public/logos/${path}?t=${Date.now()}`;
+  document.getElementById('logo-preview-img').src = newUrl;
+  currentGallerySettings.logo_path = path;
+  closeCrop();
+  showToast('Logo cropped and saved.');
 }
 
 // Colors
