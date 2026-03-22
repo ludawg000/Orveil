@@ -841,12 +841,21 @@ let appStarted = false;
 
 sb.auth.onAuthStateChange(async (event, session) => {
   if (isGalleryMode) return;
-  if (session?.user && !appStarted) {
-    appStarted = true;
-    currentUser = session.user;
-    window.history.replaceState(null, '', window.location.pathname);
-    await initApp();
-  } else if (!session && (event === 'INITIAL_SESSION' || event === 'SIGNED_OUT')) {
+  try {
+    if (session?.user) {
+      currentUser = session.user;
+      window.history.replaceState(null, '', window.location.pathname);
+      if (!appStarted) {
+        appStarted = true;
+        await initApp();
+      }
+    } else {
+      appStarted = false;
+      currentUser = null;
+      showScreen('login-screen');
+    }
+  } catch (err) {
+    console.error('Auth state change error:', err);
     appStarted = false;
     currentUser = null;
     showScreen('login-screen');
