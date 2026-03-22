@@ -2223,16 +2223,48 @@ function toggleCustomize() {
 async function handleLogoUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
-  if (file.size > 2 * 1024 * 1024) { showToast('Logo must be under 2MB.'); return; }
+
+  let uploadFile = file;
+  // Resize large images client-side (phone photos are often 5MB+)
+  if (file.type.startsWith('image/') && file.type !== 'image/svg+xml' && file.size > 500 * 1024) {
+    try { uploadFile = await resizeImage(file, 800, 800, 0.85); }
+    catch (e) { console.error('Resize error:', e); }
+  }
+
+  if (uploadFile.size > 5 * 1024 * 1024) { showToast('Logo is too large even after resize.'); return; }
+
   const ext = file.name.split('.').pop().toLowerCase();
   const path = `${currentUser.id}/logo.${ext}`;
-  const { error } = await storageUpload('logos', path, file, { upsert: true });
-  if (error) { showToast('Logo upload failed.'); return; }
-  document.getElementById('logo-preview-img').src = `${SUPABASE_URL}/storage/v1/object/public/logos/${path}`;
+  const { error } = await storageUpload('logos', path, uploadFile, { upsert: true });
+  if (error) { showToast('Logo upload failed.'); console.error(error); return; }
+  document.getElementById('logo-preview-img').src = `${SUPABASE_URL}/storage/v1/object/public/logos/${path}?t=${Date.now()}`;
   document.getElementById('logo-preview').style.display = 'inline-block';
   document.getElementById('logo-placeholder').style.display = 'none';
   currentGallerySettings.logo_path = path;
   showToast('Logo uploaded.');
+}
+
+function resizeImage(file, maxW, maxH, quality) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => {
+      let w = img.width, h = img.height;
+      if (w > maxW || h > maxH) {
+        const ratio = Math.min(maxW / w, maxH / h);
+        w = Math.round(w * ratio);
+        h = Math.round(h * ratio);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      canvas.toBlob(blob => {
+        if (blob) resolve(new File([blob], file.name, { type: 'image/jpeg' }));
+        else reject(new Error('Blob conversion failed'));
+      }, 'image/jpeg', quality);
+    };
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  });
 }
 
 function removeLogo() {
@@ -2607,12 +2639,17 @@ async function loadSettingsAvatar() {
 
 async function uploadAvatar(file) {
   if (!file) return;
-  if (file.size > 2 * 1024 * 1024) { showToast('Image must be under 2MB'); return; }
+
+  let uploadFile = file;
+  if (file.size > 500 * 1024) {
+    try { uploadFile = await resizeImage(file, 400, 400, 0.8); }
+    catch (e) { console.error('Resize error:', e); }
+  }
 
   const ext = file.name.split('.').pop().toLowerCase();
   const path = `${currentUser.id}/avatar.${ext}`;
 
-  const { error } = await storageUpload('avatars', path, file, { upsert: true });
+  const { error } = await storageUpload('avatars', path, uploadFile, { upsert: true });
   if (error) { showToast('Upload failed'); console.error(error); return; }
 
   const avatarUrl = `${SUPABASE_URL}/storage/v1/object/public/avatars/${path}?t=${Date.now()}`;
