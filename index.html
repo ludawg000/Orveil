@@ -1426,15 +1426,34 @@ async function loadProjects() {
     // Load thumbnails in background via REST
     projects.forEach(async p => {
       try {
-        const fUrl = `${SUPABASE_URL}/rest/v1/files?select=path,type,thumb_path&project_id=eq.${p.id}&limit=1`;
+        const fUrl = `${SUPABASE_URL}/rest/v1/files?select=path,type,thumb_path&project_id=eq.${p.id}&limit=10`;
         const fResp = await fetch(fUrl, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${accessToken}` } });
         const files = await fResp.json();
         const el = document.getElementById(`pthumb-${p.id}`);
-        if (!el) return;
-        if (files?.[0]?.type?.startsWith('image/')) {
-          el.innerHTML = `<img src="${SUPABASE_URL}/storage/v1/object/public/projects/${files[0].path}" alt="" loading="lazy">`;
-        } else if (files?.[0]?.thumb_path) {
-          el.innerHTML = `<img src="${SUPABASE_URL}/storage/v1/object/public/projects/${files[0].thumb_path}" alt="" loading="lazy">`;
+        if (!el || !files?.length) return;
+
+        // Prefer an image file for the thumbnail
+        const img = files.find(f => f.type?.startsWith('image/'));
+        if (img) {
+          el.innerHTML = `<img src="${SUPABASE_URL}/storage/v1/object/public/projects/${img.path}" alt="" loading="lazy">`;
+          return;
+        }
+
+        // Try a video with a stored thumbnail
+        const vidThumb = files.find(f => f.thumb_path);
+        if (vidThumb) {
+          el.innerHTML = `<img src="${SUPABASE_URL}/storage/v1/object/public/projects/${vidThumb.thumb_path}" alt="" loading="lazy">`;
+          return;
+        }
+
+        // Generate thumbnail from first video on the fly
+        const vid = files.find(f => f.type?.startsWith('video/'));
+        if (vid) {
+          const vidUrl = `${SUPABASE_URL}/storage/v1/object/public/projects/${vid.path}`;
+          const dataUrl = await genThumb(vidUrl, vid.name);
+          if (dataUrl && document.getElementById(`pthumb-${p.id}`)) {
+            el.innerHTML = `<img src="${dataUrl}" alt="" loading="lazy">`;
+          }
         }
       } catch {}
     });
