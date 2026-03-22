@@ -407,7 +407,8 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: {
     detectSessionInUrl: true,
     persistSession: true,
-    autoRefreshToken: true
+    autoRefreshToken: true,
+    flowType: 'pkce'
   }
 });
 
@@ -425,7 +426,10 @@ const deliveryMessages = {
 async function signInWithGoogle() {
   const { error } = await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: 'https://orveil.vercel.app' }
+    options: {
+      redirectTo: 'https://orveil.vercel.app',
+      skipBrowserRedirect: false
+    }
   });
   if (error) showToast('Sign in failed. Please try again.');
 }
