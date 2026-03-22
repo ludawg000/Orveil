@@ -1746,6 +1746,16 @@ async function loadProjects() {
       </div>`;
     }).join('');
 
+    // Make last card fill remaining grid space
+    requestAnimationFrame(() => {
+      const cols = getComputedStyle(grid).gridTemplateColumns.split(' ').length;
+      const remainder = projects.length % cols;
+      if (remainder !== 0) {
+        const lastCard = grid.querySelector('.project-card:last-child');
+        if (lastCard) lastCard.style.gridColumn = `span ${cols - remainder + 1}`;
+      }
+    });
+
     // Load thumbnails in background via REST
     projects.forEach(async p => {
       try {
