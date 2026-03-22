@@ -175,10 +175,11 @@
 
   /* Manage action buttons on cards */
   .manage-actions {
-    display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-    z-index: 6; background: rgba(0,0,0,0.7);
+    display: none; position: absolute; inset: 0;
+    z-index: 10; background: rgba(0,0,0,0.8); border-radius: 0;
     flex-direction: column; align-items: center; justify-content: center; gap: 0.6rem;
   }
+  .retro-tv .project-card { position: relative; }
   .retro-tv .project-card:hover .manage-actions { display: flex; }
   .manage-action-btn {
     font-family: 'Courier New', monospace; font-size: 0.68rem; font-weight: 700;
@@ -1839,8 +1840,9 @@ async function loadProjects() {
         <button class="manage-action-btn manage-invite-btn" onclick="openInviteModal('${p.id}','${escHtml(p.name)}',event)">+ Invite</button>
         <button class="manage-action-btn manage-delete-btn" onclick="openDeleteModal('${p.id}','${escHtml(p.name)}',event)">Delete</button>
       </div>` : '';
-      return `<div class="project-card" onclick="${manageMode ? '' : `openProject('${p.id}','${escHtml(p.name)}')`}" style="${manageMode ? 'cursor:default' : ''}">
-        <div class="project-thumb" id="pthumb-${p.id}" style="position:relative">${manageOverlay}<div class="project-thumb-placeholder">${p.file_count ? p.file_count + ' files' : (() => { const q = randomQuip(); return q.emoji + '<br><span style="font-size:0.55rem;letter-spacing:0.05em;opacity:0.7">' + q.text + '</span>'; })()}</div></div>
+      return `<div class="project-card" onclick="${manageMode ? '' : `openProject('${p.id}','${escHtml(p.name)}')`}" style="${manageMode ? 'cursor:default;position:relative' : ''}">
+        ${manageOverlay}
+        <div class="project-thumb" id="pthumb-${p.id}"><div class="project-thumb-placeholder">${p.file_count ? p.file_count + ' files' : (() => { const q = randomQuip(); return q.emoji + '<br><span style="font-size:0.55rem;letter-spacing:0.05em;opacity:0.7">' + q.text + '</span>'; })()}</div></div>
         <div class="project-name">${escHtml(p.name)}</div>
         <div class="project-meta">${p.file_count || 0} files · ${timeAgo(p.created_at)}</div>
       </div>`;
