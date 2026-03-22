@@ -185,25 +185,83 @@
   }
 
   /* Exit button — appears after zoom completes */
-  .room-exit-btn {
+  /* Power button on the Mac case */
+  .mac-power-btn {
     display: none;
-    position: fixed; top: 1.5rem; right: 1.5rem;
-    z-index: 100;
-    background: none; border: 1px solid rgba(250,250,250,0.15);
-    color: rgba(250,250,250,0.5);
-    font-family: var(--serif);
-    font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
-    padding: 0.5rem 1.2rem;
+    position: absolute; bottom: 8px; right: 10px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #4a4438 0%, #3a3428 60%, #2a2620 100%);
+    border: 1.5px solid #5a5040;
     cursor: pointer;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(4px);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.08);
+    transition: all 0.2s;
+    z-index: 20;
   }
-  .room-exit-btn:hover {
-    color: #fafafa;
-    border-color: rgba(250,250,250,0.4);
-    background: rgba(250,250,250,0.05);
+  /* Power symbol — circle with line */
+  .mac-power-btn::before {
+    content: ''; position: absolute; top: 2px; left: 2px; right: 2px; bottom: 2px;
+    border: 1.5px solid rgba(250,250,250,0.25);
+    border-radius: 50%;
+    border-top-color: transparent;
   }
-  .room-exit-btn.visible { display: block; }
+  .mac-power-btn::after {
+    content: ''; position: absolute; top: 1px; left: 50%;
+    width: 1.5px; height: 5px;
+    background: rgba(250,250,250,0.25);
+    transform: translateX(-50%);
+  }
+  .mac-power-btn:hover {
+    background: radial-gradient(circle, #5a5448 0%, #4a4438 60%, #3a3428 100%);
+    border-color: #7a7060;
+  }
+  .mac-power-btn:hover::before { border-color: rgba(250,250,250,0.5); border-top-color: transparent; }
+  .mac-power-btn:hover::after { background: rgba(250,250,250,0.5); }
+  .mac-power-btn:active { transform: scale(0.9); }
+  .mac-power-btn.visible { display: block; }
+
+  /* CRT shutdown animation overlay */
+  .crt-shutdown {
+    display: none;
+    position: fixed; inset: 0;
+    z-index: 200;
+    background: #000;
+    pointer-events: none;
+  }
+  @keyframes crtOff {
+    0% { opacity: 0; }
+    5% { opacity: 1; }
+    /* Flash white */
+    10% { background: #fff; }
+    15% { background: #000; }
+    /* Shrink to horizontal line */
+    40% {
+      clip-path: inset(45% 0 45% 0);
+      background: #fff;
+      opacity: 1;
+    }
+    /* Line shrinks to dot */
+    70% {
+      clip-path: inset(49% 40% 49% 40%);
+      background: #fff;
+      opacity: 1;
+    }
+    /* Dot fades */
+    85% {
+      clip-path: inset(49.5% 49% 49.5% 49%);
+      background: #fff;
+      opacity: 0.6;
+    }
+    100% {
+      clip-path: inset(50% 50% 50% 50%);
+      background: #000;
+      opacity: 0;
+    }
+  }
+  .crt-shutdown.active {
+    display: block;
+    animation: crtOff 1.2s ease-out forwards;
+  }
 
   /* === 3D ROOM — straight-on view from doorway === */
   .room-scene {
@@ -1638,8 +1696,9 @@
         <button class="new-project-btn" onclick="openNewProject()">+ New Project</button>
       </div>
     </div>
-    <button class="room-exit-btn" id="room-exit-btn" onclick="toggleManageMode()">Leave Room</button>
     <div class="tv-frame" id="tv-frame" style="display:none">
+      <!-- CRT shutdown overlay -->
+      <div class="crt-shutdown" id="crt-shutdown"></div>
       <!-- Full bedroom scene -->
       <div class="room-scene">
         <!-- Wall -->
@@ -1721,6 +1780,7 @@
               </div>
               <div class="mac-label">Orveil</div>
               <div class="mac-floppy"><div class="mac-floppy-slot"></div></div>
+              <button class="mac-power-btn" id="room-exit-btn" onclick="shutdownRoom()"></button>
             </div>
             <div class="mac-base">
               <div class="mac-base-ridge"></div>
@@ -3449,12 +3509,27 @@ let pendingDeleteId = null;
 let pendingDeleteName = '';
 let pendingInviteId = null;
 
+function shutdownRoom() {
+  const shutdown = document.getElementById('crt-shutdown');
+  if (shutdown) {
+    shutdown.classList.remove('active');
+    void shutdown.offsetWidth;
+    shutdown.classList.add('active');
+    shutdown.addEventListener('animationend', () => {
+      shutdown.classList.remove('active');
+      toggleManageMode();
+    }, { once: true });
+  } else {
+    toggleManageMode();
+  }
+}
+
 function toggleManageMode() {
   manageMode = !manageMode;
   const main = document.querySelector('.app-main');
   const btn = document.getElementById('manage-btn');
   const tvFrame = document.getElementById('tv-frame');
-  const exitBtn = document.getElementById('room-exit-btn');
+  const powerBtn = document.getElementById('room-exit-btn');
   if (manageMode) {
     main.classList.add('retro-tv');
     btn.classList.add('active');
@@ -3467,14 +3542,14 @@ function toggleManageMode() {
       tvFrame.addEventListener('animationend', () => {
         tvFrame.classList.remove('zooming-in');
         tvFrame.classList.add('zoomed-in');
-        if (exitBtn) exitBtn.classList.add('visible');
+        if (powerBtn) powerBtn.classList.add('visible');
       }, { once: true });
     }
   } else {
     main.classList.remove('retro-tv');
     btn.classList.remove('active');
     btn.textContent = 'Manage';
-    if (exitBtn) exitBtn.classList.remove('visible');
+    if (powerBtn) powerBtn.classList.remove('visible');
     if (tvFrame) {
       tvFrame.classList.remove('zooming-in', 'zoomed-in');
       tvFrame.style.display = 'none';
