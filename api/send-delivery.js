@@ -36,11 +36,11 @@ export default async function handler(req, res) {
   const wallpaperStyle = wpStyles[wallpaper] || '';
 
   const headerContent = logoUrl
-    ? `<img src="${logoUrl}" alt="Brand" style="max-height: 48px; max-width: 200px;">`
+    ? `<img src="${logoUrl}" alt="Brand" style="max-height: 80px; max-width: 320px;">`
     : `<h1 style="font-family: ${fontFamily}, Georgia, serif; font-size: 2rem; font-weight: 400; letter-spacing: 0.02em; margin: 0; color: ${accentColor};">Orveil</h1>`;
 
   const footerContent = logoUrl
-    ? `<img src="${logoUrl}" alt="Brand" style="max-height: 28px; max-width: 120px; opacity: 0.5;">`
+    ? `<img src="${logoUrl}" alt="Brand" style="max-height: 48px; max-width: 200px; opacity: 0.5;">`
     : `<span style="color: ${accentColor}; opacity: 0.4;">Delivered with Orveil</span>`;
 
   const html = `

@@ -1793,6 +1793,13 @@
   .wallpaper-opt[data-wp="marble"]::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 30%, rgba(0,0,0,0.03) 35%, transparent 40%, rgba(0,0,0,0.02) 55%, transparent 60%, rgba(0,0,0,0.03) 75%, transparent 80%); }
   .delivery-email-input { width: 100%; font-family: var(--sans); font-size: 0.82rem; padding: 0.75rem 1rem; border: 1px solid var(--g200); background: transparent; color: var(--black); outline: none; margin-bottom: 0.8rem; }
   .delivery-email-input:focus { border-color: var(--black); }
+  .delivery-custom-input {
+    width: 100%; font-family: var(--serif); font-size: 0.82rem;
+    padding: 0.8rem 1rem; border: 1px solid var(--g200); background: transparent;
+    color: var(--black); outline: none; margin-bottom: 0.8rem; resize: vertical;
+    min-height: 80px; line-height: 1.6; box-sizing: border-box;
+  }
+  .delivery-custom-input:focus { border-color: var(--black); }
 
   /* DELIVERY LINK */
   .delivery-link-box { display: none; margin-bottom: 1rem; }
@@ -2058,6 +2065,12 @@
     --black: #fafafa; --white: #0a0a0a;
     --g100: #1a1a1a; --g200: #2a2a2a; --g400: #7a7a7a; --g600: #a0a0a0;
   }
+  /* PINK MODE */
+  body.pink-mode {
+    --black: #ffffff; --white: #f8c8d4;
+    --g100: #f2b0c0; --g200: #e8a0b0; --g400: #d48898; --g600: #ffffff;
+  }
+  body.pink-mode .toggle-switch.active { background: #d4708a; }
 
   /* SLIDESHOW */
   .slideshow-container {
@@ -2085,10 +2098,10 @@
     background: none; border: 1px solid var(--gal-accent, rgba(255,255,255,0.12));
     color: var(--gal-accent, rgba(255,255,255,0.5)); font-size: 1.2rem;
     cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: all 0.3s; opacity: 0.35; z-index: 10;
+    transition: all 0.3s; opacity: 0.7; z-index: 10;
     font-family: var(--gal-font, var(--serif));
   }
-  .slideshow-nav:hover { opacity: 0.8; }
+  .slideshow-nav:hover { opacity: 1; }
   .slideshow-prev { left: 1.5rem; }
   .slideshow-next { right: 1.5rem; }
   .slideshow-bottom {
@@ -2098,7 +2111,7 @@
   .slideshow-counter {
     font-family: var(--gal-font, var(--serif));
     font-size: 0.65rem; color: var(--gal-accent, rgba(255,255,255,0.35));
-    letter-spacing: 0.15em; opacity: 0.4;
+    letter-spacing: 0.15em; opacity: 0.7;
   }
   .slideshow-dl {
     font-family: var(--gal-font, var(--serif)); font-size: 0.6rem; font-weight: 400;
@@ -2106,9 +2119,9 @@
     background: none; color: var(--gal-accent, rgba(255,255,255,0.5));
     border: 1px solid var(--gal-accent, rgba(255,255,255,0.15));
     padding: 0.5rem 1.4rem; cursor: pointer; transition: all 0.3s;
-    opacity: 0.4;
+    opacity: 0.7;
   }
-  .slideshow-dl:hover { opacity: 0.8; }
+  .slideshow-dl:hover { opacity: 1; }
 
   /* GALLERY SCREEN */
   #gallery-screen {
@@ -2231,7 +2244,7 @@
     font-family: var(--gal-font, var(--serif)); font-size: 0.9rem; color: var(--gal-accent, rgba(255,255,255,0.2));
     letter-spacing: 0.08em; opacity: 0.3;
   }
-  .gallery-footer-logo-img { max-height: 32px; max-width: 150px; opacity: 0.3; }
+  .gallery-footer-logo-img { max-height: 48px; max-width: 200px; opacity: 0.5; }
   .gallery-footer-sub {
     font-size: 0.6rem; color: var(--gal-accent, rgba(255,255,255,0.1)); opacity: 0.2;
     letter-spacing: 0.15em; text-transform: uppercase; margin-top: 0.5rem;
@@ -2834,7 +2847,7 @@
   </nav>
   <main class="settings-main">
     <div style="display:flex;align-items:center;gap:0.8rem;margin-bottom:2.5rem">
-      <button class="back-btn" onclick="showDashboard()">&#8592; Dashboard</button>
+      <button class="back-btn" onclick="showDashboard()">&#8592; Home</button>
     </div>
     <div class="settings-title">Settings</div>
 
@@ -2871,6 +2884,13 @@
             <div class="settings-row-sub">Switch to a darker color scheme</div>
           </div>
           <div class="toggle-switch" id="dark-mode-toggle" onclick="toggleDarkMode()"></div>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Pink Mode</div>
+            <div class="settings-row-sub">Soft pink color scheme</div>
+          </div>
+          <div class="toggle-switch" id="pink-mode-toggle" onclick="togglePinkMode()"></div>
         </div>
       </div>
     </div>
@@ -3017,7 +3037,12 @@
         <div><div class="delivery-opt-name">Top Tier</div><div class="delivery-opt-desc">Luxury studio experience</div></div>
         <div class="delivery-check"></div>
       </div>
+      <div class="delivery-opt" data-style="custom" onclick="selectDelivery(this)">
+        <div><div class="delivery-opt-name">Custom</div><div class="delivery-opt-desc">Write your own</div></div>
+        <div class="delivery-check"></div>
+      </div>
     </div>
+    <textarea class="delivery-custom-input" id="delivery-custom-text" placeholder="Write your own delivery message..." style="display:none"></textarea>
     <div class="delivery-preview-box">
       <div class="delivery-preview-label">Message Preview</div>
       <div class="delivery-preview-text" id="delivery-preview-text"></div>
@@ -3709,6 +3734,9 @@ async function initApp() {
     if (localStorage.getItem('orveil-dark-mode') === '1') {
       document.body.classList.add('dark-mode');
     }
+    if (localStorage.getItem('orveil-pink-mode') === '1') {
+      document.body.classList.add('pink-mode');
+    }
 
     // Accept pending invite if present
     if (pendingInviteToken) {
@@ -4128,8 +4156,12 @@ async function loadShareLink() {
 async function loadGallerySettings() {
   const defaults = { logo_path: null, bg_color: '#0a0a0a', accent_color: '#fafafa', font_family: 'Playfair Display', layout: 'masonry', wallpaper: 'none' };
 
-  const { data: profile } = await dbSelect('profiles', 'gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout,gallery_wallpaper', `id=eq.${currentUser.id}`, { single: true });
-  const { data: proj } = await dbSelect('projects', 'gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout,gallery_wallpaper', `id=eq.${currentProject.id}`, { single: true });
+  const { data: profile } = await dbSelect('profiles', 'gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout', `id=eq.${currentUser.id}`, { single: true });
+  const { data: proj } = await dbSelect('projects', 'gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout', `id=eq.${currentProject.id}`, { single: true });
+  // Try wallpaper column separately (may not exist yet)
+  let projWp = null, profileWp = null;
+  try { const r = await dbSelect('projects', 'gallery_wallpaper', `id=eq.${currentProject.id}`, { single: true }); projWp = r.data?.gallery_wallpaper; } catch {}
+  try { const r = await dbSelect('profiles', 'gallery_wallpaper', `id=eq.${currentUser.id}`, { single: true }); profileWp = r.data?.gallery_wallpaper; } catch {}
 
   const p = profile || {};
   currentGallerySettings = {
@@ -4138,7 +4170,7 @@ async function loadGallerySettings() {
     accent_color: proj?.gallery_accent_color ?? p.gallery_accent_color ?? defaults.accent_color,
     font_family: proj?.gallery_font_family ?? p.gallery_font_family ?? defaults.font_family,
     layout: proj?.gallery_layout ?? p.gallery_layout ?? defaults.layout,
-    wallpaper: proj?.gallery_wallpaper ?? p.gallery_wallpaper ?? defaults.wallpaper
+    wallpaper: projWp ?? profileWp ?? defaults.wallpaper
   };
 
   populateCustomizeUI();
@@ -4467,7 +4499,17 @@ function closeDelivery() {
 function selectDelivery(el) {
   document.querySelectorAll('.delivery-opt').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
-  updateDeliveryPreview(el.dataset.style);
+  const customInput = document.getElementById('delivery-custom-text');
+  if (el.dataset.style === 'custom') {
+    customInput.style.display = 'block';
+    customInput.oninput = () => {
+      document.getElementById('delivery-preview-text').textContent = customInput.value ? `"${customInput.value}"` : '"Type your message above..."';
+    };
+    document.getElementById('delivery-preview-text').textContent = customInput.value ? `"${customInput.value}"` : '"Type your message above..."';
+  } else {
+    customInput.style.display = 'none';
+    updateDeliveryPreview(el.dataset.style);
+  }
 }
 
 function updateDeliveryPreview(style) {
@@ -4508,10 +4550,11 @@ async function sendDelivery() {
     gallery_bg_color: currentGallerySettings.bg_color,
     gallery_accent_color: currentGallerySettings.accent_color,
     gallery_font_family: currentGallerySettings.font_family,
-    gallery_layout: currentGallerySettings.layout,
-    gallery_wallpaper: currentGallerySettings.wallpaper
+    gallery_layout: currentGallerySettings.layout
   };
   await dbUpdate('projects', galUpdate, `id=eq.${currentProject.id}`);
+  // Try wallpaper separately (column may not exist yet)
+  try { await dbUpdate('projects', { gallery_wallpaper: currentGallerySettings.wallpaper }, `id=eq.${currentProject.id}`); } catch {}
 
   // Save as default if checked
   if (document.getElementById('save-as-default').checked) {
@@ -4520,9 +4563,9 @@ async function sendDelivery() {
       gallery_bg_color: currentGallerySettings.bg_color,
       gallery_accent_color: currentGallerySettings.accent_color,
       gallery_font_family: currentGallerySettings.font_family,
-      gallery_layout: currentGallerySettings.layout,
-      gallery_wallpaper: currentGallerySettings.wallpaper
+      gallery_layout: currentGallerySettings.layout
     }, `id=eq.${currentUser.id}`);
+    try { await dbUpdate('profiles', { gallery_wallpaper: currentGallerySettings.wallpaper }, `id=eq.${currentUser.id}`); } catch {}
   }
 
   const galleryUrl = `${window.location.origin}${window.location.pathname}?gallery=${token}`;
@@ -4534,7 +4577,9 @@ async function sendDelivery() {
   // Send email via API
   btn.textContent = 'Sending...';
   const style = document.querySelector('.delivery-opt.selected')?.dataset.style || 'standard';
-  const message = deliveryMessages[style]?.(currentProject?.name) || '';
+  const message = style === 'custom'
+    ? (document.getElementById('delivery-custom-text').value || 'Your gallery is ready!')
+    : (deliveryMessages[style]?.(currentProject?.name) || '');
   const logoUrl = currentGallerySettings.logo_path
     ? `${SUPABASE_URL}/storage/v1/object/public/logos/${currentGallerySettings.logo_path}` : null;
 
@@ -5096,6 +5141,11 @@ function openSettings() {
   if (document.body.classList.contains('dark-mode')) dm.classList.add('active');
   else dm.classList.remove('active');
 
+  // Pink mode toggle
+  const pm = document.getElementById('pink-mode-toggle');
+  if (document.body.classList.contains('pink-mode')) pm.classList.add('active');
+  else pm.classList.remove('active');
+
   updateStorage();
 }
 
@@ -5169,7 +5219,26 @@ function toggleDarkMode() {
   const toggle = document.getElementById('dark-mode-toggle');
   document.body.classList.toggle('dark-mode');
   toggle.classList.toggle('active');
+  // Turn off pink mode if dark mode is on
+  if (document.body.classList.contains('dark-mode')) {
+    document.body.classList.remove('pink-mode');
+    document.getElementById('pink-mode-toggle').classList.remove('active');
+    localStorage.setItem('orveil-pink-mode', '0');
+  }
   localStorage.setItem('orveil-dark-mode', document.body.classList.contains('dark-mode') ? '1' : '0');
+}
+
+function togglePinkMode() {
+  const toggle = document.getElementById('pink-mode-toggle');
+  document.body.classList.toggle('pink-mode');
+  toggle.classList.toggle('active');
+  // Turn off dark mode if pink mode is on
+  if (document.body.classList.contains('pink-mode')) {
+    document.body.classList.remove('dark-mode');
+    document.getElementById('dark-mode-toggle').classList.remove('active');
+    localStorage.setItem('orveil-dark-mode', '0');
+  }
+  localStorage.setItem('orveil-pink-mode', document.body.classList.contains('pink-mode') ? '1' : '0');
 }
 
 // ─── UTILS ───
