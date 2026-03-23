@@ -1163,6 +1163,10 @@
   .room-scene[data-poster1="quote"] .room-poster:not(.p2) .room-poster-tape { display: none; }
 
   .room-scene[data-poster1="none"] .room-poster:not(.p2) { display: none; }
+  .room-scene[data-poster1="custom"] .room-poster:not(.p2) .room-poster-art { background: #111; }
+  .room-scene[data-poster1="custom"] .room-poster:not(.p2) .room-poster-art::before { display: none; }
+  .room-scene[data-poster1="custom"] .room-poster:not(.p2) .room-poster-art::after { display: none; }
+  .room-scene[data-poster1="custom"] .room-poster:not(.p2) .room-poster-tape { display: none; }
 
   /* Poster variants — Poster 2 (right, .p2) */
   .room-scene[data-poster2="nirvana"] .room-poster.p2 .room-poster-art { background: #0a0a0a; }
@@ -1186,6 +1190,18 @@
   .room-scene[data-poster2="quote"] .room-poster.p2 .room-poster-art::after { content: 'CREATE'; color: #fafafa; font-size: 6px; font-weight: 900; letter-spacing: 3px; top: 50%; bottom: auto; transform: translateY(-50%); font-family: 'Helvetica Neue', sans-serif; }
 
   .room-scene[data-poster2="none"] .room-poster.p2 { display: none; }
+  .room-scene[data-poster2="custom"] .room-poster.p2 .room-poster-art { background: #111; }
+  .room-scene[data-poster2="custom"] .room-poster.p2 .room-poster-art::before { display: none; }
+  .room-scene[data-poster2="custom"] .room-poster.p2 .room-poster-art::after { display: none; }
+  .room-scene[data-poster2="custom"] .room-poster.p2 .room-poster-tape { display: none; }
+
+  /* Custom poster image styling */
+  .room-poster-art .custom-poster-img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; display: none;
+  }
+  .room-scene[data-poster1="custom"] .room-poster:not(.p2) .room-poster-art .custom-poster-img,
+  .room-scene[data-poster2="custom"] .room-poster.p2 .room-poster-art .custom-poster-img { display: block; }
 
   /* Bean bag colors */
   .room-scene[data-beanbag="pink"] .bean-bag { background: radial-gradient(ellipse at 45% 40%, #4a2838 0%, #3a1e30 40%, #2e1428 100%); }
@@ -2424,12 +2440,12 @@
         <!-- Poster on wall -->
         <div class="room-poster" data-draggable="poster1">
           <div class="room-poster-tape"></div>
-          <div class="room-poster-art"></div>
+          <div class="room-poster-art"><img class="custom-poster-img" id="custom-poster1-img" alt=""></div>
         </div>
         <!-- Second poster -->
         <div class="room-poster p2" data-draggable="poster2">
           <div class="room-poster-tape"></div>
-          <div class="room-poster-art"></div>
+          <div class="room-poster-art"><img class="custom-poster-img" id="custom-poster2-img" alt=""></div>
         </div>
         <!-- Shelf on right wall -->
         <div class="room-shelf" data-draggable="shelf">
@@ -2644,6 +2660,8 @@
           <div class="rc-poster-opt" data-value="sza" style="background:#2a1040;color:#e0a060" onclick="setRoomOption('poster1','sza')">SZA</div>
           <div class="rc-poster-opt" data-value="quote" style="background:#0a0a0a;color:#fafafa" onclick="setRoomOption('poster1','quote')">TXT</div>
           <div class="rc-poster-opt" data-value="none" style="background:#1a1a1a;color:rgba(255,255,255,0.3)" onclick="setRoomOption('poster1','none')">&#x2715;</div>
+          <div class="rc-poster-opt" data-value="custom" style="background:#1a1a1a;color:rgba(250,250,250,0.6);font-size:10px" onclick="triggerPosterUpload('poster1')">+</div>
+          <input type="file" id="poster1-upload" accept="image/*" style="display:none" onchange="handlePosterUpload('poster1',this)">
         </div>
       </div>
 
@@ -2657,6 +2675,8 @@
           <div class="rc-poster-opt" data-value="sza" style="background:#2a1040;color:#e0a060" onclick="setRoomOption('poster2','sza')">SZA</div>
           <div class="rc-poster-opt" data-value="quote" style="background:#0a0a0a;color:#fafafa" onclick="setRoomOption('poster2','quote')">TXT</div>
           <div class="rc-poster-opt" data-value="none" style="background:#1a1a1a;color:rgba(255,255,255,0.3)" onclick="setRoomOption('poster2','none')">&#x2715;</div>
+          <div class="rc-poster-opt" data-value="custom" style="background:#1a1a1a;color:rgba(250,250,250,0.6);font-size:10px" onclick="triggerPosterUpload('poster2')">+</div>
+          <input type="file" id="poster2-upload" accept="image/*" style="display:none" onchange="handlePosterUpload('poster2',this)">
         </div>
       </div>
 
@@ -2751,7 +2771,7 @@
 <!-- PROJECT VIEW -->
 <div id="project-screen" class="screen">
   <nav class="project-nav">
-    <button class="back-btn" onclick="showDashboard()">&#8592; Projects</button>
+    <button class="back-btn" onclick="showDashboard()">&#8592; Project Manager</button>
     <div class="project-nav-title" id="project-nav-title"></div>
     <span class="edit-mode-badge">Edit Mode</span>
     <div class="project-nav-actions">
@@ -4550,6 +4570,8 @@ function loadRoomConfig() {
   // Restore light state
   const lightsOn = localStorage.getItem('orveil-room-lights') === '1';
   scene.classList.toggle('lights-on', lightsOn);
+  // Restore custom poster images
+  loadCustomPosters();
 }
 
 function toggleRoomLight() {
@@ -4611,6 +4633,42 @@ function updateCustomizerUI(config) {
 function toggleClutter() {
   const config = getRoomConfig();
   setRoomOption('clutter', config.clutter === 'on' ? 'off' : 'on');
+}
+
+function triggerPosterUpload(posterKey) {
+  document.getElementById(posterKey + '-upload').click();
+}
+
+function handlePosterUpload(posterKey, input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const dataUrl = e.target.result;
+    localStorage.setItem('orveil-' + posterKey + '-custom', dataUrl);
+    setRoomOption(posterKey, 'custom');
+    applyCustomPoster(posterKey, dataUrl);
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function applyCustomPoster(posterKey, dataUrl) {
+  const num = posterKey === 'poster1' ? '1' : '2';
+  const img = document.getElementById('custom-poster' + num + '-img');
+  if (img) img.src = dataUrl || '';
+}
+
+function loadCustomPosters() {
+  const config = getRoomConfig();
+  if (config.poster1 === 'custom') {
+    const url = localStorage.getItem('orveil-poster1-custom');
+    if (url) applyCustomPoster('poster1', url);
+  }
+  if (config.poster2 === 'custom') {
+    const url = localStorage.getItem('orveil-poster2-custom');
+    if (url) applyCustomPoster('poster2', url);
+  }
 }
 
 function openRoomCustomizer() {
