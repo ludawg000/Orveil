@@ -270,6 +270,7 @@
     overflow: hidden;
     perspective: 800px;
     perspective-origin: 50% 55%;
+    background: #020202;
   }
 
   .room-scene > * { position: absolute; }
@@ -488,7 +489,7 @@
 
   /* === FLOOR — ground plane below back wall === */
   .room-floor {
-    top: 72%; left: 8%; right: 8%; bottom: 0;
+    top: 72%; left: 0; right: 0; bottom: 0;
     background:
       linear-gradient(180deg, #0e0d0a 0%, #0a0908 20%, #080807 50%, #050504 100%);
     z-index: 0;
@@ -1027,6 +1028,24 @@
   .room-scene[data-wall="white"]::before { background: linear-gradient(90deg, #a8a4a0 0%, #b8b4ae 60%, #c8c4be 100%) !important; }
   .room-scene[data-wall="white"]::after { background: linear-gradient(-90deg, #a8a4a0 0%, #b8b4ae 60%, #c8c4be 100%) !important; }
   .room-scene[data-wall="white"] .room-wall::after { background: linear-gradient(180deg, #b8b4ae, #a8a4a0); }
+
+  /* Room-scene background matches side walls so corners don't show black */
+  .room-scene[data-wall="charcoal"] { background: #0a0a0e; }
+  .room-scene[data-wall="sage"] { background: #040804; }
+  .room-scene[data-wall="rose"] { background: #080406; }
+  .room-scene[data-wall="navy"] { background: #040408; }
+  .room-scene[data-wall="cream"] { background: #0a0a06; }
+  .room-scene[data-wall="blush"] { background: #0c060a; }
+  .room-scene[data-wall="lilac-wall"] { background: #080610; }
+  .room-scene[data-wall="sky"] { background: #040a10; }
+  .room-scene[data-wall="moss"] { background: #040a04; }
+  .room-scene[data-wall="wine"] { background: #080406; }
+  .room-scene[data-wall="rust"] { background: #0a0804; }
+  .room-scene[data-wall="teal-wall"] { background: #040a0a; }
+  .room-scene[data-wall="plum-wall"] { background: #06040a; }
+  .room-scene[data-wall="gold"] { background: #0a0a04; }
+  .room-scene[data-wall="slate-wall"] { background: #04060a; }
+  .room-scene[data-wall="white"] { background: #a8a4a0; }
 
   /* Computer colors */
   .room-scene[data-computer="space-gray"] .mac-case { background: linear-gradient(180deg, #5a5a5e 0%, #4a4a4e 40%, #3e3e42 100%); }
