@@ -1025,8 +1025,6 @@
   .room-scene[data-wall="gold"] .room-wall { background: linear-gradient(180deg, #14120a 0%, #1e1c10 20%, #282618 50%, #323020 80%, #3c3a28 100%); }
   .room-scene[data-wall="slate-wall"] .room-wall { background: linear-gradient(180deg, #0c0e14 0%, #14161e 20%, #1a1e28 50%, #202632 80%, #262e3c 100%); }
   .room-scene[data-wall="white"] .room-wall { background: linear-gradient(180deg, #c8c4be 0%, #d4d0ca 20%, #dedad4 50%, #e4e0da 80%, #eae6e0 100%); }
-  .room-scene[data-wall="white"]::before { background: linear-gradient(90deg, #a8a4a0 0%, #b8b4ae 60%, #c8c4be 100%) !important; }
-  .room-scene[data-wall="white"]::after { background: linear-gradient(-90deg, #a8a4a0 0%, #b8b4ae 60%, #c8c4be 100%) !important; }
   .room-scene[data-wall="white"] .room-wall::after { background: linear-gradient(180deg, #b8b4ae, #a8a4a0); }
 
   /* Room-scene background matches side walls so corners don't show black */
@@ -1045,7 +1043,7 @@
   .room-scene[data-wall="plum-wall"] { background: #06040a; }
   .room-scene[data-wall="gold"] { background: #0a0a04; }
   .room-scene[data-wall="slate-wall"] { background: #04060a; }
-  .room-scene[data-wall="white"] { background: #a8a4a0; }
+  .room-scene[data-wall="white"] { background: #8a8680; }
 
   /* Computer colors */
   .room-scene[data-computer="space-gray"] .mac-case { background: linear-gradient(180deg, #5a5a5e 0%, #4a4a4e 40%, #3e3e42 100%); }
@@ -1176,43 +1174,39 @@
   .room-scene[data-floor="sand"] .room-floor { background: linear-gradient(180deg, #2c2618 0%, #262014 30%, #201a10 60%, #1a160e 100%); }
   .room-scene[data-floor="white"] .room-floor { background: linear-gradient(180deg, #c8c4be 0%, #beb8b2 30%, #b4aea8 60%, #aaa49e 100%); }
 
-  /* Side wall colors */
-  .room-scene[data-wall="charcoal"]::before { background: linear-gradient(90deg, #0a0a0e 0%, #141418 60%, #1a1a1e 100%); }
-  .room-scene[data-wall="charcoal"]::after { background: linear-gradient(-90deg, #0a0a0e 0%, #141418 60%, #1a1a1e 100%); }
-  .room-scene[data-wall="sage"]::before { background: linear-gradient(90deg, #040804 0%, #0a120a 60%, #101a10 100%); }
-  .room-scene[data-wall="sage"]::after { background: linear-gradient(-90deg, #040804 0%, #0a120a 60%, #101a10 100%); }
-  .room-scene[data-wall="rose"]::before { background: linear-gradient(90deg, #080406 0%, #140e10 60%, #1e1416 100%); }
-  .room-scene[data-wall="rose"]::after { background: linear-gradient(-90deg, #080406 0%, #140e10 60%, #1e1416 100%); }
-  .room-scene[data-wall="navy"]::before { background: linear-gradient(90deg, #040408 0%, #080c18 60%, #0c1020 100%); }
-  .room-scene[data-wall="navy"]::after { background: linear-gradient(-90deg, #040408 0%, #080c18 60%, #0c1020 100%); }
-  .room-scene[data-wall="cream"]::before { background: linear-gradient(90deg, #0a0a06 0%, #141210 60%, #1c1a16 100%); }
-  .room-scene[data-wall="cream"]::after { background: linear-gradient(-90deg, #0a0a06 0%, #141210 60%, #1c1a16 100%); }
-  .room-scene[data-wall="blush"]::before { background: linear-gradient(90deg, #0c060a 0%, #1a1018 60%, #241620 100%); }
-  .room-scene[data-wall="blush"]::after { background: linear-gradient(-90deg, #0c060a 0%, #1a1018 60%, #241620 100%); }
-  .room-scene[data-wall="lilac"]::before { background: linear-gradient(90deg, #080610 0%, #141020 60%, #1c1828 100%); }
-  .room-scene[data-wall="lilac"]::after { background: linear-gradient(-90deg, #080610 0%, #141020 60%, #1c1828 100%); }
-  .room-scene[data-wall="sky"]::before { background: linear-gradient(90deg, #040a10 0%, #0c1420 60%, #141c2a 100%); }
-  .room-scene[data-wall="sky"]::after { background: linear-gradient(-90deg, #040a10 0%, #0c1420 60%, #141c2a 100%); }
-  .room-scene[data-wall="moss"]::before { background: linear-gradient(90deg, #040a04 0%, #0c140c 60%, #141c14 100%); }
-  .room-scene[data-wall="moss"]::after { background: linear-gradient(-90deg, #040a04 0%, #0c140c 60%, #141c14 100%); }
-  .room-scene[data-wall="wine"]::before { background: linear-gradient(90deg, #080406 0%, #140a0e 60%, #1e1014 100%); }
-  .room-scene[data-wall="wine"]::after { background: linear-gradient(-90deg, #080406 0%, #140a0e 60%, #1e1014 100%); }
-  .room-scene[data-wall="teal"]::before { background: linear-gradient(90deg, #040a0a 0%, #0e1818 60%, #142222 100%); }
-  .room-scene[data-wall="teal"]::after { background: linear-gradient(-90deg, #040a0a 0%, #0e1818 60%, #142222 100%); }
-  .room-scene[data-wall="plum"]::before { background: linear-gradient(90deg, #06040a 0%, #100a16 60%, #18101e 100%); }
-  .room-scene[data-wall="plum"]::after { background: linear-gradient(-90deg, #06040a 0%, #100a16 60%, #18101e 100%); }
-  .room-scene[data-wall="lilac-wall"]::before { background: linear-gradient(90deg, #080610 0%, #141020 60%, #1c1828 100%); }
-  .room-scene[data-wall="lilac-wall"]::after { background: linear-gradient(-90deg, #080610 0%, #141020 60%, #1c1828 100%); }
-  .room-scene[data-wall="rust"]::before { background: linear-gradient(90deg, #0a0804 0%, #141008 60%, #1e180e 100%); }
-  .room-scene[data-wall="rust"]::after { background: linear-gradient(-90deg, #0a0804 0%, #141008 60%, #1e180e 100%); }
-  .room-scene[data-wall="teal-wall"]::before { background: linear-gradient(90deg, #040a0a 0%, #0e1818 60%, #142222 100%); }
-  .room-scene[data-wall="teal-wall"]::after { background: linear-gradient(-90deg, #040a0a 0%, #0e1818 60%, #142222 100%); }
-  .room-scene[data-wall="plum-wall"]::before { background: linear-gradient(90deg, #06040a 0%, #100a16 60%, #18101e 100%); }
-  .room-scene[data-wall="plum-wall"]::after { background: linear-gradient(-90deg, #06040a 0%, #100a16 60%, #18101e 100%); }
-  .room-scene[data-wall="gold"]::before { background: linear-gradient(90deg, #0a0a04 0%, #14120a 60%, #1c1a10 100%); }
-  .room-scene[data-wall="gold"]::after { background: linear-gradient(-90deg, #0a0a04 0%, #14120a 60%, #1c1a10 100%); }
-  .room-scene[data-wall="slate-wall"]::before { background: linear-gradient(90deg, #04060a 0%, #0c0e14 60%, #14161e 100%); }
-  .room-scene[data-wall="slate-wall"]::after { background: linear-gradient(-90deg, #04060a 0%, #0c0e14 60%, #14161e 100%); }
+  /* Side wall colors — shaded darker than back wall for perspective depth */
+  .room-scene[data-wall="charcoal"]::before { background: linear-gradient(90deg, #08080c 0%, #0e0e14 60%, #141418 100%); }
+  .room-scene[data-wall="charcoal"]::after { background: linear-gradient(-90deg, #08080c 0%, #0e0e14 60%, #141418 100%); }
+  .room-scene[data-wall="sage"]::before { background: linear-gradient(90deg, #060a06 0%, #0a140a 60%, #0e1a0e 100%); }
+  .room-scene[data-wall="sage"]::after { background: linear-gradient(-90deg, #060a06 0%, #0a140a 60%, #0e1a0e 100%); }
+  .room-scene[data-wall="rose"]::before { background: linear-gradient(90deg, #0c0608 0%, #160c10 60%, #1c1016 100%); }
+  .room-scene[data-wall="rose"]::after { background: linear-gradient(-90deg, #0c0608 0%, #160c10 60%, #1c1016 100%); }
+  .room-scene[data-wall="navy"]::before { background: linear-gradient(90deg, #04060e 0%, #080c1a 60%, #0c1024 100%); }
+  .room-scene[data-wall="navy"]::after { background: linear-gradient(-90deg, #04060e 0%, #080c1a 60%, #0c1024 100%); }
+  .room-scene[data-wall="cream"]::before { background: linear-gradient(90deg, #100e0a 0%, #181610 60%, #201e16 100%); }
+  .room-scene[data-wall="cream"]::after { background: linear-gradient(-90deg, #100e0a 0%, #181610 60%, #201e16 100%); }
+  .room-scene[data-wall="blush"]::before { background: linear-gradient(90deg, #140c12 0%, #201418 60%, #2a1a22 100%); }
+  .room-scene[data-wall="blush"]::after { background: linear-gradient(-90deg, #140c12 0%, #201418 60%, #2a1a22 100%); }
+  .room-scene[data-wall="lilac-wall"]::before { background: linear-gradient(90deg, #0c0a14 0%, #14101e 60%, #1a1628 100%); }
+  .room-scene[data-wall="lilac-wall"]::after { background: linear-gradient(-90deg, #0c0a14 0%, #14101e 60%, #1a1628 100%); }
+  .room-scene[data-wall="sky"]::before { background: linear-gradient(90deg, #080e16 0%, #0e1622 60%, #141e2e 100%); }
+  .room-scene[data-wall="sky"]::after { background: linear-gradient(-90deg, #080e16 0%, #0e1622 60%, #141e2e 100%); }
+  .room-scene[data-wall="moss"]::before { background: linear-gradient(90deg, #080e08 0%, #0e160e 60%, #141e14 100%); }
+  .room-scene[data-wall="moss"]::after { background: linear-gradient(-90deg, #080e08 0%, #0e160e 60%, #141e14 100%); }
+  .room-scene[data-wall="wine"]::before { background: linear-gradient(90deg, #0e0608 0%, #180c10 60%, #221016 100%); }
+  .room-scene[data-wall="wine"]::after { background: linear-gradient(-90deg, #0e0608 0%, #180c10 60%, #221016 100%); }
+  .room-scene[data-wall="rust"]::before { background: linear-gradient(90deg, #0e0c06 0%, #18140a 60%, #221c0e 100%); }
+  .room-scene[data-wall="rust"]::after { background: linear-gradient(-90deg, #0e0c06 0%, #18140a 60%, #221c0e 100%); }
+  .room-scene[data-wall="teal-wall"]::before { background: linear-gradient(90deg, #060e0e 0%, #0c1818 60%, #122222 100%); }
+  .room-scene[data-wall="teal-wall"]::after { background: linear-gradient(-90deg, #060e0e 0%, #0c1818 60%, #122222 100%); }
+  .room-scene[data-wall="plum-wall"]::before { background: linear-gradient(90deg, #0a060e 0%, #120c18 60%, #1a1222 100%); }
+  .room-scene[data-wall="plum-wall"]::after { background: linear-gradient(-90deg, #0a060e 0%, #120c18 60%, #1a1222 100%); }
+  .room-scene[data-wall="gold"]::before { background: linear-gradient(90deg, #0e0e06 0%, #18160c 60%, #201e12 100%); }
+  .room-scene[data-wall="gold"]::after { background: linear-gradient(-90deg, #0e0e06 0%, #18160c 60%, #201e12 100%); }
+  .room-scene[data-wall="slate-wall"]::before { background: linear-gradient(90deg, #080a10 0%, #0e1018 60%, #141820 100%); }
+  .room-scene[data-wall="slate-wall"]::after { background: linear-gradient(-90deg, #080a10 0%, #0e1018 60%, #141820 100%); }
+  .room-scene[data-wall="white"]::before { background: linear-gradient(90deg, #8a8680 0%, #9e9a94 60%, #b0aca6 100%); }
+  .room-scene[data-wall="white"]::after { background: linear-gradient(-90deg, #8a8680 0%, #9e9a94 60%, #b0aca6 100%); }
 
   /* Lightswitch — on left wall */
   .room-lightswitch {
