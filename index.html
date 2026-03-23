@@ -2068,10 +2068,12 @@
   .slideshow-media {
     display: flex; align-items: center; justify-content: center;
     width: 100%; max-width: 900px; margin: 0 auto;
+    transition: opacity 0.3s ease;
   }
   .slideshow-img {
     max-width: 100%; max-height: 70vh; object-fit: contain;
     display: block; margin: 0 auto;
+    transition: opacity 0.4s ease;
   }
   .slideshow-video {
     max-width: 100%; max-height: 70vh;
@@ -2079,13 +2081,14 @@
   }
   .slideshow-nav {
     position: absolute; top: 50%; transform: translateY(-50%);
-    width: 48px; height: 48px; border-radius: 50%;
-    background: none; border: 1px solid rgba(255,255,255,0.12);
-    color: rgba(255,255,255,0.5); font-size: 1.3rem;
+    width: 44px; height: 44px;
+    background: none; border: 1px solid var(--gal-accent, rgba(255,255,255,0.12));
+    color: var(--gal-accent, rgba(255,255,255,0.5)); font-size: 1.2rem;
     cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: all 0.3s; backdrop-filter: blur(8px); z-index: 10;
+    transition: all 0.3s; opacity: 0.35; z-index: 10;
+    font-family: var(--gal-font, var(--serif));
   }
-  .slideshow-nav:hover { color: white; border-color: rgba(255,255,255,0.3); }
+  .slideshow-nav:hover { opacity: 0.8; }
   .slideshow-prev { left: 1.5rem; }
   .slideshow-next { right: 1.5rem; }
   .slideshow-bottom {
@@ -2093,20 +2096,23 @@
     display: flex; align-items: center; gap: 2rem;
   }
   .slideshow-counter {
-    font-size: 0.68rem; color: rgba(255,255,255,0.35); letter-spacing: 0.1em;
+    font-family: var(--gal-font, var(--serif));
+    font-size: 0.65rem; color: var(--gal-accent, rgba(255,255,255,0.35));
+    letter-spacing: 0.15em; opacity: 0.4;
   }
   .slideshow-dl {
-    font-family: var(--sans); font-size: 0.65rem; font-weight: 400;
-    letter-spacing: 0.12em; text-transform: uppercase;
-    background: none; color: rgba(255,255,255,0.5);
-    border: 1px solid rgba(255,255,255,0.15);
-    padding: 0.5rem 1.2rem; cursor: pointer; transition: all 0.3s;
+    font-family: var(--gal-font, var(--serif)); font-size: 0.6rem; font-weight: 400;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    background: none; color: var(--gal-accent, rgba(255,255,255,0.5));
+    border: 1px solid var(--gal-accent, rgba(255,255,255,0.15));
+    padding: 0.5rem 1.4rem; cursor: pointer; transition: all 0.3s;
+    opacity: 0.4;
   }
-  .slideshow-dl:hover { color: white; border-color: rgba(255,255,255,0.4); }
+  .slideshow-dl:hover { opacity: 0.8; }
 
   /* GALLERY SCREEN */
   #gallery-screen {
-    background: var(--gal-bg, var(--black)); flex-direction: column;
+    background-color: var(--gal-bg, var(--black)); flex-direction: column;
   }
 
   .gallery-header {
@@ -2790,7 +2796,7 @@
 <!-- PROJECT VIEW -->
 <div id="project-screen" class="screen">
   <nav class="project-nav">
-    <button class="back-btn" onclick="showDashboard()">&#8592; Project Manager</button>
+    <button class="back-btn" id="project-back-btn" onclick="showDashboard()">&#8592; Home</button>
     <div class="project-nav-title" id="project-nav-title"></div>
     <span class="edit-mode-badge">Edit Mode</span>
     <div class="project-nav-actions">
@@ -3316,7 +3322,7 @@ function applyGalleryCustomization(project) {
   root.style.setProperty('--gal-bg', bg);
   root.style.setProperty('--gal-accent', accent);
   root.style.setProperty('--gal-font', `'${font}', serif`);
-  root.style.background = bg;
+  root.style.backgroundColor = bg;
 
   // Apply wallpaper pattern
   const wp = project.gallery_wallpaper || 'none';
@@ -3436,11 +3442,15 @@ function updateSlideshow() {
   const media = document.getElementById('slideshow-media');
   if (!media) return;
 
-  if (f.type?.startsWith('video/')) {
-    media.innerHTML = `<video class="slideshow-video" src="${f.publicUrl}" controls></video>`;
-  } else {
-    media.innerHTML = `<img class="slideshow-img" src="${f.publicUrl}" alt="${escHtml(f.name)}" onclick="openLightbox(${slideshowIndex})">`;
-  }
+  media.style.opacity = '0';
+  setTimeout(() => {
+    if (f.type?.startsWith('video/')) {
+      media.innerHTML = `<video class="slideshow-video" src="${f.publicUrl}" controls></video>`;
+    } else {
+      media.innerHTML = `<img class="slideshow-img" src="${f.publicUrl}" alt="${escHtml(f.name)}" onclick="openLightbox(${slideshowIndex})">`;
+    }
+    media.style.opacity = '1';
+  }, 200);
   document.getElementById('slideshow-counter').textContent = `${slideshowIndex + 1} / ${galleryFiles.length}`;
 }
 
@@ -3904,6 +3914,7 @@ async function openProject(id, name) {
   currentProject = { id, name };
   document.getElementById('project-nav-title').textContent = name;
   document.getElementById('project-screen').classList.remove('edit-mode');
+  document.getElementById('project-back-btn').innerHTML = '&#8592; Home';
   showScreen('project-screen');
   await loadFiles();
 }
@@ -3913,6 +3924,7 @@ function openProjectEditMode(id, name, event) {
   currentProject = { id, name };
   document.getElementById('project-nav-title').textContent = name;
   document.getElementById('project-screen').classList.add('edit-mode');
+  document.getElementById('project-back-btn').innerHTML = '&#8592; Project Manager';
   showScreen('project-screen');
   loadFiles();
 }
