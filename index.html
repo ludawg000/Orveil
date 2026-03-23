@@ -1571,6 +1571,8 @@
   .manage-invite-btn:hover { background: rgba(250,250,250,0.08); color: #fafafa; border-color: rgba(250,250,250,0.45); }
   .manage-delete-btn { color: rgba(200,80,80,0.7); border-color: rgba(200,80,80,0.25); }
   .manage-delete-btn:hover { background: rgba(200,80,80,0.1); color: #c85050; border-color: rgba(200,80,80,0.45); }
+  .manage-edit-btn { color: rgba(250,250,250,0.8); border-color: rgba(250,250,250,0.25); }
+  .manage-edit-btn:hover { background: rgba(250,250,250,0.08); color: #fafafa; border-color: rgba(250,250,250,0.45); }
 
   /* EMPTY STATE */
   .empty-state {
@@ -1583,6 +1585,29 @@
 
   /* PROJECT VIEW */
   #project-screen { flex-direction: column; }
+
+  /* Edit mode state */
+  #project-screen.edit-mode .project-nav { border-bottom: 1px solid var(--g200); }
+  #project-screen.edit-mode .deliver-btn,
+  #project-screen.edit-mode .upload-btn { display: none; }
+  #project-screen .edit-mode-badge {
+    display: none; font-family: var(--sans); font-size: 0.55rem; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--g400); background: var(--g100);
+    border: 1px solid var(--g200); padding: 0.25rem 0.7rem;
+  }
+  #project-screen.edit-mode .edit-mode-badge { display: inline-block; }
+  #project-screen .edit-toolbar {
+    display: none; align-items: center; justify-content: center;
+    padding: 0.8rem 2.5rem; background: var(--g100);
+    border-bottom: 1px solid var(--g200);
+  }
+  #project-screen.edit-mode .edit-toolbar { display: flex; }
+  .edit-toolbar-label {
+    font-family: var(--sans); font-size: 0.65rem; font-weight: 400;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--g300);
+  }
 
   .project-nav {
     display: flex; align-items: center; gap: 1.2rem;
@@ -2728,11 +2753,15 @@
   <nav class="project-nav">
     <button class="back-btn" onclick="showDashboard()">&#8592; Projects</button>
     <div class="project-nav-title" id="project-nav-title"></div>
+    <span class="edit-mode-badge">Edit Mode</span>
     <div class="project-nav-actions">
       <button class="deliver-btn" onclick="openDelivery()">Deliver to Client</button>
       <button class="upload-btn" onclick="document.getElementById('file-input').click()">+ Upload</button>
     </div>
   </nav>
+  <div class="edit-toolbar">
+    <span class="edit-toolbar-label">Editing tools coming soon</span>
+  </div>
   <div class="project-main">
     <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
       <div class="drop-zone-btn">Select Files</div>
@@ -3700,6 +3729,7 @@ async function loadProjects() {
 
     target.innerHTML = projects.map(p => {
       const manageOverlay = manageMode ? `<div class="manage-actions">
+        <button class="manage-action-btn manage-edit-btn" onclick="openProjectEditMode('${p.id}','${escHtml(p.name)}',event)">Edit</button>
         <button class="manage-action-btn manage-invite-btn" onclick="openInviteModal('${p.id}','${escHtml(p.name)}',event)">+ Invite</button>
         <button class="manage-action-btn manage-delete-btn" onclick="openDeleteModal('${p.id}','${escHtml(p.name)}',event)">Delete</button>
       </div>` : '';
@@ -3798,8 +3828,18 @@ async function createProject() {
 async function openProject(id, name) {
   currentProject = { id, name };
   document.getElementById('project-nav-title').textContent = name;
+  document.getElementById('project-screen').classList.remove('edit-mode');
   showScreen('project-screen');
   await loadFiles();
+}
+
+function openProjectEditMode(id, name, event) {
+  if (event) event.stopPropagation();
+  currentProject = { id, name };
+  document.getElementById('project-nav-title').textContent = name;
+  document.getElementById('project-screen').classList.add('edit-mode');
+  showScreen('project-screen');
+  loadFiles();
 }
 
 async function loadFiles() {
@@ -4865,6 +4905,7 @@ async function sendInvite() {
 
 // ─── NAVIGATION ───
 function showDashboard() {
+  document.getElementById('project-screen').classList.remove('edit-mode');
   showScreen('app-screen');
   loadProjects();
 }
