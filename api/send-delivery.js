@@ -22,6 +22,18 @@ export default async function handler(req, res) {
   const accentColor = branding?.accentColor || '#fafafa';
   const fontFamily = branding?.fontFamily || 'Georgia, serif';
   const logoUrl = branding?.logoUrl;
+  const wallpaper = branding?.wallpaper || 'none';
+
+  // Wallpaper patterns (email-safe inline CSS)
+  const wpStyles = {
+    none: '',
+    linen: 'background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(128,128,128,0.06) 2px, rgba(128,128,128,0.06) 4px), repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(128,128,128,0.04) 2px, rgba(128,128,128,0.04) 4px);',
+    paper: 'background-image: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(128,128,128,0.03) 3px, rgba(128,128,128,0.03) 4px);',
+    geometric: 'background-image: repeating-linear-gradient(60deg, transparent, transparent 8px, rgba(128,128,128,0.05) 8px, rgba(128,128,128,0.05) 9px), repeating-linear-gradient(-60deg, transparent, transparent 8px, rgba(128,128,128,0.05) 8px, rgba(128,128,128,0.05) 9px);',
+    dots: 'background-image: radial-gradient(circle, rgba(128,128,128,0.08) 1px, transparent 1px); background-size: 16px 16px;',
+    marble: 'background-image: linear-gradient(135deg, transparent 30%, rgba(128,128,128,0.04) 35%, transparent 40%, rgba(128,128,128,0.03) 55%, transparent 60%, rgba(128,128,128,0.04) 75%, transparent 80%);'
+  };
+  const wallpaperStyle = wpStyles[wallpaper] || '';
 
   const headerContent = logoUrl
     ? `<img src="${logoUrl}" alt="Brand" style="max-height: 48px; max-width: 200px;">`
@@ -32,7 +44,7 @@ export default async function handler(req, res) {
     : `<span style="color: ${accentColor}; opacity: 0.4;">Delivered with Orveil</span>`;
 
   const html = `
-    <div style="font-family: '${fontFamily}', 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background: ${bgColor}; color: ${accentColor}; padding: 3rem 2.5rem;">
+    <div style="font-family: '${fontFamily}', 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background: ${bgColor}; color: ${accentColor}; padding: 3rem 2.5rem; ${wallpaperStyle}">
       <div style="text-align: center; margin-bottom: 2.5rem;">
         ${headerContent}
       </div>

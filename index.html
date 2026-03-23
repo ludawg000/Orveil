@@ -225,43 +225,23 @@
     display: none;
     position: absolute; inset: 0;
     z-index: 50;
-    background: #000;
+    background: transparent;
     pointer-events: none;
     border-radius: 3px;
   }
   @keyframes crtOff {
-    0% { opacity: 0; }
-    5% { opacity: 1; }
-    /* Flash white */
-    10% { background: #fff; }
-    15% { background: #000; }
-    /* Shrink to horizontal line */
-    40% {
-      clip-path: inset(45% 0 45% 0);
-      background: #fff;
-      opacity: 1;
-    }
-    /* Line shrinks to dot */
-    70% {
-      clip-path: inset(49% 40% 49% 40%);
-      background: #fff;
-      opacity: 1;
-    }
-    /* Dot fades */
-    85% {
-      clip-path: inset(49.5% 49% 49.5% 49%);
-      background: #fff;
-      opacity: 0.6;
-    }
-    100% {
-      clip-path: inset(50% 50% 50% 50%);
-      background: #000;
-      opacity: 0;
-    }
+    0% { opacity: 0; backdrop-filter: blur(0); background: transparent; }
+    10% { opacity: 1; backdrop-filter: blur(0); background: transparent; }
+    20% { opacity: 1; backdrop-filter: blur(2px);
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px); }
+    50% { opacity: 1; backdrop-filter: blur(6px);
+      background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(200,200,200,0.08) 1px, rgba(200,200,200,0.08) 2px); }
+    70% { opacity: 1; backdrop-filter: blur(10px); background: rgba(0,0,0,0.7); }
+    100% { opacity: 1; backdrop-filter: blur(20px); background: rgba(0,0,0,1); }
   }
   .crt-shutdown.active {
     display: block;
-    animation: crtOff 1.2s ease-out forwards;
+    animation: crtOff 1.5s ease-out forwards;
   }
 
   /* === 3D ROOM — straight-on view from doorway === */
@@ -1260,6 +1240,36 @@
   .room-scene[data-lamp="wood-lamp"] .lamp-neck { background: linear-gradient(90deg, #5a4830, #7a6850 50%, #5a4830); }
   .room-scene[data-lamp="wood-lamp"] .lamp-base { background: linear-gradient(180deg, #7a6850 0%, #5a4830 100%); }
 
+  /* Desk colors/materials */
+  /* walnut = default (no override needed) */
+  .room-scene[data-desk="oak"] .desk-top { background: repeating-linear-gradient(90deg, transparent 0px, transparent 22px, rgba(0,0,0,0.04) 22px, rgba(0,0,0,0.04) 23px), linear-gradient(180deg, #9a8060 0%, #8a7050 30%, #7a6040 70%, #6a5030 100%); }
+  .room-scene[data-desk="oak"] .desk-top::after { background: repeating-linear-gradient(90deg, transparent 0px, transparent 22px, rgba(0,0,0,0.03) 22px, rgba(0,0,0,0.03) 23px), linear-gradient(180deg, #7a6040 0%, #6a5030 30%, #5a4020 100%); }
+  .room-scene[data-desk="oak"] .desk-leg { background: repeating-linear-gradient(180deg, transparent 0px, transparent 5px, rgba(0,0,0,0.04) 5px, rgba(0,0,0,0.04) 6px), linear-gradient(90deg, #5a4820 0%, #6a5830 25%, #7a6840 50%, #6a5830 75%, #5a4820 100%); }
+  .room-scene[data-desk="white-desk"] .desk-top { background: linear-gradient(180deg, #e8e4de 0%, #ddd8d0 30%, #d4d0c8 70%, #ccc8c0 100%); }
+  .room-scene[data-desk="white-desk"] .desk-top::after { background: linear-gradient(180deg, #d4d0c8 0%, #c8c4bc 30%, #beb8b0 100%); }
+  .room-scene[data-desk="white-desk"] .desk-leg { background: linear-gradient(90deg, #b8b4ac 0%, #c8c4bc 25%, #d4d0c8 50%, #c8c4bc 75%, #b8b4ac 100%); }
+  .room-scene[data-desk="white-desk"] .desk-stain, .room-scene[data-desk="white-desk"] .desk-scratch { display: none; }
+  .room-scene[data-desk="black-desk"] .desk-top { background: linear-gradient(180deg, #2a2a2a 0%, #222 30%, #1a1a1a 70%, #141414 100%); }
+  .room-scene[data-desk="black-desk"] .desk-top::after { background: linear-gradient(180deg, #1a1a1a 0%, #141414 30%, #0e0e0e 100%); }
+  .room-scene[data-desk="black-desk"] .desk-leg { background: linear-gradient(90deg, #0e0e0e 0%, #1a1a1a 25%, #222 50%, #1a1a1a 75%, #0e0e0e 100%); }
+  .room-scene[data-desk="black-desk"] .desk-stain, .room-scene[data-desk="black-desk"] .desk-scratch { display: none; }
+  .room-scene[data-desk="industrial"] .desk-top { background: linear-gradient(180deg, #3a3a40 0%, #30303a 30%, #2a2a34 70%, #24242e 100%); }
+  .room-scene[data-desk="industrial"] .desk-top::after { background: linear-gradient(180deg, #2a2a34 0%, #24242e 30%, #1e1e28 100%); }
+  .room-scene[data-desk="industrial"] .desk-leg { background: linear-gradient(90deg, #606068 0%, #70707a 25%, #7a7a84 50%, #70707a 75%, #606068 100%); width: 10px; }
+  .room-scene[data-desk="industrial"] .desk-stain, .room-scene[data-desk="industrial"] .desk-scratch { display: none; }
+  .room-scene[data-desk="marble"] .desk-top { background: linear-gradient(135deg, #e8e4e0 0%, #f0ece8 20%, #e0dcd8 40%, #eae6e2 60%, #d8d4d0 80%, #e8e4e0 100%); }
+  .room-scene[data-desk="marble"] .desk-top::after { background: linear-gradient(180deg, #d8d4d0 0%, #ccc8c4 30%, #c0bcb8 100%); }
+  .room-scene[data-desk="marble"] .desk-leg { background: linear-gradient(90deg, #606068 0%, #70707a 25%, #7a7a84 50%, #70707a 75%, #606068 100%); width: 8px; }
+  .room-scene[data-desk="marble"] .desk-stain, .room-scene[data-desk="marble"] .desk-scratch { display: none; }
+  .room-scene[data-desk="glass"] .desk-top { background: linear-gradient(180deg, rgba(200,210,220,0.5) 0%, rgba(180,195,210,0.4) 30%, rgba(160,175,190,0.35) 70%, rgba(140,155,170,0.3) 100%); box-shadow: 0 -2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.3), inset 0 -1px 0 rgba(255,255,255,0.15); }
+  .room-scene[data-desk="glass"] .desk-top::after { background: linear-gradient(180deg, rgba(160,175,190,0.3) 0%, rgba(140,155,170,0.25) 30%, rgba(120,135,150,0.2) 100%); }
+  .room-scene[data-desk="glass"] .desk-leg { background: linear-gradient(90deg, #888890 0%, #a0a0a8 25%, #b0b0b8 50%, #a0a0a8 75%, #888890 100%); width: 8px; }
+  .room-scene[data-desk="glass"] .desk-stain, .room-scene[data-desk="glass"] .desk-scratch { display: none; }
+  .room-scene[data-desk="pink-desk"] .desk-top { background: linear-gradient(180deg, #daa0aa 0%, #d49098 30%, #cc8890 70%, #c48088 100%); }
+  .room-scene[data-desk="pink-desk"] .desk-top::after { background: linear-gradient(180deg, #c48088 0%, #bc7880 30%, #b47078 100%); }
+  .room-scene[data-desk="pink-desk"] .desk-leg { background: linear-gradient(90deg, #a86870 0%, #b87880 25%, #c48088 50%, #b87880 75%, #a86870 100%); }
+  .room-scene[data-desk="pink-desk"] .desk-stain, .room-scene[data-desk="pink-desk"] .desk-scratch { display: none; }
+
   /* Floor colors */
   .room-scene[data-floor="charcoal"] .room-floor { background: linear-gradient(180deg, #1e1e22 0%, #181820 30%, #141418 60%, #101014 100%); }
   .room-scene[data-floor="slate"] .room-floor { background: linear-gradient(180deg, #222020 0%, #1c1a1a 30%, #161414 60%, #121010 100%); }
@@ -1329,44 +1339,6 @@
   .room-scene[data-wall="pastel-lavender"]::after { background: linear-gradient(-90deg, #887898 0%, #9888a8 60%, #a898b8 100%); }
   .room-scene[data-wall="beige"]::before { background: linear-gradient(90deg, #585040 0%, #686050 60%, #787060 100%); }
   .room-scene[data-wall="beige"]::after { background: linear-gradient(-90deg, #908878 0%, #a09888 60%, #b0a898 100%); }
-
-  /* Lightswitch — on left side wall, near the corner */
-  .room-lightswitch {
-    position: absolute; top: 42%; left: 5%; z-index: 5; cursor: pointer;
-  }
-  .lightswitch-plate {
-    width: 18px; height: 28px;
-    background: linear-gradient(180deg, #e4ddd0 0%, #d8d0c4 50%, #ccc4b4 100%);
-    border-radius: 2px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.3);
-    display: flex; align-items: center; justify-content: center;
-    border: 1px solid rgba(0,0,0,0.15);
-  }
-  .lightswitch-toggle {
-    width: 8px; height: 12px;
-    background: linear-gradient(180deg, #f0e8dc, #d8d0c0);
-    border-radius: 2px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.4);
-    transform: translateY(2px);
-    transition: transform 0.15s;
-  }
-  .room-scene.lights-on .lightswitch-toggle { transform: translateY(-2px); box-shadow: 0 -1px 4px rgba(0,0,0,0.3), inset 0 -1px 0 rgba(255,255,255,0.4); }
-
-  /* Lights-on brightness */
-  .room-scene.lights-on .room-wall { filter: brightness(1.6); }
-  .room-scene.lights-on .room-floor { filter: brightness(1.4); }
-  .room-scene.lights-on::before,
-  .room-scene.lights-on::after { filter: brightness(1.5); }
-  .room-scene.lights-on .ceiling-light::after {
-    background: radial-gradient(ellipse, rgba(255,240,200,0.6) 20%, rgba(255,230,180,0.2) 60%, transparent 80%);
-    box-shadow: 0 0 30px rgba(255,240,200,0.3);
-  }
-  .room-scene.lights-on .room-poster,
-  .room-scene.lights-on .room-bookshelf,
-  .room-scene.lights-on .room-shelf,
-  .room-scene.lights-on .bean-bag,
-  .room-scene.lights-on .room-desk,
-  .room-scene.lights-on .desk-chair { filter: brightness(1.3); }
 
   /* Computer size */
   .room-scene[data-compsize="small"] .mac-computer { transform: scale(0.7); transform-origin: bottom center; }
@@ -1768,20 +1740,57 @@
   }
 
   /* DELIVERY MODAL */
-  .delivery-options { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
+  .delivery-options { display: flex; flex-direction: row; gap: 0.5rem; margin-bottom: 1rem; }
   .delivery-opt {
-    padding: 0.9rem 1rem; border: 1px solid var(--g200); cursor: pointer;
-    display: flex; align-items: center; justify-content: space-between;
-    transition: all 0.15s;
+    flex: 1; padding: 0.55rem 0.5rem; border: 1px solid var(--g200); cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+    transition: all 0.15s; text-align: center;
   }
   .delivery-opt:hover, .delivery-opt.selected { border-color: var(--black); background: var(--g100); }
-  .delivery-opt-name { font-size: 0.85rem; font-weight: 500; }
-  .delivery-opt-desc { font-size: 0.72rem; color: var(--g400); margin-top: 0.15rem; }
-  .delivery-check { width: 16px; height: 16px; border-radius: 50%; border: 1px solid var(--g200); flex-shrink: 0; }
+  .delivery-opt-name { font-size: 0.75rem; font-weight: 500; }
+  .delivery-opt-desc { display: none; }
+  .delivery-check { width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--g200); flex-shrink: 0; }
   .delivery-opt.selected .delivery-check { background: var(--black); border-color: var(--black); }
-  .delivery-preview-box { background: var(--g100); padding: 1rem; border-radius: 1px; margin-bottom: 1rem; }
-  .delivery-preview-label { font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--g400); margin-bottom: 0.5rem; }
-  .delivery-preview-text { font-family: var(--serif); font-size: 0.85rem; color: var(--g600); line-height: 1.7; font-style: italic; }
+  .delivery-preview-box { background: var(--g100); padding: 0.8rem; border-radius: 1px; margin-bottom: 1rem; }
+  .delivery-preview-label { font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--g400); margin-bottom: 0.4rem; }
+  .delivery-preview-text { font-family: var(--serif); font-size: 0.8rem; color: var(--g600); line-height: 1.6; font-style: italic; }
+  /* Color Presets */
+  .color-presets { display: flex; gap: 0.5rem; margin-bottom: 0.8rem; flex-wrap: wrap; }
+  .color-preset {
+    width: 36px; height: 36px; border-radius: 50%; cursor: pointer; border: 2px solid transparent;
+    position: relative; overflow: hidden; transition: border-color 0.15s;
+  }
+  .color-preset:hover { border-color: var(--g400); }
+  .color-preset.active { border-color: var(--black); }
+  .color-preset::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 50%; }
+  .color-preset::after { content: ''; position: absolute; top: 50%; left: 0; right: 0; bottom: 0; }
+  .color-preset[data-preset="classic"]::before { background: #0a0a0a; }
+  .color-preset[data-preset="classic"]::after { background: #fafafa; }
+  .color-preset[data-preset="cream"]::before { background: #f5f0e8; }
+  .color-preset[data-preset="cream"]::after { background: #2a2420; }
+  .color-preset[data-preset="blush"]::before { background: #f8e8ec; }
+  .color-preset[data-preset="blush"]::after { background: #3a2028; }
+  .color-preset[data-preset="sage"]::before { background: #e8f0e8; }
+  .color-preset[data-preset="sage"]::after { background: #1a2a1a; }
+  .color-preset[data-preset="lavender"]::before { background: #f0e8f8; }
+  .color-preset[data-preset="lavender"]::after { background: #2a1a38; }
+  .color-preset[data-preset="sky"]::before { background: #e8f0f8; }
+  .color-preset[data-preset="sky"]::after { background: #1a2434; }
+  /* Wallpaper Swatches */
+  .wallpaper-options { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .wallpaper-opt {
+    width: 48px; height: 48px; border: 1px solid var(--g200); cursor: pointer; position: relative;
+    background: var(--g100); transition: border-color 0.15s; overflow: hidden;
+  }
+  .wallpaper-opt:hover { border-color: var(--g400); }
+  .wallpaper-opt.active { border-color: var(--black); }
+  .wallpaper-opt::after { content: attr(data-label); position: absolute; bottom: 2px; left: 0; right: 0; text-align: center; font-size: 0.5rem; color: var(--g400); letter-spacing: 0.05em; }
+  .wallpaper-opt[data-wp="none"]::before { content: '—'; position: absolute; top: 35%; left: 0; right: 0; text-align: center; font-size: 0.7rem; color: var(--g300); }
+  .wallpaper-opt[data-wp="linen"]::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px), repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px); }
+  .wallpaper-opt[data-wp="paper"]::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0,0,0,0.02) 3px, rgba(0,0,0,0.02) 4px); }
+  .wallpaper-opt[data-wp="geometric"]::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(60deg, transparent, transparent 8px, rgba(0,0,0,0.04) 8px, rgba(0,0,0,0.04) 9px), repeating-linear-gradient(-60deg, transparent, transparent 8px, rgba(0,0,0,0.04) 8px, rgba(0,0,0,0.04) 9px); }
+  .wallpaper-opt[data-wp="dots"]::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle, rgba(0,0,0,0.06) 1px, transparent 1px); background-size: 8px 8px; }
+  .wallpaper-opt[data-wp="marble"]::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 30%, rgba(0,0,0,0.03) 35%, transparent 40%, rgba(0,0,0,0.02) 55%, transparent 60%, rgba(0,0,0,0.03) 75%, transparent 80%); }
   .delivery-email-input { width: 100%; font-family: var(--sans); font-size: 0.82rem; padding: 0.75rem 1rem; border: 1px solid var(--g200); background: transparent; color: var(--black); outline: none; margin-bottom: 0.8rem; }
   .delivery-email-input:focus { border-color: var(--black); }
 
@@ -2467,12 +2476,6 @@
           <div class="window-glass" id="room-window-glass-2"></div>
           <div class="window-frame"></div>
         </div>
-        <!-- Lightswitch -->
-        <div class="room-lightswitch" onclick="toggleRoomLight()">
-          <div class="lightswitch-plate">
-            <div class="lightswitch-toggle"></div>
-          </div>
-        </div>
         <!-- Floor -->
         <div class="room-floor"></div>
         <!-- Bookshelf (left side, against wall) -->
@@ -2719,6 +2722,20 @@
           <div class="rc-swatch" data-value="pink-lamp" data-label="Pink" style="background:#d4909a" onclick="setRoomOption('lamp','pink-lamp')"></div>
           <div class="rc-swatch" data-value="chrome" data-label="Chrome" style="background:#a0a0a8" onclick="setRoomOption('lamp','chrome')"></div>
           <div class="rc-swatch" data-value="wood-lamp" data-label="Wood" style="background:#6a5840" onclick="setRoomOption('lamp','wood-lamp')"></div>
+        </div>
+      </div>
+
+      <div class="rc-section">
+        <div class="rc-label">Desk</div>
+        <div class="rc-swatches" data-option="desk">
+          <div class="rc-swatch" data-value="walnut" data-label="Walnut" style="background:#5a4a38" onclick="setRoomOption('desk','walnut')"></div>
+          <div class="rc-swatch" data-value="oak" data-label="Oak" style="background:#8a7050" onclick="setRoomOption('desk','oak')"></div>
+          <div class="rc-swatch" data-value="white-desk" data-label="White" style="background:#ddd8d0" onclick="setRoomOption('desk','white-desk')"></div>
+          <div class="rc-swatch" data-value="black-desk" data-label="Black" style="background:#222" onclick="setRoomOption('desk','black-desk')"></div>
+          <div class="rc-swatch" data-value="industrial" data-label="Industrial" style="background:#3a3a40" onclick="setRoomOption('desk','industrial')"></div>
+          <div class="rc-swatch" data-value="marble" data-label="Marble" style="background:linear-gradient(135deg,#e8e4e0,#d8d4d0)" onclick="setRoomOption('desk','marble')"></div>
+          <div class="rc-swatch" data-value="glass" data-label="Glass" style="background:rgba(180,195,210,0.6)" onclick="setRoomOption('desk','glass')"></div>
+          <div class="rc-swatch" data-value="pink-desk" data-label="Pink" style="background:#d49098" onclick="setRoomOption('desk','pink-desk')"></div>
         </div>
       </div>
 
@@ -3005,6 +3022,42 @@
     </div>
     <div class="delivery-customize" id="delivery-customize" style="display:none">
       <div class="customize-section">
+        <label class="customize-label">Color Presets</label>
+        <div class="color-presets">
+          <div class="color-preset active" data-preset="classic" title="Classic" onclick="applyColorPreset('classic')"></div>
+          <div class="color-preset" data-preset="cream" title="Cream" onclick="applyColorPreset('cream')"></div>
+          <div class="color-preset" data-preset="blush" title="Blush" onclick="applyColorPreset('blush')"></div>
+          <div class="color-preset" data-preset="sage" title="Sage" onclick="applyColorPreset('sage')"></div>
+          <div class="color-preset" data-preset="lavender" title="Lavender" onclick="applyColorPreset('lavender')"></div>
+          <div class="color-preset" data-preset="sky" title="Sky" onclick="applyColorPreset('sky')"></div>
+        </div>
+      </div>
+      <div class="customize-section">
+        <label class="customize-label">Colors</label>
+        <div class="color-pickers-row">
+          <div class="color-picker-group">
+            <label class="color-label">Background</label>
+            <input type="color" id="gallery-bg-color" value="#0a0a0a" onchange="syncColor('bg')">
+          </div>
+          <div class="color-picker-group">
+            <label class="color-label">Text / Accent</label>
+            <input type="color" id="gallery-accent-color" value="#fafafa" onchange="syncColor('accent')">
+          </div>
+        </div>
+        <div class="contrast-warning" id="contrast-warning" style="display:none">Low contrast — text may be hard to read.</div>
+      </div>
+      <div class="customize-section">
+        <label class="customize-label">Wallpaper</label>
+        <div class="wallpaper-options">
+          <div class="wallpaper-opt active" data-wp="none" data-label="None" onclick="selectWallpaper('none')"></div>
+          <div class="wallpaper-opt" data-wp="linen" data-label="Linen" onclick="selectWallpaper('linen')"></div>
+          <div class="wallpaper-opt" data-wp="paper" data-label="Paper" onclick="selectWallpaper('paper')"></div>
+          <div class="wallpaper-opt" data-wp="geometric" data-label="Geo" onclick="selectWallpaper('geometric')"></div>
+          <div class="wallpaper-opt" data-wp="dots" data-label="Dots" onclick="selectWallpaper('dots')"></div>
+          <div class="wallpaper-opt" data-wp="marble" data-label="Marble" onclick="selectWallpaper('marble')"></div>
+        </div>
+      </div>
+      <div class="customize-section">
         <label class="customize-label">Your Logo</label>
         <div class="logo-upload-area" id="logo-upload-area" onclick="document.getElementById('logo-file-input').click()">
           <div class="logo-preview" id="logo-preview" style="display:none">
@@ -3021,20 +3074,6 @@
           </div>
           <input type="file" id="logo-file-input" accept="image/png,image/jpeg,image/svg+xml,image/webp" style="display:none" onchange="handleLogoUpload(event)">
         </div>
-      </div>
-      <div class="customize-section">
-        <label class="customize-label">Colors</label>
-        <div class="color-pickers-row">
-          <div class="color-picker-group">
-            <label class="color-label">Background</label>
-            <input type="color" id="gallery-bg-color" value="#0a0a0a" onchange="syncColor('bg')">
-          </div>
-          <div class="color-picker-group">
-            <label class="color-label">Text / Accent</label>
-            <input type="color" id="gallery-accent-color" value="#fafafa" onchange="syncColor('accent')">
-          </div>
-        </div>
-        <div class="contrast-warning" id="contrast-warning" style="display:none">Low contrast — text may be hard to read.</div>
       </div>
       <div class="customize-section">
         <label class="customize-label">Typography</label>
@@ -3278,6 +3317,20 @@ function applyGalleryCustomization(project) {
   root.style.setProperty('--gal-accent', accent);
   root.style.setProperty('--gal-font', `'${font}', serif`);
   root.style.background = bg;
+
+  // Apply wallpaper pattern
+  const wp = project.gallery_wallpaper || 'none';
+  const wpPatterns = {
+    none: 'none',
+    linen: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(128,128,128,0.06) 2px, rgba(128,128,128,0.06) 4px), repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(128,128,128,0.04) 2px, rgba(128,128,128,0.04) 4px)',
+    paper: 'repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(128,128,128,0.03) 3px, rgba(128,128,128,0.03) 4px)',
+    geometric: 'repeating-linear-gradient(60deg, transparent, transparent 8px, rgba(128,128,128,0.05) 8px, rgba(128,128,128,0.05) 9px), repeating-linear-gradient(-60deg, transparent, transparent 8px, rgba(128,128,128,0.05) 8px, rgba(128,128,128,0.05) 9px)',
+    dots: 'radial-gradient(circle, rgba(128,128,128,0.08) 1px, transparent 1px)',
+    marble: 'linear-gradient(135deg, transparent 30%, rgba(128,128,128,0.04) 35%, transparent 40%, rgba(128,128,128,0.03) 55%, transparent 60%, rgba(128,128,128,0.04) 75%, transparent 80%)'
+  };
+  root.style.backgroundImage = wpPatterns[wp] || 'none';
+  if (wp === 'dots') root.style.backgroundSize = '16px 16px';
+  else root.style.backgroundSize = 'auto';
 
   // Load Google Font if not default
   if (font && font !== 'Playfair Display') {
@@ -4017,7 +4070,7 @@ if (dropZone) {
 // ─── DELIVERY ───
 let currentGallerySettings = {
   logo_path: null, bg_color: '#0a0a0a', accent_color: '#fafafa',
-  font_family: 'Playfair Display', layout: 'masonry'
+  font_family: 'Playfair Display', layout: 'masonry', wallpaper: 'none'
 };
 
 const FONT_LIST = [
@@ -4061,10 +4114,10 @@ async function loadShareLink() {
 }
 
 async function loadGallerySettings() {
-  const defaults = { logo_path: null, bg_color: '#0a0a0a', accent_color: '#fafafa', font_family: 'Playfair Display', layout: 'masonry' };
+  const defaults = { logo_path: null, bg_color: '#0a0a0a', accent_color: '#fafafa', font_family: 'Playfair Display', layout: 'masonry', wallpaper: 'none' };
 
-  const { data: profile } = await dbSelect('profiles', 'gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout', `id=eq.${currentUser.id}`, { single: true });
-  const { data: proj } = await dbSelect('projects', 'gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout', `id=eq.${currentProject.id}`, { single: true });
+  const { data: profile } = await dbSelect('profiles', 'gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout,gallery_wallpaper', `id=eq.${currentUser.id}`, { single: true });
+  const { data: proj } = await dbSelect('projects', 'gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout,gallery_wallpaper', `id=eq.${currentProject.id}`, { single: true });
 
   const p = profile || {};
   currentGallerySettings = {
@@ -4072,7 +4125,8 @@ async function loadGallerySettings() {
     bg_color: proj?.gallery_bg_color ?? p.gallery_bg_color ?? defaults.bg_color,
     accent_color: proj?.gallery_accent_color ?? p.gallery_accent_color ?? defaults.accent_color,
     font_family: proj?.gallery_font_family ?? p.gallery_font_family ?? defaults.font_family,
-    layout: proj?.gallery_layout ?? p.gallery_layout ?? defaults.layout
+    layout: proj?.gallery_layout ?? p.gallery_layout ?? defaults.layout,
+    wallpaper: proj?.gallery_wallpaper ?? p.gallery_wallpaper ?? defaults.wallpaper
   };
 
   populateCustomizeUI();
@@ -4101,6 +4155,15 @@ function populateCustomizeUI() {
   }
   document.querySelectorAll('.layout-opt').forEach(o => {
     o.classList.toggle('selected', o.dataset.layout === s.layout);
+  });
+  // Wallpaper
+  document.querySelectorAll('.wallpaper-opt').forEach(o => {
+    o.classList.toggle('active', o.dataset.wp === (s.wallpaper || 'none'));
+  });
+  // Color presets — highlight matching preset
+  document.querySelectorAll('.color-preset').forEach(p => {
+    const preset = COLOR_PRESETS[p.dataset.preset];
+    p.classList.toggle('active', preset && preset.bg === s.bg_color && preset.accent === s.accent_color);
   });
 }
 
@@ -4292,6 +4355,34 @@ function syncColor(which) {
   const id = which === 'bg' ? 'gallery-bg-color' : 'gallery-accent-color';
   currentGallerySettings[which === 'bg' ? 'bg_color' : 'accent_color'] = document.getElementById(id).value;
   checkContrast();
+  document.querySelectorAll('.color-preset').forEach(p => p.classList.remove('active'));
+}
+
+const COLOR_PRESETS = {
+  classic: { bg: '#0a0a0a', accent: '#fafafa' },
+  cream: { bg: '#f5f0e8', accent: '#2a2420' },
+  blush: { bg: '#f8e8ec', accent: '#3a2028' },
+  sage: { bg: '#e8f0e8', accent: '#1a2a1a' },
+  lavender: { bg: '#f0e8f8', accent: '#2a1a38' },
+  sky: { bg: '#e8f0f8', accent: '#1a2434' }
+};
+
+function applyColorPreset(name) {
+  const p = COLOR_PRESETS[name];
+  if (!p) return;
+  document.getElementById('gallery-bg-color').value = p.bg;
+  document.getElementById('gallery-accent-color').value = p.accent;
+  currentGallerySettings.bg_color = p.bg;
+  currentGallerySettings.accent_color = p.accent;
+  document.querySelectorAll('.color-preset').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.color-preset[data-preset="${name}"]`)?.classList.add('active');
+  checkContrast();
+}
+
+function selectWallpaper(wp) {
+  currentGallerySettings.wallpaper = wp;
+  document.querySelectorAll('.wallpaper-opt').forEach(el => el.classList.remove('active'));
+  document.querySelector(`.wallpaper-opt[data-wp="${wp}"]`)?.classList.add('active');
 }
 
 function checkContrast() {
@@ -4405,7 +4496,8 @@ async function sendDelivery() {
     gallery_bg_color: currentGallerySettings.bg_color,
     gallery_accent_color: currentGallerySettings.accent_color,
     gallery_font_family: currentGallerySettings.font_family,
-    gallery_layout: currentGallerySettings.layout
+    gallery_layout: currentGallerySettings.layout,
+    gallery_wallpaper: currentGallerySettings.wallpaper
   };
   await dbUpdate('projects', galUpdate, `id=eq.${currentProject.id}`);
 
@@ -4416,7 +4508,8 @@ async function sendDelivery() {
       gallery_bg_color: currentGallerySettings.bg_color,
       gallery_accent_color: currentGallerySettings.accent_color,
       gallery_font_family: currentGallerySettings.font_family,
-      gallery_layout: currentGallerySettings.layout
+      gallery_layout: currentGallerySettings.layout,
+      gallery_wallpaper: currentGallerySettings.wallpaper
     }, `id=eq.${currentUser.id}`);
   }
 
@@ -4443,7 +4536,8 @@ async function sendDelivery() {
           bgColor: currentGallerySettings.bg_color,
           accentColor: currentGallerySettings.accent_color,
           fontFamily: currentGallerySettings.font_family,
-          logoUrl
+          logoUrl,
+          wallpaper: currentGallerySettings.wallpaper
         }
       })
     });
@@ -4545,12 +4639,12 @@ function toggleManageMode() {
 }
 
 // ─── ROOM CUSTOMIZATION ───
-const ROOM_DEFAULTS = { wall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on', floor: 'default', compsize: 'medium', bookshelf: 'walnut', lamp: 'brass' };
+const ROOM_DEFAULTS = { wall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on', floor: 'default', compsize: 'medium', bookshelf: 'walnut', lamp: 'brass', desk: 'walnut' };
 const ROOM_THEMES = {
-  grunge: { wall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on', floor: 'default', compsize: 'medium', bookshelf: 'walnut', lamp: 'brass' },
-  minimal: { wall: 'charcoal', computer: 'silver', poster1: 'quote', poster2: 'none', beanbag: 'cream', clutter: 'off', floor: 'slate', compsize: 'medium', bookshelf: 'white-shelf', lamp: 'chrome' },
-  cozy: { wall: 'cream', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'green', clutter: 'off', floor: 'warm-brown', compsize: 'large', bookshelf: 'oak', lamp: 'brass' },
-  girly: { wall: 'blush', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'pink', clutter: 'off', floor: 'rose', compsize: 'medium', bookshelf: 'pink-shelf', lamp: 'pink-lamp' }
+  grunge: { wall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on', floor: 'default', compsize: 'medium', bookshelf: 'walnut', lamp: 'brass', desk: 'walnut' },
+  minimal: { wall: 'charcoal', computer: 'silver', poster1: 'quote', poster2: 'none', beanbag: 'cream', clutter: 'off', floor: 'slate', compsize: 'medium', bookshelf: 'white-shelf', lamp: 'chrome', desk: 'white-desk' },
+  cozy: { wall: 'cream', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'green', clutter: 'off', floor: 'warm-brown', compsize: 'large', bookshelf: 'oak', lamp: 'brass', desk: 'oak' },
+  girly: { wall: 'blush', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'pink', clutter: 'off', floor: 'rose', compsize: 'medium', bookshelf: 'pink-shelf', lamp: 'pink-lamp', desk: 'pink-desk' }
 };
 
 function getRoomConfig() {
@@ -4569,18 +4663,8 @@ function loadRoomConfig() {
   // Update clutter toggle
   const toggle = document.getElementById('rc-clutter-toggle');
   if (toggle) toggle.classList.toggle('on', config.clutter === 'on');
-  // Restore light state
-  const lightsOn = localStorage.getItem('orveil-room-lights') === '1';
-  scene.classList.toggle('lights-on', lightsOn);
   // Restore custom poster images
   loadCustomPosters();
-}
-
-function toggleRoomLight() {
-  const scene = document.querySelector('.room-scene');
-  if (!scene) return;
-  scene.classList.toggle('lights-on');
-  localStorage.setItem('orveil-room-lights', scene.classList.contains('lights-on') ? '1' : '0');
 }
 
 function setRoomOption(key, value) {
