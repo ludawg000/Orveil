@@ -615,12 +615,10 @@
      ========================================= */
   /* Desk — 3D solid wood with perspective depth */
   .room-desk {
-    top: 58%; left: 30%; right: 30%; z-index: 8;
+    top: 58%; left: 30%; width: 40%; z-index: 8;
     height: 14%;
     transform-style: preserve-3d;
     perspective: 400px;
-    transform: rotateX(2deg);
-    transform-origin: bottom center;
   }
   /* Desk surface — 3D tilted slab, you see the top */
   .desk-top {
@@ -962,6 +960,53 @@
     border-radius: 2px 2px 0 0;
   }
 
+  /* === CAMERA on desk === */
+  .room-camera {
+    position: absolute; z-index: 9;
+    left: 36%; top: 53%;
+  }
+  .camera-body {
+    width: 32px; height: 20px;
+    background: linear-gradient(180deg, #1a1a1a 0%, #2a2a2a 30%, #222222 70%, #181818 100%);
+    border-radius: 3px;
+    position: relative;
+    box-shadow: 2px 3px 8px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.08);
+  }
+  /* Lens */
+  .camera-body::before {
+    content: ''; position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px; height: 12px; border-radius: 50%;
+    background: radial-gradient(circle, #1a2a3a 0%, #0a1420 40%, #060e18 70%);
+    border: 2px solid #333;
+    box-shadow: inset 0 0 4px rgba(100,140,255,0.15), 0 0 2px rgba(0,0,0,0.5);
+  }
+  /* Viewfinder bump */
+  .camera-body::after {
+    content: ''; position: absolute; top: -5px; left: 50%;
+    transform: translateX(-50%);
+    width: 10px; height: 6px;
+    background: linear-gradient(180deg, #222 0%, #1a1a1a 100%);
+    border-radius: 2px 2px 0 0;
+    box-shadow: 0 -1px 3px rgba(0,0,0,0.4);
+  }
+  /* Grip */
+  .camera-grip {
+    position: absolute; right: -3px; top: 2px; bottom: 2px; width: 6px;
+    background: linear-gradient(90deg, #2a2a2a, #1a1a1a);
+    border-radius: 0 2px 2px 0;
+    box-shadow: 1px 0 3px rgba(0,0,0,0.3);
+  }
+  /* Strap */
+  .camera-strap {
+    position: absolute; top: 0; left: 3px; width: 4px; height: 12px;
+    background: #8a2020;
+    border-radius: 1px;
+    transform: rotate(-15deg);
+    transform-origin: top center;
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+  }
+
   /* ═══ ROOM CUSTOMIZATION OVERRIDES ═══ */
 
   /* Wall colors */
@@ -1062,37 +1107,55 @@
   .room-scene[data-beanbag="lavender"] .bean-bag { background: radial-gradient(ellipse at 45% 40%, #2e2838 0%, #262030 40%, #1e1828 100%); }
 
   /* Floor types */
-  .room-scene[data-floor="dark-wood"] .room-floor {
-    background: linear-gradient(180deg, #1a1510 0%, #141008 20%, #0e0c06 50%, #080804 100%);
-  }
-  .room-scene[data-floor="dark-wood"] .room-floor::after {
+  .room-scene[data-floor="hardwood"] .room-floor {
     background:
-      repeating-linear-gradient(90deg, transparent 0px, transparent 40px, rgba(255,255,255,0.01) 40px, rgba(255,255,255,0.01) 41px),
-      radial-gradient(ellipse at 55% 0%, rgba(100,140,255,0.02) 0%, transparent 70%);
+      repeating-linear-gradient(90deg,
+        rgba(0,0,0,0.08) 0px, transparent 1px, transparent 50px, rgba(0,0,0,0.08) 50px, rgba(0,0,0,0.08) 51px),
+      repeating-linear-gradient(180deg,
+        rgba(0,0,0,0.04) 0px, transparent 2px, transparent 12px),
+      linear-gradient(180deg, #3d2e1e 0%, #34271a 30%, #2c2016 60%, #241a12 100%);
   }
   .room-scene[data-floor="light-wood"] .room-floor {
-    background: linear-gradient(180deg, #2a2418 0%, #221c12 20%, #1a160e 50%, #14100a 100%);
-  }
-  .room-scene[data-floor="light-wood"] .room-floor::after {
     background:
-      repeating-linear-gradient(90deg, transparent 0px, transparent 35px, rgba(255,255,255,0.02) 35px, rgba(255,255,255,0.02) 36px),
-      radial-gradient(ellipse at 55% 0%, rgba(100,140,255,0.02) 0%, transparent 70%);
+      repeating-linear-gradient(90deg,
+        rgba(0,0,0,0.06) 0px, transparent 1px, transparent 55px, rgba(0,0,0,0.06) 55px, rgba(0,0,0,0.06) 56px),
+      repeating-linear-gradient(180deg,
+        rgba(0,0,0,0.03) 0px, transparent 2px, transparent 14px),
+      linear-gradient(180deg, #5a4830 0%, #4e3e28 30%, #423420 60%, #382a1a 100%);
   }
-  .room-scene[data-floor="carpet"] .room-floor {
-    background: linear-gradient(180deg, #14121a 0%, #100e16 20%, #0c0a12 50%, #08080e 100%);
+  .room-scene[data-floor="carpet-blue"] .room-floor {
+    background:
+      linear-gradient(180deg, #1a2030 0%, #162030 30%, #121c2a 60%, #0e1824 100%);
   }
   .room-scene[data-floor="carpet-warm"] .room-floor {
-    background: linear-gradient(180deg, #1a1412 0%, #161010 20%, #120e0c 50%, #0e0a08 100%);
-  }
-  .room-scene[data-floor="tile"] .room-floor {
     background:
-      repeating-linear-gradient(0deg, transparent 0px, transparent 28px, rgba(255,255,255,0.03) 28px, rgba(255,255,255,0.03) 29px),
-      repeating-linear-gradient(90deg, transparent 0px, transparent 28px, rgba(255,255,255,0.03) 28px, rgba(255,255,255,0.03) 29px),
-      linear-gradient(180deg, #141414 0%, #101010 20%, #0c0c0c 50%, #080808 100%);
+      linear-gradient(180deg, #2a1e18 0%, #241a14 30%, #1e1610 60%, #18120e 100%);
+  }
+  .room-scene[data-floor="tile-white"] .room-floor {
+    background:
+      repeating-linear-gradient(0deg, transparent 0px, transparent 24px, rgba(0,0,0,0.15) 24px, rgba(0,0,0,0.15) 25px),
+      repeating-linear-gradient(90deg, transparent 0px, transparent 24px, rgba(0,0,0,0.15) 24px, rgba(0,0,0,0.15) 25px),
+      linear-gradient(180deg, #2a2a2a 0%, #222222 30%, #1c1c1c 60%, #161616 100%);
+  }
+  .room-scene[data-floor="tile-checker"] .room-floor {
+    background:
+      repeating-conic-gradient(#1a1a1a 0% 25%, #2a2a2a 0% 50%) 0 0 / 30px 30px,
+      linear-gradient(180deg, #222 0%, #1a1a1a 100%);
   }
   .room-scene[data-floor="pink-carpet"] .room-floor {
-    background: linear-gradient(180deg, #1a1018 0%, #160e14 20%, #120a10 50%, #0e080c 100%);
+    background:
+      linear-gradient(180deg, #30182a 0%, #2a1424 30%, #24101e 60%, #1e0e18 100%);
   }
+  .room-scene[data-floor="concrete"] .room-floor {
+    background:
+      linear-gradient(180deg, #222020 0%, #1c1a1a 30%, #161414 60%, #121010 100%);
+  }
+
+  /* Computer size */
+  .room-scene[data-compsize="small"] .mac-computer { transform: scale(0.7); transform-origin: bottom center; }
+  .room-scene[data-compsize="medium"] .mac-computer { transform: scale(1); }
+  .room-scene[data-compsize="large"] .mac-computer { transform: scale(1.3); transform-origin: bottom center; }
+  .room-scene[data-compsize="xl"] .mac-computer { transform: scale(1.6); transform-origin: bottom center; }
 
   /* Clutter toggle */
   .room-scene[data-clutter="off"] .floor-clothes,
@@ -2226,6 +2289,13 @@
           <div class="can-top"></div>
           <div class="can-body"></div>
         </div>
+        <!-- Camera on desk -->
+        <div class="room-camera" data-draggable="camera">
+          <div class="camera-body">
+            <div class="camera-grip"></div>
+            <div class="camera-strap"></div>
+          </div>
+        </div>
         <!-- Desk lamp -->
         <div class="desk-lamp" data-draggable="lamp">
           <div class="lamp-shade"></div>
@@ -2305,6 +2375,16 @@
       </div>
 
       <div class="rc-section">
+        <div class="rc-label">Computer Size</div>
+        <div class="rc-swatches" data-option="compsize">
+          <div class="rc-swatch" data-value="small" data-label="Small" style="background:#333;width:20px;height:20px" onclick="setRoomOption('compsize','small')"></div>
+          <div class="rc-swatch" data-value="medium" data-label="Medium" style="background:#555;width:24px;height:24px" onclick="setRoomOption('compsize','medium')"></div>
+          <div class="rc-swatch" data-value="large" data-label="Large" style="background:#777;width:28px;height:28px" onclick="setRoomOption('compsize','large')"></div>
+          <div class="rc-swatch" data-value="xl" data-label="XL" style="background:#999;width:32px;height:32px" onclick="setRoomOption('compsize','xl')"></div>
+        </div>
+      </div>
+
+      <div class="rc-section">
         <div class="rc-label">Left Poster</div>
         <div class="rc-posters" data-option="poster1">
           <div class="rc-poster-opt" data-value="nirvana" style="background:#0a0a0a;color:#d4a820" onclick="setRoomOption('poster1','nirvana')">NIR</div>
@@ -2345,12 +2425,14 @@
         <div class="rc-label">Floor</div>
         <div class="rc-swatches" data-option="floor">
           <div class="rc-swatch" data-value="default" data-label="Default" style="background:#0a0908" onclick="setRoomOption('floor','default')"></div>
-          <div class="rc-swatch" data-value="dark-wood" data-label="Dark Wood" style="background:#1a1510" onclick="setRoomOption('floor','dark-wood')"></div>
-          <div class="rc-swatch" data-value="light-wood" data-label="Light Wood" style="background:#2a2418" onclick="setRoomOption('floor','light-wood')"></div>
-          <div class="rc-swatch" data-value="carpet" data-label="Carpet" style="background:#14121a" onclick="setRoomOption('floor','carpet')"></div>
-          <div class="rc-swatch" data-value="carpet-warm" data-label="Warm Carpet" style="background:#1a1412" onclick="setRoomOption('floor','carpet-warm')"></div>
-          <div class="rc-swatch" data-value="tile" data-label="Tile" style="background:#141414" onclick="setRoomOption('floor','tile')"></div>
-          <div class="rc-swatch" data-value="pink-carpet" data-label="Pink Carpet" style="background:#1a1018" onclick="setRoomOption('floor','pink-carpet')"></div>
+          <div class="rc-swatch" data-value="hardwood" data-label="Hardwood" style="background:#3d2e1e" onclick="setRoomOption('floor','hardwood')"></div>
+          <div class="rc-swatch" data-value="light-wood" data-label="Light Wood" style="background:#5a4830" onclick="setRoomOption('floor','light-wood')"></div>
+          <div class="rc-swatch" data-value="carpet-blue" data-label="Blue Carpet" style="background:#1a2030" onclick="setRoomOption('floor','carpet-blue')"></div>
+          <div class="rc-swatch" data-value="carpet-warm" data-label="Warm Carpet" style="background:#2a1e18" onclick="setRoomOption('floor','carpet-warm')"></div>
+          <div class="rc-swatch" data-value="tile-white" data-label="Tile" style="background:#2a2a2a" onclick="setRoomOption('floor','tile-white')"></div>
+          <div class="rc-swatch" data-value="tile-checker" data-label="Checker" style="background:repeating-conic-gradient(#1a1a1a 0% 25%, #2a2a2a 0% 50%) 0 0/14px 14px" onclick="setRoomOption('floor','tile-checker')"></div>
+          <div class="rc-swatch" data-value="pink-carpet" data-label="Pink Carpet" style="background:#30182a" onclick="setRoomOption('floor','pink-carpet')"></div>
+          <div class="rc-swatch" data-value="concrete" data-label="Concrete" style="background:#222020" onclick="setRoomOption('floor','concrete')"></div>
         </div>
       </div>
 
@@ -4133,12 +4215,12 @@ function toggleManageMode() {
 }
 
 // ─── ROOM CUSTOMIZATION ───
-const ROOM_DEFAULTS = { wall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on', floor: 'default' };
+const ROOM_DEFAULTS = { wall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on', floor: 'default', compsize: 'medium' };
 const ROOM_THEMES = {
-  grunge: { wall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on', floor: 'default' },
-  minimal: { wall: 'charcoal', computer: 'silver', poster1: 'quote', poster2: 'none', beanbag: 'cream', clutter: 'off', floor: 'tile' },
-  cozy: { wall: 'cream', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'green', clutter: 'off', floor: 'light-wood' },
-  girly: { wall: 'blush', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'pink', clutter: 'off', floor: 'pink-carpet' }
+  grunge: { wall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on', floor: 'default', compsize: 'medium' },
+  minimal: { wall: 'charcoal', computer: 'silver', poster1: 'quote', poster2: 'none', beanbag: 'cream', clutter: 'off', floor: 'concrete', compsize: 'medium' },
+  cozy: { wall: 'cream', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'green', clutter: 'off', floor: 'hardwood', compsize: 'large' },
+  girly: { wall: 'blush', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'pink', clutter: 'off', floor: 'pink-carpet', compsize: 'medium' }
 };
 
 function getRoomConfig() {
