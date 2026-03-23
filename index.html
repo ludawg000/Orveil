@@ -570,7 +570,7 @@
   /* Bean bag on the floor */
   .bean-bag {
     bottom: 28%; right: 12%; z-index: 4;
-    width: 70px; height: 50px;
+    width: 210px; height: 150px;
     background: radial-gradient(ellipse at 45% 40%, #3a2828 0%, #2e1e1e 40%, #221414 100%);
     border-radius: 55% 50% 48% 52% / 60% 55% 50% 45%;
     box-shadow: 4px 6px 18px rgba(0,0,0,0.7), inset 0 -3px 8px rgba(0,0,0,0.3);
@@ -1019,6 +1019,12 @@
   .room-scene[data-wall="lilac-wall"] .room-wall { background: linear-gradient(180deg, #141020 0%, #1c1828 20%, #241e32 50%, #2c2438 80%, #342a40 100%); }
   .room-scene[data-wall="sky"] .room-wall { background: linear-gradient(180deg, #0c1420 0%, #141c2a 20%, #1a2434 50%, #202c3e 80%, #263448 100%); }
   .room-scene[data-wall="moss"] .room-wall { background: linear-gradient(180deg, #0e1410 0%, #141c14 20%, #1a241a 50%, #202c20 80%, #263426 100%); }
+  .room-scene[data-wall="wine"] .room-wall { background: linear-gradient(180deg, #140a0c 0%, #1e1014 20%, #28141a 50%, #321820 80%, #3c1c26 100%); }
+  .room-scene[data-wall="rust"] .room-wall { background: linear-gradient(180deg, #141008 0%, #1e180e 20%, #282014 50%, #32281a 80%, #3c3020 100%); }
+  .room-scene[data-wall="teal-wall"] .room-wall { background: linear-gradient(180deg, #081412 0%, #0e1e1c 20%, #142826 50%, #1a3230 80%, #203c3a 100%); }
+  .room-scene[data-wall="plum-wall"] .room-wall { background: linear-gradient(180deg, #100a14 0%, #1a1020 20%, #22162a 50%, #2a1c34 80%, #32223e 100%); }
+  .room-scene[data-wall="gold"] .room-wall { background: linear-gradient(180deg, #14120a 0%, #1e1c10 20%, #282618 50%, #323020 80%, #3c3a28 100%); }
+  .room-scene[data-wall="slate-wall"] .room-wall { background: linear-gradient(180deg, #0c0e14 0%, #14161e 20%, #1a1e28 50%, #202632 80%, #262e3c 100%); }
 
   /* Computer colors */
   .room-scene[data-computer="space-gray"] .mac-case { background: linear-gradient(180deg, #5a5a5e 0%, #4a4a4e 40%, #3e3e42 100%); }
@@ -1052,6 +1058,31 @@
   .room-scene[data-computer="lilac"] .mac-label { color: #6a5a7a; }
   .room-scene[data-computer="lilac"] .mac-top-vent { background: repeating-linear-gradient(90deg, transparent 0px, transparent 5px, #9888b0 5px, #9888b0 6px); }
   .room-scene[data-computer="lilac"] .mac-floppy-slot { background: linear-gradient(180deg, #9888b0, #a898c0 50%, #9888b0); }
+
+  .room-scene[data-computer="midnight"] .mac-case { background: linear-gradient(180deg, #1e2030 0%, #181a28 40%, #121420 100%); }
+  .room-scene[data-computer="midnight"] .mac-case { box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 0 60px rgba(100,140,255,0.1), 0 6px 20px rgba(0,0,0,0.6); }
+  .room-scene[data-computer="midnight"] .mac-base { background: linear-gradient(180deg, #121420, #0e1018); }
+  .room-scene[data-computer="midnight"] .mac-label { color: #4a5068; }
+  .room-scene[data-computer="midnight"] .mac-top-vent { background: repeating-linear-gradient(90deg, transparent 0px, transparent 5px, #1a1c2a 5px, #1a1c2a 6px); }
+  .room-scene[data-computer="midnight"] .mac-floppy-slot { background: linear-gradient(180deg, #1a1c2a, #222438 50%, #1a1c2a); }
+
+  .room-scene[data-computer="mint"] .mac-case { background: linear-gradient(180deg, #a8d8c8 0%, #90c8b4 40%, #80b8a4 100%); }
+  .room-scene[data-computer="mint"] .mac-base { background: linear-gradient(180deg, #80b8a4, #70a894); }
+  .room-scene[data-computer="mint"] .mac-label { color: #4a7a6a; }
+  .room-scene[data-computer="mint"] .mac-top-vent { background: repeating-linear-gradient(90deg, transparent 0px, transparent 5px, #88c0ac 5px, #88c0ac 6px); }
+  .room-scene[data-computer="mint"] .mac-floppy-slot { background: linear-gradient(180deg, #88c0ac, #98d0bc 50%, #88c0ac); }
+
+  .room-scene[data-computer="coral"] .mac-case { background: linear-gradient(180deg, #e0a898 0%, #d49888 40%, #c88878 100%); }
+  .room-scene[data-computer="coral"] .mac-base { background: linear-gradient(180deg, #c88878, #b87868); }
+  .room-scene[data-computer="coral"] .mac-label { color: #8a5a4a; }
+  .room-scene[data-computer="coral"] .mac-top-vent { background: repeating-linear-gradient(90deg, transparent 0px, transparent 5px, #cc9080 5px, #cc9080 6px); }
+  .room-scene[data-computer="coral"] .mac-floppy-slot { background: linear-gradient(180deg, #cc9080, #d8a090 50%, #cc9080); }
+
+  .room-scene[data-computer="sunflower"] .mac-case { background: linear-gradient(180deg, #e0d090 0%, #d4c080 40%, #c8b070 100%); }
+  .room-scene[data-computer="sunflower"] .mac-base { background: linear-gradient(180deg, #c8b070, #b8a060); }
+  .room-scene[data-computer="sunflower"] .mac-label { color: #7a6a3a; }
+  .room-scene[data-computer="sunflower"] .mac-top-vent { background: repeating-linear-gradient(90deg, transparent 0px, transparent 5px, #ccb878 5px, #ccb878 6px); }
+  .room-scene[data-computer="sunflower"] .mac-floppy-slot { background: linear-gradient(180deg, #ccb878, #d8c888 50%, #ccb878); }
 
   /* Poster variants — Poster 1 (left) */
   .room-scene[data-poster1="matisse"] .room-poster:not(.p2) .room-poster-art { background: #f4efe6; }
@@ -1106,50 +1137,85 @@
   .room-scene[data-beanbag="cream"] .bean-bag { background: radial-gradient(ellipse at 45% 40%, #3a3428 0%, #302c20 40%, #26221a 100%); }
   .room-scene[data-beanbag="lavender"] .bean-bag { background: radial-gradient(ellipse at 45% 40%, #2e2838 0%, #262030 40%, #1e1828 100%); }
 
-  /* Floor types */
-  .room-scene[data-floor="hardwood"] .room-floor {
-    background:
-      repeating-linear-gradient(90deg,
-        rgba(0,0,0,0.08) 0px, transparent 1px, transparent 50px, rgba(0,0,0,0.08) 50px, rgba(0,0,0,0.08) 51px),
-      repeating-linear-gradient(180deg,
-        rgba(0,0,0,0.04) 0px, transparent 2px, transparent 12px),
-      linear-gradient(180deg, #3d2e1e 0%, #34271a 30%, #2c2016 60%, #241a12 100%);
+  /* Floor colors */
+  .room-scene[data-floor="charcoal"] .room-floor { background: linear-gradient(180deg, #1e1e22 0%, #181820 30%, #141418 60%, #101014 100%); }
+  .room-scene[data-floor="slate"] .room-floor { background: linear-gradient(180deg, #222020 0%, #1c1a1a 30%, #161414 60%, #121010 100%); }
+  .room-scene[data-floor="warm-brown"] .room-floor { background: linear-gradient(180deg, #2a1e18 0%, #241a14 30%, #1e1610 60%, #18120e 100%); }
+  .room-scene[data-floor="espresso"] .room-floor { background: linear-gradient(180deg, #201410 0%, #1a100c 30%, #140e0a 60%, #100a08 100%); }
+  .room-scene[data-floor="navy"] .room-floor { background: linear-gradient(180deg, #1a2030 0%, #162030 30%, #121c2a 60%, #0e1824 100%); }
+  .room-scene[data-floor="ocean"] .room-floor { background: linear-gradient(180deg, #142832 0%, #10222c 30%, #0e1c26 60%, #0a1620 100%); }
+  .room-scene[data-floor="teal"] .room-floor { background: linear-gradient(180deg, #14282a 0%, #102224 30%, #0e1c1e 60%, #0a1618 100%); }
+  .room-scene[data-floor="forest"] .room-floor { background: linear-gradient(180deg, #142014 0%, #101a10 30%, #0e160e 60%, #0a120a 100%); }
+  .room-scene[data-floor="olive"] .room-floor { background: linear-gradient(180deg, #1e2014 0%, #1a1c10 30%, #16180e 60%, #12140a 100%); }
+  .room-scene[data-floor="plum"] .room-floor { background: linear-gradient(180deg, #24142a 0%, #1e1024 30%, #1a0e1e 60%, #140a18 100%); }
+  .room-scene[data-floor="rose"] .room-floor { background: linear-gradient(180deg, #30182a 0%, #2a1424 30%, #24101e 60%, #1e0e18 100%); }
+  .room-scene[data-floor="blush"] .room-floor { background: linear-gradient(180deg, #2e1820 0%, #28141c 30%, #221018 60%, #1c0e14 100%); }
+  .room-scene[data-floor="mauve"] .room-floor { background: linear-gradient(180deg, #28202a 0%, #221c24 30%, #1c181e 60%, #161418 100%); }
+  .room-scene[data-floor="cream"] .room-floor { background: linear-gradient(180deg, #2a2820 0%, #24221c 30%, #1e1c18 60%, #181614 100%); }
+  .room-scene[data-floor="sand"] .room-floor { background: linear-gradient(180deg, #2c2618 0%, #262014 30%, #201a10 60%, #1a160e 100%); }
+
+  /* Side wall colors */
+  .room-scene[data-sidewall="charcoal"]::before { background: linear-gradient(90deg, #0a0a0e 0%, #141418 60%, #1a1a1e 100%); }
+  .room-scene[data-sidewall="charcoal"]::after { background: linear-gradient(-90deg, #0a0a0e 0%, #141418 60%, #1a1a1e 100%); }
+  .room-scene[data-sidewall="sage"]::before { background: linear-gradient(90deg, #040804 0%, #0a120a 60%, #101a10 100%); }
+  .room-scene[data-sidewall="sage"]::after { background: linear-gradient(-90deg, #040804 0%, #0a120a 60%, #101a10 100%); }
+  .room-scene[data-sidewall="rose"]::before { background: linear-gradient(90deg, #080406 0%, #140e10 60%, #1e1416 100%); }
+  .room-scene[data-sidewall="rose"]::after { background: linear-gradient(-90deg, #080406 0%, #140e10 60%, #1e1416 100%); }
+  .room-scene[data-sidewall="navy"]::before { background: linear-gradient(90deg, #040408 0%, #080c18 60%, #0c1020 100%); }
+  .room-scene[data-sidewall="navy"]::after { background: linear-gradient(-90deg, #040408 0%, #080c18 60%, #0c1020 100%); }
+  .room-scene[data-sidewall="cream"]::before { background: linear-gradient(90deg, #0a0a06 0%, #141210 60%, #1c1a16 100%); }
+  .room-scene[data-sidewall="cream"]::after { background: linear-gradient(-90deg, #0a0a06 0%, #141210 60%, #1c1a16 100%); }
+  .room-scene[data-sidewall="blush"]::before { background: linear-gradient(90deg, #0c060a 0%, #1a1018 60%, #241620 100%); }
+  .room-scene[data-sidewall="blush"]::after { background: linear-gradient(-90deg, #0c060a 0%, #1a1018 60%, #241620 100%); }
+  .room-scene[data-sidewall="lilac"]::before { background: linear-gradient(90deg, #080610 0%, #141020 60%, #1c1828 100%); }
+  .room-scene[data-sidewall="lilac"]::after { background: linear-gradient(-90deg, #080610 0%, #141020 60%, #1c1828 100%); }
+  .room-scene[data-sidewall="sky"]::before { background: linear-gradient(90deg, #040a10 0%, #0c1420 60%, #141c2a 100%); }
+  .room-scene[data-sidewall="sky"]::after { background: linear-gradient(-90deg, #040a10 0%, #0c1420 60%, #141c2a 100%); }
+  .room-scene[data-sidewall="moss"]::before { background: linear-gradient(90deg, #040a04 0%, #0c140c 60%, #141c14 100%); }
+  .room-scene[data-sidewall="moss"]::after { background: linear-gradient(-90deg, #040a04 0%, #0c140c 60%, #141c14 100%); }
+  .room-scene[data-sidewall="wine"]::before { background: linear-gradient(90deg, #080406 0%, #140a0e 60%, #1e1014 100%); }
+  .room-scene[data-sidewall="wine"]::after { background: linear-gradient(-90deg, #080406 0%, #140a0e 60%, #1e1014 100%); }
+  .room-scene[data-sidewall="teal"]::before { background: linear-gradient(90deg, #040a0a 0%, #0e1818 60%, #142222 100%); }
+  .room-scene[data-sidewall="teal"]::after { background: linear-gradient(-90deg, #040a0a 0%, #0e1818 60%, #142222 100%); }
+  .room-scene[data-sidewall="plum"]::before { background: linear-gradient(90deg, #06040a 0%, #100a16 60%, #18101e 100%); }
+  .room-scene[data-sidewall="plum"]::after { background: linear-gradient(-90deg, #06040a 0%, #100a16 60%, #18101e 100%); }
+
+  /* Lightswitch */
+  .room-lightswitch {
+    position: absolute; top: 40%; left: 24%; z-index: 3; cursor: pointer;
   }
-  .room-scene[data-floor="light-wood"] .room-floor {
-    background:
-      repeating-linear-gradient(90deg,
-        rgba(0,0,0,0.06) 0px, transparent 1px, transparent 55px, rgba(0,0,0,0.06) 55px, rgba(0,0,0,0.06) 56px),
-      repeating-linear-gradient(180deg,
-        rgba(0,0,0,0.03) 0px, transparent 2px, transparent 14px),
-      linear-gradient(180deg, #5a4830 0%, #4e3e28 30%, #423420 60%, #382a1a 100%);
+  .lightswitch-plate {
+    width: 10px; height: 16px;
+    background: linear-gradient(180deg, #d8d0c4 0%, #c4bca8 100%);
+    border-radius: 1px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    display: flex; align-items: center; justify-content: center;
   }
-  .room-scene[data-floor="carpet-blue"] .room-floor {
-    background:
-      linear-gradient(180deg, #1a2030 0%, #162030 30%, #121c2a 60%, #0e1824 100%);
+  .lightswitch-toggle {
+    width: 4px; height: 7px;
+    background: linear-gradient(180deg, #e8e0d4, #ccc4b4);
+    border-radius: 1px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    transform: translateY(1px);
+    transition: transform 0.15s;
   }
-  .room-scene[data-floor="carpet-warm"] .room-floor {
-    background:
-      linear-gradient(180deg, #2a1e18 0%, #241a14 30%, #1e1610 60%, #18120e 100%);
+  .room-scene.lights-on .lightswitch-toggle { transform: translateY(-1px); }
+
+  /* Lights-on brightness */
+  .room-scene.lights-on .room-wall { filter: brightness(1.6); }
+  .room-scene.lights-on .room-floor { filter: brightness(1.4); }
+  .room-scene.lights-on::before,
+  .room-scene.lights-on::after { filter: brightness(1.5); }
+  .room-scene.lights-on .ceiling-light::after {
+    background: radial-gradient(ellipse, rgba(255,240,200,0.6) 20%, rgba(255,230,180,0.2) 60%, transparent 80%);
+    box-shadow: 0 0 30px rgba(255,240,200,0.3);
   }
-  .room-scene[data-floor="tile-white"] .room-floor {
-    background:
-      repeating-linear-gradient(0deg, transparent 0px, transparent 24px, rgba(0,0,0,0.15) 24px, rgba(0,0,0,0.15) 25px),
-      repeating-linear-gradient(90deg, transparent 0px, transparent 24px, rgba(0,0,0,0.15) 24px, rgba(0,0,0,0.15) 25px),
-      linear-gradient(180deg, #2a2a2a 0%, #222222 30%, #1c1c1c 60%, #161616 100%);
-  }
-  .room-scene[data-floor="tile-checker"] .room-floor {
-    background:
-      repeating-conic-gradient(#1a1a1a 0% 25%, #2a2a2a 0% 50%) 0 0 / 30px 30px,
-      linear-gradient(180deg, #222 0%, #1a1a1a 100%);
-  }
-  .room-scene[data-floor="pink-carpet"] .room-floor {
-    background:
-      linear-gradient(180deg, #30182a 0%, #2a1424 30%, #24101e 60%, #1e0e18 100%);
-  }
-  .room-scene[data-floor="concrete"] .room-floor {
-    background:
-      linear-gradient(180deg, #222020 0%, #1c1a1a 30%, #161414 60%, #121010 100%);
-  }
+  .room-scene.lights-on .room-poster,
+  .room-scene.lights-on .room-bookshelf,
+  .room-scene.lights-on .room-shelf,
+  .room-scene.lights-on .bean-bag,
+  .room-scene.lights-on .room-desk,
+  .room-scene.lights-on .desk-chair { filter: brightness(1.3); }
 
   /* Computer size */
   .room-scene[data-compsize="small"] .mac-computer { transform: scale(0.7); transform-origin: bottom center; }
@@ -1363,15 +1429,15 @@
   .retro-tv .project-card { position: relative; }
   .retro-tv .project-card:hover .manage-actions { display: flex; }
   .manage-action-btn {
-    font-family: 'Courier New', monospace; font-size: 0.65rem; font-weight: 700;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    padding: 0.6rem 1.4rem; border: 1px solid #6090ff; cursor: pointer;
-    transition: all 0.2s; width: 160px; text-align: center;
+    font-family: 'Poppins', sans-serif; font-size: 0.55rem; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    padding: 0.5rem 1.2rem; border: 1px solid rgba(250,250,250,0.25); cursor: pointer;
+    transition: all 0.25s; width: 140px; text-align: center; background: transparent;
   }
-  .manage-delete-btn { background: transparent; color: #ff4444; border-color: #ff4444; }
-  .manage-delete-btn:hover { background: #ff4444; color: #000; }
-  .manage-invite-btn { background: transparent; color: #6090ff; border-color: #6090ff; }
-  .manage-invite-btn:hover { background: #6090ff; color: #000; }
+  .manage-invite-btn { color: rgba(250,250,250,0.8); border-color: rgba(250,250,250,0.25); }
+  .manage-invite-btn:hover { background: rgba(250,250,250,0.08); color: #fafafa; border-color: rgba(250,250,250,0.45); }
+  .manage-delete-btn { color: rgba(200,80,80,0.7); border-color: rgba(200,80,80,0.25); }
+  .manage-delete-btn:hover { background: rgba(200,80,80,0.1); color: #c85050; border-color: rgba(200,80,80,0.45); }
 
   /* EMPTY STATE */
   .empty-state {
@@ -2225,6 +2291,12 @@
           <div class="window-glass" id="room-window-glass-2"></div>
           <div class="window-frame"></div>
         </div>
+        <!-- Lightswitch -->
+        <div class="room-lightswitch" onclick="toggleRoomLight()">
+          <div class="lightswitch-plate">
+            <div class="lightswitch-toggle"></div>
+          </div>
+        </div>
         <!-- Floor -->
         <div class="room-floor"></div>
         <!-- Bookshelf (left side, against wall) -->
@@ -2359,6 +2431,31 @@
           <div class="rc-swatch" data-value="lilac-wall" data-label="Lilac" style="background:#2c2438" onclick="setRoomOption('wall','lilac-wall')"></div>
           <div class="rc-swatch" data-value="sky" data-label="Sky" style="background:#1a2434" onclick="setRoomOption('wall','sky')"></div>
           <div class="rc-swatch" data-value="moss" data-label="Moss" style="background:#1a241a" onclick="setRoomOption('wall','moss')"></div>
+          <div class="rc-swatch" data-value="wine" data-label="Wine" style="background:#28141a" onclick="setRoomOption('wall','wine')"></div>
+          <div class="rc-swatch" data-value="rust" data-label="Rust" style="background:#282014" onclick="setRoomOption('wall','rust')"></div>
+          <div class="rc-swatch" data-value="teal-wall" data-label="Teal" style="background:#142826" onclick="setRoomOption('wall','teal-wall')"></div>
+          <div class="rc-swatch" data-value="plum-wall" data-label="Plum" style="background:#22162a" onclick="setRoomOption('wall','plum-wall')"></div>
+          <div class="rc-swatch" data-value="gold" data-label="Gold" style="background:#282618" onclick="setRoomOption('wall','gold')"></div>
+          <div class="rc-swatch" data-value="slate-wall" data-label="Slate" style="background:#1a1e28" onclick="setRoomOption('wall','slate-wall')"></div>
+        </div>
+      </div>
+
+      <div class="rc-section">
+        <div class="rc-label">Side Walls</div>
+        <div class="rc-swatches" data-option="sidewall">
+          <div class="rc-swatch" data-value="midnight" data-label="Midnight" style="background:#050504" onclick="setRoomOption('sidewall','midnight')"></div>
+          <div class="rc-swatch" data-value="charcoal" data-label="Charcoal" style="background:#141418" onclick="setRoomOption('sidewall','charcoal')"></div>
+          <div class="rc-swatch" data-value="sage" data-label="Sage" style="background:#0a120a" onclick="setRoomOption('sidewall','sage')"></div>
+          <div class="rc-swatch" data-value="rose" data-label="Rose" style="background:#140e10" onclick="setRoomOption('sidewall','rose')"></div>
+          <div class="rc-swatch" data-value="navy" data-label="Navy" style="background:#080c18" onclick="setRoomOption('sidewall','navy')"></div>
+          <div class="rc-swatch" data-value="cream" data-label="Cream" style="background:#141210" onclick="setRoomOption('sidewall','cream')"></div>
+          <div class="rc-swatch" data-value="blush" data-label="Blush" style="background:#1a1018" onclick="setRoomOption('sidewall','blush')"></div>
+          <div class="rc-swatch" data-value="lilac" data-label="Lilac" style="background:#141020" onclick="setRoomOption('sidewall','lilac')"></div>
+          <div class="rc-swatch" data-value="sky" data-label="Sky" style="background:#0c1420" onclick="setRoomOption('sidewall','sky')"></div>
+          <div class="rc-swatch" data-value="moss" data-label="Moss" style="background:#0c140c" onclick="setRoomOption('sidewall','moss')"></div>
+          <div class="rc-swatch" data-value="wine" data-label="Wine" style="background:#140a0e" onclick="setRoomOption('sidewall','wine')"></div>
+          <div class="rc-swatch" data-value="teal" data-label="Teal" style="background:#0e1818" onclick="setRoomOption('sidewall','teal')"></div>
+          <div class="rc-swatch" data-value="plum" data-label="Plum" style="background:#100a16" onclick="setRoomOption('sidewall','plum')"></div>
         </div>
       </div>
 
@@ -2371,6 +2468,10 @@
           <div class="rc-swatch" data-value="rose-gold" data-label="Rose Gold" style="background:#d4a8a0" onclick="setRoomOption('computer','rose-gold')"></div>
           <div class="rc-swatch" data-value="bondi-blue" data-label="Bondi Blue" style="background:#4a8aaa" onclick="setRoomOption('computer','bondi-blue')"></div>
           <div class="rc-swatch" data-value="lilac" data-label="Lilac" style="background:#9a88b8" onclick="setRoomOption('computer','lilac')"></div>
+          <div class="rc-swatch" data-value="midnight" data-label="Midnight" style="background:#181a28" onclick="setRoomOption('computer','midnight')"></div>
+          <div class="rc-swatch" data-value="mint" data-label="Mint" style="background:#90c8b4" onclick="setRoomOption('computer','mint')"></div>
+          <div class="rc-swatch" data-value="coral" data-label="Coral" style="background:#d49888" onclick="setRoomOption('computer','coral')"></div>
+          <div class="rc-swatch" data-value="sunflower" data-label="Sunflower" style="background:#d4c080" onclick="setRoomOption('computer','sunflower')"></div>
         </div>
       </div>
 
@@ -2425,14 +2526,21 @@
         <div class="rc-label">Floor</div>
         <div class="rc-swatches" data-option="floor">
           <div class="rc-swatch" data-value="default" data-label="Default" style="background:#0a0908" onclick="setRoomOption('floor','default')"></div>
-          <div class="rc-swatch" data-value="hardwood" data-label="Hardwood" style="background:#3d2e1e" onclick="setRoomOption('floor','hardwood')"></div>
-          <div class="rc-swatch" data-value="light-wood" data-label="Light Wood" style="background:#5a4830" onclick="setRoomOption('floor','light-wood')"></div>
-          <div class="rc-swatch" data-value="carpet-blue" data-label="Blue Carpet" style="background:#1a2030" onclick="setRoomOption('floor','carpet-blue')"></div>
-          <div class="rc-swatch" data-value="carpet-warm" data-label="Warm Carpet" style="background:#2a1e18" onclick="setRoomOption('floor','carpet-warm')"></div>
-          <div class="rc-swatch" data-value="tile-white" data-label="Tile" style="background:#2a2a2a" onclick="setRoomOption('floor','tile-white')"></div>
-          <div class="rc-swatch" data-value="tile-checker" data-label="Checker" style="background:repeating-conic-gradient(#1a1a1a 0% 25%, #2a2a2a 0% 50%) 0 0/14px 14px" onclick="setRoomOption('floor','tile-checker')"></div>
-          <div class="rc-swatch" data-value="pink-carpet" data-label="Pink Carpet" style="background:#30182a" onclick="setRoomOption('floor','pink-carpet')"></div>
-          <div class="rc-swatch" data-value="concrete" data-label="Concrete" style="background:#222020" onclick="setRoomOption('floor','concrete')"></div>
+          <div class="rc-swatch" data-value="charcoal" data-label="Charcoal" style="background:#1e1e22" onclick="setRoomOption('floor','charcoal')"></div>
+          <div class="rc-swatch" data-value="slate" data-label="Slate" style="background:#222020" onclick="setRoomOption('floor','slate')"></div>
+          <div class="rc-swatch" data-value="warm-brown" data-label="Warm Brown" style="background:#2a1e18" onclick="setRoomOption('floor','warm-brown')"></div>
+          <div class="rc-swatch" data-value="espresso" data-label="Espresso" style="background:#201410" onclick="setRoomOption('floor','espresso')"></div>
+          <div class="rc-swatch" data-value="navy" data-label="Navy" style="background:#1a2030" onclick="setRoomOption('floor','navy')"></div>
+          <div class="rc-swatch" data-value="ocean" data-label="Ocean" style="background:#142832" onclick="setRoomOption('floor','ocean')"></div>
+          <div class="rc-swatch" data-value="teal" data-label="Teal" style="background:#14282a" onclick="setRoomOption('floor','teal')"></div>
+          <div class="rc-swatch" data-value="forest" data-label="Forest" style="background:#142014" onclick="setRoomOption('floor','forest')"></div>
+          <div class="rc-swatch" data-value="olive" data-label="Olive" style="background:#1e2014" onclick="setRoomOption('floor','olive')"></div>
+          <div class="rc-swatch" data-value="plum" data-label="Plum" style="background:#24142a" onclick="setRoomOption('floor','plum')"></div>
+          <div class="rc-swatch" data-value="rose" data-label="Rose" style="background:#30182a" onclick="setRoomOption('floor','rose')"></div>
+          <div class="rc-swatch" data-value="blush" data-label="Blush" style="background:#2e1820" onclick="setRoomOption('floor','blush')"></div>
+          <div class="rc-swatch" data-value="mauve" data-label="Mauve" style="background:#28202a" onclick="setRoomOption('floor','mauve')"></div>
+          <div class="rc-swatch" data-value="cream" data-label="Cream" style="background:#2a2820" onclick="setRoomOption('floor','cream')"></div>
+          <div class="rc-swatch" data-value="sand" data-label="Sand" style="background:#2c2618" onclick="setRoomOption('floor','sand')"></div>
         </div>
       </div>
 
@@ -4215,12 +4323,12 @@ function toggleManageMode() {
 }
 
 // ─── ROOM CUSTOMIZATION ───
-const ROOM_DEFAULTS = { wall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on', floor: 'default', compsize: 'medium' };
+const ROOM_DEFAULTS = { wall: 'midnight', sidewall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on', floor: 'default', compsize: 'medium' };
 const ROOM_THEMES = {
-  grunge: { wall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on', floor: 'default', compsize: 'medium' },
-  minimal: { wall: 'charcoal', computer: 'silver', poster1: 'quote', poster2: 'none', beanbag: 'cream', clutter: 'off', floor: 'concrete', compsize: 'medium' },
-  cozy: { wall: 'cream', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'green', clutter: 'off', floor: 'hardwood', compsize: 'large' },
-  girly: { wall: 'blush', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'pink', clutter: 'off', floor: 'pink-carpet', compsize: 'medium' }
+  grunge: { wall: 'midnight', sidewall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on', floor: 'default', compsize: 'medium' },
+  minimal: { wall: 'charcoal', sidewall: 'charcoal', computer: 'silver', poster1: 'quote', poster2: 'none', beanbag: 'cream', clutter: 'off', floor: 'slate', compsize: 'medium' },
+  cozy: { wall: 'cream', sidewall: 'cream', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'green', clutter: 'off', floor: 'warm-brown', compsize: 'large' },
+  girly: { wall: 'blush', sidewall: 'blush', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'pink', clutter: 'off', floor: 'rose', compsize: 'medium' }
 };
 
 function getRoomConfig() {
@@ -4239,6 +4347,16 @@ function loadRoomConfig() {
   // Update clutter toggle
   const toggle = document.getElementById('rc-clutter-toggle');
   if (toggle) toggle.classList.toggle('on', config.clutter === 'on');
+  // Restore light state
+  const lightsOn = localStorage.getItem('orveil-room-lights') === '1';
+  scene.classList.toggle('lights-on', lightsOn);
+}
+
+function toggleRoomLight() {
+  const scene = document.querySelector('.room-scene');
+  if (!scene) return;
+  scene.classList.toggle('lights-on');
+  localStorage.setItem('orveil-room-lights', scene.classList.contains('lights-on') ? '1' : '0');
 }
 
 function setRoomOption(key, value) {
@@ -4410,14 +4528,22 @@ function initRoomDrag() {
       const left = parseFloat(el.style.left);
       const floorTop = 72;
       const deskTop = 55;
+      const deskSurface = 54; // where cans land on desk
       const deskBottom = 62;
       const deskLeft = 25;
       const deskRight = 70;
-      const onDesk = top >= deskTop && top <= deskBottom && left >= deskLeft && left <= deskRight;
+      const aboveDesk = left >= deskLeft && left <= deskRight;
+      const onDesk = top >= deskTop && top <= deskBottom && aboveDesk;
 
       if (!onDesk && top < floorTop) {
         el.style.transition = 'top 0.4s cubic-bezier(0.6, 0, 1, 1)';
-        el.style.top = (floorTop + 2 + Math.random() * 6) + '%';
+        if (aboveDesk && top < deskTop) {
+          // Dropped above the desk — land on desk surface
+          el.style.top = deskSurface + '%';
+        } else {
+          // Fall to floor
+          el.style.top = (floorTop + 2 + Math.random() * 6) + '%';
+        }
         setTimeout(() => { el.style.transition = ''; }, 500);
       }
     }
