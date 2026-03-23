@@ -1025,6 +1025,10 @@
   .room-scene[data-wall="plum-wall"] .room-wall { background: linear-gradient(180deg, #100a14 0%, #1a1020 20%, #22162a 50%, #2a1c34 80%, #32223e 100%); }
   .room-scene[data-wall="gold"] .room-wall { background: linear-gradient(180deg, #14120a 0%, #1e1c10 20%, #282618 50%, #323020 80%, #3c3a28 100%); }
   .room-scene[data-wall="slate-wall"] .room-wall { background: linear-gradient(180deg, #0c0e14 0%, #14161e 20%, #1a1e28 50%, #202632 80%, #262e3c 100%); }
+  .room-scene[data-wall="white"] .room-wall { background: linear-gradient(180deg, #c8c4be 0%, #d4d0ca 20%, #dedad4 50%, #e4e0da 80%, #eae6e0 100%); }
+  .room-scene[data-wall="white"]::before { background: linear-gradient(90deg, #a8a4a0 0%, #b8b4ae 60%, #c8c4be 100%) !important; }
+  .room-scene[data-wall="white"]::after { background: linear-gradient(-90deg, #a8a4a0 0%, #b8b4ae 60%, #c8c4be 100%) !important; }
+  .room-scene[data-wall="white"] .room-wall::after { background: linear-gradient(180deg, #b8b4ae, #a8a4a0); }
 
   /* Computer colors */
   .room-scene[data-computer="space-gray"] .mac-case { background: linear-gradient(180deg, #5a5a5e 0%, #4a4a4e 40%, #3e3e42 100%); }
@@ -1153,53 +1157,67 @@
   .room-scene[data-floor="mauve"] .room-floor { background: linear-gradient(180deg, #28202a 0%, #221c24 30%, #1c181e 60%, #161418 100%); }
   .room-scene[data-floor="cream"] .room-floor { background: linear-gradient(180deg, #2a2820 0%, #24221c 30%, #1e1c18 60%, #181614 100%); }
   .room-scene[data-floor="sand"] .room-floor { background: linear-gradient(180deg, #2c2618 0%, #262014 30%, #201a10 60%, #1a160e 100%); }
+  .room-scene[data-floor="white"] .room-floor { background: linear-gradient(180deg, #c8c4be 0%, #beb8b2 30%, #b4aea8 60%, #aaa49e 100%); }
 
   /* Side wall colors */
-  .room-scene[data-sidewall="charcoal"]::before { background: linear-gradient(90deg, #0a0a0e 0%, #141418 60%, #1a1a1e 100%); }
-  .room-scene[data-sidewall="charcoal"]::after { background: linear-gradient(-90deg, #0a0a0e 0%, #141418 60%, #1a1a1e 100%); }
-  .room-scene[data-sidewall="sage"]::before { background: linear-gradient(90deg, #040804 0%, #0a120a 60%, #101a10 100%); }
-  .room-scene[data-sidewall="sage"]::after { background: linear-gradient(-90deg, #040804 0%, #0a120a 60%, #101a10 100%); }
-  .room-scene[data-sidewall="rose"]::before { background: linear-gradient(90deg, #080406 0%, #140e10 60%, #1e1416 100%); }
-  .room-scene[data-sidewall="rose"]::after { background: linear-gradient(-90deg, #080406 0%, #140e10 60%, #1e1416 100%); }
-  .room-scene[data-sidewall="navy"]::before { background: linear-gradient(90deg, #040408 0%, #080c18 60%, #0c1020 100%); }
-  .room-scene[data-sidewall="navy"]::after { background: linear-gradient(-90deg, #040408 0%, #080c18 60%, #0c1020 100%); }
-  .room-scene[data-sidewall="cream"]::before { background: linear-gradient(90deg, #0a0a06 0%, #141210 60%, #1c1a16 100%); }
-  .room-scene[data-sidewall="cream"]::after { background: linear-gradient(-90deg, #0a0a06 0%, #141210 60%, #1c1a16 100%); }
-  .room-scene[data-sidewall="blush"]::before { background: linear-gradient(90deg, #0c060a 0%, #1a1018 60%, #241620 100%); }
-  .room-scene[data-sidewall="blush"]::after { background: linear-gradient(-90deg, #0c060a 0%, #1a1018 60%, #241620 100%); }
-  .room-scene[data-sidewall="lilac"]::before { background: linear-gradient(90deg, #080610 0%, #141020 60%, #1c1828 100%); }
-  .room-scene[data-sidewall="lilac"]::after { background: linear-gradient(-90deg, #080610 0%, #141020 60%, #1c1828 100%); }
-  .room-scene[data-sidewall="sky"]::before { background: linear-gradient(90deg, #040a10 0%, #0c1420 60%, #141c2a 100%); }
-  .room-scene[data-sidewall="sky"]::after { background: linear-gradient(-90deg, #040a10 0%, #0c1420 60%, #141c2a 100%); }
-  .room-scene[data-sidewall="moss"]::before { background: linear-gradient(90deg, #040a04 0%, #0c140c 60%, #141c14 100%); }
-  .room-scene[data-sidewall="moss"]::after { background: linear-gradient(-90deg, #040a04 0%, #0c140c 60%, #141c14 100%); }
-  .room-scene[data-sidewall="wine"]::before { background: linear-gradient(90deg, #080406 0%, #140a0e 60%, #1e1014 100%); }
-  .room-scene[data-sidewall="wine"]::after { background: linear-gradient(-90deg, #080406 0%, #140a0e 60%, #1e1014 100%); }
-  .room-scene[data-sidewall="teal"]::before { background: linear-gradient(90deg, #040a0a 0%, #0e1818 60%, #142222 100%); }
-  .room-scene[data-sidewall="teal"]::after { background: linear-gradient(-90deg, #040a0a 0%, #0e1818 60%, #142222 100%); }
-  .room-scene[data-sidewall="plum"]::before { background: linear-gradient(90deg, #06040a 0%, #100a16 60%, #18101e 100%); }
-  .room-scene[data-sidewall="plum"]::after { background: linear-gradient(-90deg, #06040a 0%, #100a16 60%, #18101e 100%); }
+  .room-scene[data-wall="charcoal"]::before { background: linear-gradient(90deg, #0a0a0e 0%, #141418 60%, #1a1a1e 100%); }
+  .room-scene[data-wall="charcoal"]::after { background: linear-gradient(-90deg, #0a0a0e 0%, #141418 60%, #1a1a1e 100%); }
+  .room-scene[data-wall="sage"]::before { background: linear-gradient(90deg, #040804 0%, #0a120a 60%, #101a10 100%); }
+  .room-scene[data-wall="sage"]::after { background: linear-gradient(-90deg, #040804 0%, #0a120a 60%, #101a10 100%); }
+  .room-scene[data-wall="rose"]::before { background: linear-gradient(90deg, #080406 0%, #140e10 60%, #1e1416 100%); }
+  .room-scene[data-wall="rose"]::after { background: linear-gradient(-90deg, #080406 0%, #140e10 60%, #1e1416 100%); }
+  .room-scene[data-wall="navy"]::before { background: linear-gradient(90deg, #040408 0%, #080c18 60%, #0c1020 100%); }
+  .room-scene[data-wall="navy"]::after { background: linear-gradient(-90deg, #040408 0%, #080c18 60%, #0c1020 100%); }
+  .room-scene[data-wall="cream"]::before { background: linear-gradient(90deg, #0a0a06 0%, #141210 60%, #1c1a16 100%); }
+  .room-scene[data-wall="cream"]::after { background: linear-gradient(-90deg, #0a0a06 0%, #141210 60%, #1c1a16 100%); }
+  .room-scene[data-wall="blush"]::before { background: linear-gradient(90deg, #0c060a 0%, #1a1018 60%, #241620 100%); }
+  .room-scene[data-wall="blush"]::after { background: linear-gradient(-90deg, #0c060a 0%, #1a1018 60%, #241620 100%); }
+  .room-scene[data-wall="lilac"]::before { background: linear-gradient(90deg, #080610 0%, #141020 60%, #1c1828 100%); }
+  .room-scene[data-wall="lilac"]::after { background: linear-gradient(-90deg, #080610 0%, #141020 60%, #1c1828 100%); }
+  .room-scene[data-wall="sky"]::before { background: linear-gradient(90deg, #040a10 0%, #0c1420 60%, #141c2a 100%); }
+  .room-scene[data-wall="sky"]::after { background: linear-gradient(-90deg, #040a10 0%, #0c1420 60%, #141c2a 100%); }
+  .room-scene[data-wall="moss"]::before { background: linear-gradient(90deg, #040a04 0%, #0c140c 60%, #141c14 100%); }
+  .room-scene[data-wall="moss"]::after { background: linear-gradient(-90deg, #040a04 0%, #0c140c 60%, #141c14 100%); }
+  .room-scene[data-wall="wine"]::before { background: linear-gradient(90deg, #080406 0%, #140a0e 60%, #1e1014 100%); }
+  .room-scene[data-wall="wine"]::after { background: linear-gradient(-90deg, #080406 0%, #140a0e 60%, #1e1014 100%); }
+  .room-scene[data-wall="teal"]::before { background: linear-gradient(90deg, #040a0a 0%, #0e1818 60%, #142222 100%); }
+  .room-scene[data-wall="teal"]::after { background: linear-gradient(-90deg, #040a0a 0%, #0e1818 60%, #142222 100%); }
+  .room-scene[data-wall="plum"]::before { background: linear-gradient(90deg, #06040a 0%, #100a16 60%, #18101e 100%); }
+  .room-scene[data-wall="plum"]::after { background: linear-gradient(-90deg, #06040a 0%, #100a16 60%, #18101e 100%); }
+  .room-scene[data-wall="lilac-wall"]::before { background: linear-gradient(90deg, #080610 0%, #141020 60%, #1c1828 100%); }
+  .room-scene[data-wall="lilac-wall"]::after { background: linear-gradient(-90deg, #080610 0%, #141020 60%, #1c1828 100%); }
+  .room-scene[data-wall="rust"]::before { background: linear-gradient(90deg, #0a0804 0%, #141008 60%, #1e180e 100%); }
+  .room-scene[data-wall="rust"]::after { background: linear-gradient(-90deg, #0a0804 0%, #141008 60%, #1e180e 100%); }
+  .room-scene[data-wall="teal-wall"]::before { background: linear-gradient(90deg, #040a0a 0%, #0e1818 60%, #142222 100%); }
+  .room-scene[data-wall="teal-wall"]::after { background: linear-gradient(-90deg, #040a0a 0%, #0e1818 60%, #142222 100%); }
+  .room-scene[data-wall="plum-wall"]::before { background: linear-gradient(90deg, #06040a 0%, #100a16 60%, #18101e 100%); }
+  .room-scene[data-wall="plum-wall"]::after { background: linear-gradient(-90deg, #06040a 0%, #100a16 60%, #18101e 100%); }
+  .room-scene[data-wall="gold"]::before { background: linear-gradient(90deg, #0a0a04 0%, #14120a 60%, #1c1a10 100%); }
+  .room-scene[data-wall="gold"]::after { background: linear-gradient(-90deg, #0a0a04 0%, #14120a 60%, #1c1a10 100%); }
+  .room-scene[data-wall="slate-wall"]::before { background: linear-gradient(90deg, #04060a 0%, #0c0e14 60%, #14161e 100%); }
+  .room-scene[data-wall="slate-wall"]::after { background: linear-gradient(-90deg, #04060a 0%, #0c0e14 60%, #14161e 100%); }
 
   /* Lightswitch */
   .room-lightswitch {
-    position: absolute; top: 40%; left: 24%; z-index: 3; cursor: pointer;
+    position: absolute; top: 38%; left: 23%; z-index: 5; cursor: pointer;
   }
   .lightswitch-plate {
-    width: 10px; height: 16px;
-    background: linear-gradient(180deg, #d8d0c4 0%, #c4bca8 100%);
-    border-radius: 1px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    width: 18px; height: 28px;
+    background: linear-gradient(180deg, #e4ddd0 0%, #d8d0c4 50%, #ccc4b4 100%);
+    border-radius: 2px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.3);
     display: flex; align-items: center; justify-content: center;
+    border: 1px solid rgba(0,0,0,0.15);
   }
   .lightswitch-toggle {
-    width: 4px; height: 7px;
-    background: linear-gradient(180deg, #e8e0d4, #ccc4b4);
-    border-radius: 1px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.3);
-    transform: translateY(1px);
+    width: 8px; height: 12px;
+    background: linear-gradient(180deg, #f0e8dc, #d8d0c0);
+    border-radius: 2px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.4);
+    transform: translateY(2px);
     transition: transform 0.15s;
   }
-  .room-scene.lights-on .lightswitch-toggle { transform: translateY(-1px); }
+  .room-scene.lights-on .lightswitch-toggle { transform: translateY(-2px); box-shadow: 0 -1px 4px rgba(0,0,0,0.3), inset 0 -1px 0 rgba(255,255,255,0.4); }
 
   /* Lights-on brightness */
   .room-scene.lights-on .room-wall { filter: brightness(1.6); }
@@ -2437,25 +2455,7 @@
           <div class="rc-swatch" data-value="plum-wall" data-label="Plum" style="background:#22162a" onclick="setRoomOption('wall','plum-wall')"></div>
           <div class="rc-swatch" data-value="gold" data-label="Gold" style="background:#282618" onclick="setRoomOption('wall','gold')"></div>
           <div class="rc-swatch" data-value="slate-wall" data-label="Slate" style="background:#1a1e28" onclick="setRoomOption('wall','slate-wall')"></div>
-        </div>
-      </div>
-
-      <div class="rc-section">
-        <div class="rc-label">Side Walls</div>
-        <div class="rc-swatches" data-option="sidewall">
-          <div class="rc-swatch" data-value="midnight" data-label="Midnight" style="background:#050504" onclick="setRoomOption('sidewall','midnight')"></div>
-          <div class="rc-swatch" data-value="charcoal" data-label="Charcoal" style="background:#141418" onclick="setRoomOption('sidewall','charcoal')"></div>
-          <div class="rc-swatch" data-value="sage" data-label="Sage" style="background:#0a120a" onclick="setRoomOption('sidewall','sage')"></div>
-          <div class="rc-swatch" data-value="rose" data-label="Rose" style="background:#140e10" onclick="setRoomOption('sidewall','rose')"></div>
-          <div class="rc-swatch" data-value="navy" data-label="Navy" style="background:#080c18" onclick="setRoomOption('sidewall','navy')"></div>
-          <div class="rc-swatch" data-value="cream" data-label="Cream" style="background:#141210" onclick="setRoomOption('sidewall','cream')"></div>
-          <div class="rc-swatch" data-value="blush" data-label="Blush" style="background:#1a1018" onclick="setRoomOption('sidewall','blush')"></div>
-          <div class="rc-swatch" data-value="lilac" data-label="Lilac" style="background:#141020" onclick="setRoomOption('sidewall','lilac')"></div>
-          <div class="rc-swatch" data-value="sky" data-label="Sky" style="background:#0c1420" onclick="setRoomOption('sidewall','sky')"></div>
-          <div class="rc-swatch" data-value="moss" data-label="Moss" style="background:#0c140c" onclick="setRoomOption('sidewall','moss')"></div>
-          <div class="rc-swatch" data-value="wine" data-label="Wine" style="background:#140a0e" onclick="setRoomOption('sidewall','wine')"></div>
-          <div class="rc-swatch" data-value="teal" data-label="Teal" style="background:#0e1818" onclick="setRoomOption('sidewall','teal')"></div>
-          <div class="rc-swatch" data-value="plum" data-label="Plum" style="background:#100a16" onclick="setRoomOption('sidewall','plum')"></div>
+          <div class="rc-swatch" data-value="white" data-label="White" style="background:#dedad4" onclick="setRoomOption('wall','white')"></div>
         </div>
       </div>
 
@@ -2541,6 +2541,7 @@
           <div class="rc-swatch" data-value="mauve" data-label="Mauve" style="background:#28202a" onclick="setRoomOption('floor','mauve')"></div>
           <div class="rc-swatch" data-value="cream" data-label="Cream" style="background:#2a2820" onclick="setRoomOption('floor','cream')"></div>
           <div class="rc-swatch" data-value="sand" data-label="Sand" style="background:#2c2618" onclick="setRoomOption('floor','sand')"></div>
+          <div class="rc-swatch" data-value="white" data-label="White" style="background:#c8c4be" onclick="setRoomOption('floor','white')"></div>
         </div>
       </div>
 
@@ -4323,12 +4324,12 @@ function toggleManageMode() {
 }
 
 // ─── ROOM CUSTOMIZATION ───
-const ROOM_DEFAULTS = { wall: 'midnight', sidewall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on', floor: 'default', compsize: 'medium' };
+const ROOM_DEFAULTS = { wall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on', floor: 'default', compsize: 'medium' };
 const ROOM_THEMES = {
-  grunge: { wall: 'midnight', sidewall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on', floor: 'default', compsize: 'medium' },
-  minimal: { wall: 'charcoal', sidewall: 'charcoal', computer: 'silver', poster1: 'quote', poster2: 'none', beanbag: 'cream', clutter: 'off', floor: 'slate', compsize: 'medium' },
-  cozy: { wall: 'cream', sidewall: 'cream', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'green', clutter: 'off', floor: 'warm-brown', compsize: 'large' },
-  girly: { wall: 'blush', sidewall: 'blush', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'pink', clutter: 'off', floor: 'rose', compsize: 'medium' }
+  grunge: { wall: 'midnight', computer: 'classic', poster1: 'nirvana', poster2: 'sublime', beanbag: 'red', clutter: 'on', floor: 'default', compsize: 'medium' },
+  minimal: { wall: 'charcoal', computer: 'silver', poster1: 'quote', poster2: 'none', beanbag: 'cream', clutter: 'off', floor: 'slate', compsize: 'medium' },
+  cozy: { wall: 'cream', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'green', clutter: 'off', floor: 'warm-brown', compsize: 'large' },
+  girly: { wall: 'blush', computer: 'rose-gold', poster1: 'floral', poster2: 'matisse', beanbag: 'pink', clutter: 'off', floor: 'rose', compsize: 'medium' }
 };
 
 function getRoomConfig() {
@@ -4527,13 +4528,22 @@ function initRoomDrag() {
       const top = parseFloat(el.style.top);
       const left = parseFloat(el.style.left);
       const floorTop = 72;
-      const deskTop = 55;
-      const deskSurface = 54; // where cans land on desk
-      const deskBottom = 62;
-      const deskLeft = 25;
-      const deskRight = 70;
+
+      // Find desk position dynamically (works even after desk is dragged)
+      const desk = scene.querySelector('[data-draggable="desk"]');
+      let deskTop = 55, deskBottom = 62, deskLeft = 25, deskRight = 70, deskSurface = 54;
+      if (desk) {
+        const sceneRect = scene.getBoundingClientRect();
+        const deskRect = desk.getBoundingClientRect();
+        deskLeft = ((deskRect.left - sceneRect.left) / sceneRect.width) * 100;
+        deskRight = ((deskRect.right - sceneRect.left) / sceneRect.width) * 100;
+        deskTop = ((deskRect.top - sceneRect.top) / sceneRect.height) * 100;
+        deskBottom = ((deskRect.bottom - sceneRect.top) / sceneRect.height) * 100;
+        deskSurface = deskTop - 2; // land just above desk surface
+      }
+
       const aboveDesk = left >= deskLeft && left <= deskRight;
-      const onDesk = top >= deskTop && top <= deskBottom && aboveDesk;
+      const onDesk = top >= (deskSurface - 2) && top <= deskBottom && aboveDesk;
 
       if (!onDesk && top < floorTop) {
         el.style.transition = 'top 0.4s cubic-bezier(0.6, 0, 1, 1)';
