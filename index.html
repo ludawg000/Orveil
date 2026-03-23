@@ -296,18 +296,16 @@
     background: linear-gradient(180deg, #1e1c18, #141210);
     box-shadow: 0 3px 6px rgba(0,0,0,0.4);
   }
-  /* Side walls — perspective depth illusion (left and right dark panels) */
+  /* Side walls — full height panels (left and right) */
   .room-scene::before {
     content: ''; position: absolute; top: 0; left: 0; width: 8%; bottom: 0;
     background: linear-gradient(90deg, #020202 0%, #0a0908 60%, #0e0d0b 100%);
     z-index: 1;
-    clip-path: polygon(0 0, 100% 8%, 100% 68%, 0 100%);
   }
   .room-scene::after {
     content: ''; position: absolute; top: 0; right: 0; width: 8%; bottom: 0;
     background: linear-gradient(-90deg, #020202 0%, #0a0908 60%, #0e0d0b 100%);
     z-index: 1;
-    clip-path: polygon(0 8%, 100% 0, 100% 100%, 0 68%);
   }
 
   /* === WINDOW on wall === */
@@ -490,7 +488,7 @@
 
   /* === FLOOR — ground plane below back wall === */
   .room-floor {
-    top: 72%; left: 0; right: 0; bottom: 0;
+    top: 72%; left: 8%; right: 8%; bottom: 0;
     background:
       linear-gradient(180deg, #0e0d0a 0%, #0a0908 20%, #080807 50%, #050504 100%);
     z-index: 0;
@@ -1197,9 +1195,9 @@
   .room-scene[data-wall="slate-wall"]::before { background: linear-gradient(90deg, #04060a 0%, #0c0e14 60%, #14161e 100%); }
   .room-scene[data-wall="slate-wall"]::after { background: linear-gradient(-90deg, #04060a 0%, #0c0e14 60%, #14161e 100%); }
 
-  /* Lightswitch */
+  /* Lightswitch — on left wall */
   .room-lightswitch {
-    position: absolute; top: 38%; left: 23%; z-index: 5; cursor: pointer;
+    position: absolute; top: 45%; left: 2.5%; z-index: 5; cursor: pointer;
   }
   .lightswitch-plate {
     width: 18px; height: 28px;
