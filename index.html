@@ -494,6 +494,20 @@
       linear-gradient(180deg, #0e0d0a 0%, #0a0908 20%, #080807 50%, #050504 100%);
     z-index: 0;
   }
+  /* Floor perspective corners — diagonal triangles extending above floor into side wall area */
+  .floor-corner-left, .floor-corner-right {
+    position: absolute; width: 8%; z-index: 0;
+    top: -100%; bottom: 0;
+    background: inherit;
+  }
+  .floor-corner-left {
+    left: 0;
+    clip-path: polygon(100% 100%, 0 30%, 0 100%);
+  }
+  .floor-corner-right {
+    right: 0;
+    clip-path: polygon(0 100%, 100% 30%, 100% 100%);
+  }
   /* Shadow line where wall meets floor */
   .room-floor::before {
     content: ''; position: absolute; top: 0; left: 0; right: 0; height: 12px;
@@ -2472,7 +2486,10 @@
           </div>
         </div>
         <!-- Floor -->
-        <div class="room-floor"></div>
+        <div class="room-floor">
+          <div class="floor-corner-left"></div>
+          <div class="floor-corner-right"></div>
+        </div>
         <!-- Bookshelf (left side, against wall) -->
         <div class="room-bookshelf" data-draggable="bookshelf">
           <div class="bookshelf-body"></div>
