@@ -297,16 +297,33 @@
     background: linear-gradient(180deg, #1e1c18, #141210);
     box-shadow: 0 3px 6px rgba(0,0,0,0.4);
   }
-  /* Side walls — full height panels (left and right) */
+  /* Side walls — full height panels with bottom darkening for floor blend */
   .room-scene::before {
     content: ''; position: absolute; top: 0; left: 0; width: 8%; bottom: 0;
-    background: linear-gradient(90deg, #020202 0%, #0a0908 60%, #0e0d0b 100%);
+    background:
+      linear-gradient(180deg, transparent 0%, transparent 65%, rgba(0,0,0,0.5) 80%, rgba(0,0,0,0.8) 100%),
+      linear-gradient(90deg, #020202 0%, #0a0908 60%, #0e0d0b 100%);
     z-index: 1;
   }
   .room-scene::after {
     content: ''; position: absolute; top: 0; right: 0; width: 8%; bottom: 0;
-    background: linear-gradient(-90deg, #020202 0%, #0a0908 60%, #0e0d0b 100%);
+    background:
+      linear-gradient(180deg, transparent 0%, transparent 65%, rgba(0,0,0,0.5) 80%, rgba(0,0,0,0.8) 100%),
+      linear-gradient(-90deg, #020202 0%, #0a0908 60%, #0e0d0b 100%);
     z-index: 1;
+  }
+  /* Floor edge shadows — feather the floor into the side walls */
+  .floor-shadow-left, .floor-shadow-right {
+    position: absolute; top: 72%; bottom: 0; width: 12%; z-index: 1;
+    pointer-events: none;
+  }
+  .floor-shadow-left {
+    left: 0;
+    background: linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
+  }
+  .floor-shadow-right {
+    right: 0;
+    background: linear-gradient(-90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
   }
 
   /* === WINDOW on wall === */
@@ -2328,6 +2345,8 @@
         </div>
         <!-- Floor -->
         <div class="room-floor"></div>
+        <div class="floor-shadow-left"></div>
+        <div class="floor-shadow-right"></div>
         <!-- Bookshelf (left side, against wall) -->
         <div class="room-bookshelf" data-draggable="bookshelf">
           <div class="bookshelf-body"></div>
