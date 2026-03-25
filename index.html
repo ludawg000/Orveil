@@ -3688,10 +3688,68 @@ async function handleSignUp() {
   else { errEl.style.color = '#6bff9e'; errEl.textContent = 'Account created! Check your email to confirm.'; }
 }
 
+function resetAppState() {
+  // Auth & core
+  currentUser = null;
+  currentProject = null;
+  accessToken = null;
+  appStarted = false;
+
+  // UI state
+  manageMode = false;
+  pendingDeleteId = null;
+  pendingDeleteName = '';
+  pendingInviteId = null;
+  roomDragInitialized = false;
+
+  // Gallery/delivery
+  galleryFiles = [];
+  lightboxIndex = 0;
+  slideshowIndex = 0;
+  currentGallerySettings = {
+    logo_path: null, bg_color: '#0a0a0a', accent_color: '#fafafa',
+    font_family: 'Playfair Display', layout: 'masonry', wallpaper: 'none'
+  };
+  logoLocalBlobUrl = null;
+  cropState = { startX: 0, startY: 0, dragging: false };
+
+  // Clear all screen content
+  ['projects-grid', 'files-grid', 'tv-screen'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = '';
+  });
+
+  // Reset nav/profile
+  const avatar = document.getElementById('nav-avatar');
+  if (avatar) { avatar.innerHTML = ''; avatar.textContent = '?'; }
+  const nameInput = document.getElementById('user-name');
+  if (nameInput) nameInput.value = '';
+
+  // Exit manage mode
+  const main = document.getElementById('main-content');
+  if (main) main.classList.remove('retro-tv');
+  const manageBtn = document.getElementById('manage-btn');
+  if (manageBtn) { manageBtn.classList.remove('active'); manageBtn.textContent = 'Manage'; }
+
+  // Clear auth form
+  ['auth-email', 'auth-password'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  const authErr = document.getElementById('auth-error');
+  if (authErr) authErr.textContent = '';
+
+  // Close any open modals
+  document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+
+  // Clear project screen title
+  const projTitle = document.getElementById('project-nav-title');
+  if (projTitle) projTitle.textContent = '';
+}
+
 async function signOut() {
   try { await sb.auth.signOut(); } catch {}
-  currentUser = null;
-  appStarted = false;
+  resetAppState();
   showScreen('login-screen');
 }
 
@@ -3711,22 +3769,26 @@ sb.auth.onAuthStateChange(async (event, session) => {
         await initApp();
       }
     } else {
-      appStarted = false;
-      currentUser = null;
-      accessToken = null;
+      resetAppState();
       showScreen('login-screen');
     }
   } catch (err) {
     console.error('Auth state change error:', err);
-    appStarted = false;
-    currentUser = null;
-    accessToken = null;
+    resetAppState();
     showScreen('login-screen');
   }
 });
 
 async function initApp() {
   try {
+    // Clean slate for new user session
+    currentProject = null;
+    manageMode = false;
+    galleryFiles = [];
+    pendingDeleteId = null;
+    pendingDeleteName = '';
+    pendingInviteId = null;
+
     console.log('[Orveil v3] initApp start, user:', currentUser?.id);
     const meta = currentUser.user_metadata || {};
     const initial = meta.full_name?.[0] || meta.name?.[0] || currentUser.email?.[0] || '?';
