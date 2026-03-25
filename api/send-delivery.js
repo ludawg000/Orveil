@@ -49,17 +49,23 @@ export default async function handler(req, res) {
     ? `<img src="${logoUrl}" alt="Brand" style="max-height: 48px; max-width: 200px; opacity: 0.5;">`
     : `<span style="color: ${accentColor}; opacity: 0.4;">Delivered with Orveil</span>`;
 
-  const bw = 28; // border frame width in px
+  const bw = 36; // dots border frame width in px
+  const solidLine = 4; // solid accent border line in px
+  const solidColor = `rgba(${ar},${ag},${ab},0.75)`;
   const borderCell = patternBg
     ? `background-color: ${bgColor}; background-image: ${patternBg}; background-repeat: repeat; background-size: ${patternSize}; font-size: 0; line-height: 0;`
     : `background-color: ${bgColor}; font-size: 0; line-height: 0;`;
+  const solidCellH = `background-color: ${solidColor}; font-size: 0; line-height: 0;`;
+  const solidCellV = `background-color: ${solidColor}; font-size: 0; line-height: 0; width: ${solidLine}px;`;
 
   const html = `
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: ${bgColor};"><tr><td align="center" style="background-color: ${bgColor}; padding: 32px 16px;">
     <table width="600" cellpadding="0" cellspacing="0" border="0">
-      <tr><td colspan="3" height="${bw}" style="${borderCell}">&nbsp;</td></tr>
+      <tr><td colspan="5" height="${bw}" style="${borderCell}">&nbsp;</td></tr>
+      <tr><td colspan="5" height="${solidLine}" style="${solidCellH}">&nbsp;</td></tr>
       <tr>
         <td width="${bw}" style="${borderCell}">&nbsp;</td>
+        <td width="${solidLine}" style="${solidCellV}">&nbsp;</td>
         <td bgcolor="${bgColor}" style="background-color: ${bgColor}; font-family: '${fontFamily}', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: ${accentColor}; padding: 48px 32px;">
           <div style="text-align: center; margin-bottom: 40px;">
             ${headerContent}
@@ -76,9 +82,11 @@ export default async function handler(req, res) {
             <p style="font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; margin: 0; color: ${accentColor}; opacity: 0.4;">Delivered with Orveil</p>
           </div>
         </td>
+        <td width="${solidLine}" style="${solidCellV}">&nbsp;</td>
         <td width="${bw}" style="${borderCell}">&nbsp;</td>
       </tr>
-      <tr><td colspan="3" height="${bw}" style="${borderCell}">&nbsp;</td></tr>
+      <tr><td colspan="5" height="${solidLine}" style="${solidCellH}">&nbsp;</td></tr>
+      <tr><td colspan="5" height="${bw}" style="${borderCell}">&nbsp;</td></tr>
     </table>
     </td></tr></table>
   `;

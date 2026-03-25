@@ -3638,16 +3638,24 @@ function applyGalleryCustomization(project) {
     marble: `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='m'><feTurbulence type='turbulence' baseFrequency='0.015' numOctaves='3' seed='2'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23m)' opacity='${o * 1.8}'/></svg>`)}")`
   };
   const wpSizes = { none: 'auto', linen: '8px 8px', paper: '100px 100px', geometric: '40px 40px', dots: '24px 24px', marble: '200px 200px' };
-  // Pattern as border frame only — solid bg covers content area, pattern shows in 20px padding
+  // Pattern as border frame only — solid bg covers content area, pattern shows in padding
   document.body.style.backgroundColor = bg;
+  // Remove any previous border frame overlay
+  const oldFrame = document.getElementById('gallery-border-frame');
+  if (oldFrame) oldFrame.remove();
+
   if (wp !== 'none' && svgPatterns[wp]) {
-    root.style.padding = '28px';
-    // Solid layer first (on top) clips to content-box, masking pattern behind content
-    // Pattern layer second (behind) clips to padding-box, visible only in the 20px padding frame
+    const bw = 36; // dots frame width
+    root.style.padding = `${bw}px`;
     root.style.backgroundImage = `linear-gradient(${bg}, ${bg}), ${svgPatterns[wp]}`;
     root.style.backgroundSize = `auto, ${wpSizes[wp]}`;
     root.style.backgroundClip = 'content-box, padding-box';
     root.style.backgroundColor = bg;
+    // Solid accent border line overlaid on top of the dots frame
+    const frame = document.createElement('div');
+    frame.id = 'gallery-border-frame';
+    frame.style.cssText = `position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:9998;border:4px solid rgba(${pr},${pg},${pb},0.75);`;
+    document.body.appendChild(frame);
   } else {
     root.style.padding = '';
     root.style.backgroundImage = 'none';
