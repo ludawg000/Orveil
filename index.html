@@ -1862,6 +1862,32 @@
   .customize-arrow.open { transform: rotate(180deg); }
   .delivery-customize { padding: 0.5rem 0; }
   .customize-section { margin-bottom: 1.4rem; }
+  .preview-tabs-row {
+    display: flex; border-bottom: 1px solid var(--g200); margin-bottom: 1rem;
+  }
+  .preview-tab {
+    font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 0.55rem 1rem; cursor: pointer; color: var(--g400);
+    border-bottom: 2px solid transparent; margin-bottom: -1px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .preview-tab.active { color: var(--black); border-bottom-color: var(--black); }
+  #delivery-preview-panel {
+    border: 1px solid var(--g200); margin-top: 0.5rem; overflow: hidden;
+  }
+  #gallery-preview-pane, #email-preview-pane { display: none; }
+  #gallery-preview-pane.active, #email-preview-pane.active { display: block; }
+  .gal-preview-wrap {
+    width: 100%; background: #f5f5f5; display: flex; justify-content: center;
+    align-items: flex-start; padding: 20px 0; overflow: hidden;
+  }
+  .gal-preview-inner {
+    width: 320px; transform-origin: top center; transform: scale(0.72);
+    margin-bottom: calc((320px * 0.72 - 320px) * 0.5);
+  }
+  #email-preview-pane iframe {
+    width: 100%; height: 420px; border: none; display: block;
+  }
   .customize-label {
     font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase;
     color: var(--g400); margin-bottom: 0.5rem; display: block;
@@ -3296,6 +3322,28 @@
       <label class="save-default-label">
         <input type="checkbox" id="save-as-default"> Save as default for all future projects
       </label>
+      <div id="delivery-preview-panel" style="display:none">
+        <div class="preview-tabs-row">
+          <div class="preview-tab active" id="preview-tab-gallery" onclick="switchPreviewTab('gallery')">Gallery</div>
+          <div class="preview-tab" id="preview-tab-email" onclick="switchPreviewTab('email')">Email</div>
+        </div>
+        <div id="gallery-preview-pane" class="active">
+          <div class="gal-preview-wrap">
+            <div class="gal-preview-inner" id="gal-preview-inner">
+              <div id="gal-preview-screen" style="padding:10px;box-sizing:border-box;">
+                <div id="gal-preview-content" style="padding:24px 20px;min-height:200px;">
+                  <div id="gal-preview-title" style="text-align:center;font-size:1.1rem;font-weight:400;letter-spacing:0.04em;margin-bottom:6px;"></div>
+                  <div style="text-align:center;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;opacity:0.4;margin-bottom:16px;" id="gal-preview-subtitle">Gallery</div>
+                  <div id="gal-preview-grid" style="display:grid;gap:4px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="email-preview-pane">
+          <iframe id="email-preview-iframe" sandbox="allow-same-origin"></iframe>
+        </div>
+      </div>
     </div>
 
     <div class="modal-actions">
@@ -4695,6 +4743,7 @@ async function openDelivery() {
   updateDeliveryPreview('standard');
   loadShareLink();
   await loadGallerySettings();
+  window._previewProjectName = currentProject?.name || 'Your Project';
   document.getElementById('delivery-modal').classList.add('active');
 }
 
@@ -4776,6 +4825,11 @@ function toggleCustomize() {
   const isOpen = panel.style.display !== 'none';
   panel.style.display = isOpen ? 'none' : 'block';
   arrow.classList.toggle('open', !isOpen);
+  if (!isOpen) {
+    const previewPanel = document.getElementById('delivery-preview-panel');
+    previewPanel.style.display = 'block';
+    updateGalleryPreview();
+  }
 }
 
 // Logo
@@ -4803,6 +4857,7 @@ async function handleLogoUpload(event) {
   document.getElementById('logo-placeholder').style.display = 'none';
   currentGallerySettings.logo_path = path;
   showToast('Logo uploaded.');
+  updatePreviews();
 }
 
 function resizeImage(file, maxW, maxH, quality) {
@@ -4833,6 +4888,7 @@ function removeLogo() {
   document.getElementById('logo-placeholder').style.display = 'flex';
   currentGallerySettings.logo_path = null;
   if (logoLocalBlobUrl) { URL.revokeObjectURL(logoLocalBlobUrl); logoLocalBlobUrl = null; }
+  updatePreviews();
 }
 
 // Logo crop
@@ -4959,6 +5015,7 @@ function syncColor(which) {
   currentGallerySettings[which === 'bg' ? 'bg_color' : 'accent_color'] = document.getElementById(id).value;
   checkContrast();
   document.querySelectorAll('.color-preset').forEach(p => p.classList.remove('active'));
+  updatePreviews();
 }
 
 const COLOR_PRESETS = {
@@ -4980,12 +5037,14 @@ function applyColorPreset(name) {
   document.querySelectorAll('.color-preset').forEach(el => el.classList.remove('active'));
   document.querySelector(`.color-preset[data-preset="${name}"]`)?.classList.add('active');
   checkContrast();
+  updatePreviews();
 }
 
 function selectWallpaper(wp) {
   currentGallerySettings.wallpaper = wp;
   document.querySelectorAll('.wallpaper-opt').forEach(el => el.classList.remove('active'));
   document.querySelector(`.wallpaper-opt[data-wp="${wp}"]`)?.classList.add('active');
+  updatePreviews();
 }
 
 function checkContrast() {
@@ -5029,6 +5088,7 @@ function selectFont(fontName) {
   document.getElementById('font-selected-name').textContent = fontName;
   document.getElementById('font-preview-sample').style.fontFamily = `'${fontName}', serif`;
   currentGallerySettings.font_family = fontName;
+  updatePreviews();
 }
 
 function loadGoogleFont(fontName) {
@@ -5046,6 +5106,168 @@ function selectLayout(el) {
   document.querySelectorAll('.layout-opt').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
   currentGallerySettings.layout = el.dataset.layout;
+  updatePreviews();
+}
+
+// ── Live Preview ──────────────────────────────────────────────────────────────
+function switchPreviewTab(tab) {
+  document.getElementById('preview-tab-gallery').classList.toggle('active', tab === 'gallery');
+  document.getElementById('preview-tab-email').classList.toggle('active', tab === 'email');
+  document.getElementById('gallery-preview-pane').classList.toggle('active', tab === 'gallery');
+  document.getElementById('email-preview-pane').classList.toggle('active', tab === 'email');
+  if (tab === 'email') updateEmailPreview();
+}
+
+function updatePreviews() {
+  const panel = document.getElementById('delivery-preview-panel');
+  if (!panel || panel.style.display === 'none') return;
+  updateGalleryPreview();
+  if (document.getElementById('email-preview-pane').classList.contains('active')) updateEmailPreview();
+}
+
+function updateGalleryPreview() {
+  const s = currentGallerySettings;
+  const bg = s.bg_color || '#0a0a0a';
+  const accent = s.accent_color || '#fafafa';
+  const font = s.font_family || 'Playfair Display';
+  const wp = s.wallpaper || 'none';
+  const layout = s.layout || 'masonry';
+
+  const hexToRgb = hex => {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+  };
+  const [pr, pg, pb] = hexToRgb(accent);
+  const c = `${pr},${pg},${pb}`;
+  const o = 0.3;
+  const patterns = {
+    none: '',
+    linen:    `repeating-linear-gradient(0deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.5px, transparent 0.5px, transparent 10px)`,
+    paper:    `repeating-linear-gradient(90deg, rgba(${c},${o*0.7}) 0, rgba(${c},${o*0.7}) 0.3px, transparent 0.3px, transparent 7px)`,
+    geometric:`repeating-linear-gradient(45deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.5px, transparent 0.5px, transparent 22px)`,
+    dots:     `radial-gradient(circle, rgba(${c},${o}) 1.5px, transparent 1.5px)`,
+    marble:   `repeating-linear-gradient(55deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.8px, transparent 0.8px, transparent 34px)`
+  };
+  const sizes = { none:'auto', linen:'20px 20px', paper:'20px 20px', geometric:'40px 40px', dots:'20px 20px', marble:'20px 20px' };
+
+  const screen = document.getElementById('gal-preview-screen');
+  screen.style.backgroundColor = bg;
+  screen.style.border = `4px solid ${accent}`;
+  screen.style.padding = '14px';
+  screen.style.backgroundImage = patterns[wp] || '';
+  screen.style.backgroundSize = sizes[wp] || 'auto';
+  screen.style.backgroundRepeat = 'repeat';
+
+  const content = document.getElementById('gal-preview-content');
+  content.style.backgroundColor = bg;
+
+  const title = document.getElementById('gal-preview-title');
+  title.style.color = accent;
+  title.style.fontFamily = `'${font}', serif`;
+  title.textContent = window._previewProjectName || 'Project Name';
+
+  const subtitle = document.getElementById('gal-preview-subtitle');
+  subtitle.style.color = accent;
+
+  // Placeholder photo tiles
+  const grid = document.getElementById('gal-preview-grid');
+  const tileColor = `rgba(${pr},${pg},${pb},0.15)`;
+  const tileAccent = `rgba(${pr},${pg},${pb},0.08)`;
+  if (layout === 'masonry') {
+    grid.style.cssText = `display:grid;grid-template-columns:repeat(2,1fr);gap:4px;`;
+    const heights = [60, 90, 80, 60, 70, 80];
+    grid.innerHTML = heights.map((h,i) =>
+      `<div style="height:${h}px;background:${i%2===0?tileColor:tileAccent};"></div>`
+    ).join('');
+  } else if (layout === 'grid') {
+    grid.style.cssText = `display:grid;grid-template-columns:repeat(3,1fr);gap:4px;`;
+    grid.innerHTML = Array(6).fill(0).map((_,i) =>
+      `<div style="height:56px;background:${i%2===0?tileColor:tileAccent};"></div>`
+    ).join('');
+  } else {
+    // slideshow
+    grid.style.cssText = `display:block;`;
+    grid.innerHTML = `<div style="height:130px;background:${tileColor};display:flex;align-items:center;justify-content:center;">
+      <div style="width:20px;height:20px;border:1px solid rgba(${pr},${pg},${pb},0.4);border-radius:50%;"></div>
+    </div>`;
+  }
+}
+
+function buildEmailPreviewHtml() {
+  const s = currentGallerySettings;
+  const bg = s.bg_color || '#0a0a0a';
+  const accent = s.accent_color || '#fafafa';
+  const font = s.font_family || 'Georgia, serif';
+  const wp = s.wallpaper || 'none';
+  const logoPath = s.logo_path;
+  const projectName = window._previewProjectName || 'Your Project';
+
+  const hexToRgb = hex => {
+    const h = hex.replace('#', '');
+    return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)];
+  };
+  const [ar, ag, ab] = hexToRgb(accent);
+  const c = `${ar},${ag},${ab}`;
+  const o = 0.3;
+  const gradientPatterns = {
+    linen:    `repeating-linear-gradient(0deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.5px, transparent 0.5px, transparent 10px)`,
+    paper:    `repeating-linear-gradient(90deg, rgba(${c},${o*0.7}) 0, rgba(${c},${o*0.7}) 0.3px, transparent 0.3px, transparent 7px)`,
+    geometric:`repeating-linear-gradient(45deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.5px, transparent 0.5px, transparent 22px)`,
+    dots:     `radial-gradient(circle, rgba(${c},${o}) 1.5px, transparent 1.5px)`,
+    marble:   `repeating-linear-gradient(55deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.8px, transparent 0.8px, transparent 34px)`
+  };
+  const gradientSizes = { dots:'20px 20px', linen:'20px 20px', paper:'20px 20px', geometric:'40px 40px', marble:'20px 20px' };
+  const patternBg = gradientPatterns[wp] || '';
+  const patternSize = gradientSizes[wp] || 'auto';
+  const dotFrame = parseInt(patternSize) || 20;
+
+  const borderCell = patternBg
+    ? `background-color:${bg};background-image:${patternBg};background-repeat:repeat;background-size:${patternSize};font-size:0;line-height:0;`
+    : `background-color:${bg};font-size:0;line-height:0;`;
+
+  const logoUrl = logoPath ? `${SUPABASE_URL}/storage/v1/object/public/logos/${logoPath}` : null;
+  const headerContent = logoUrl
+    ? `<img src="${logoUrl}" alt="Brand" style="max-height:80px;max-width:320px;">`
+    : `<h1 style="font-family:'${font}',Georgia,serif;font-size:2rem;font-weight:400;letter-spacing:0.02em;margin:0;color:${accent};">Orveil</h1>`;
+
+  return `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#ffffff;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;"><tr><td align="center" style="background-color:#ffffff;padding:24px 16px;">
+    <table width="500" cellpadding="0" cellspacing="0" border="0">
+      <tr>
+        <td bgcolor="${accent}" style="background-color:${accent};padding:10px;">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr><td colspan="3" height="${dotFrame}" style="${borderCell}">&nbsp;</td></tr>
+            <tr>
+              <td width="${dotFrame}" style="${borderCell}">&nbsp;</td>
+              <td bgcolor="${bg}" style="background-color:${bg};font-family:'${font}',Georgia,serif;color:${accent};padding:36px 28px;">
+                <div style="text-align:center;margin-bottom:28px;">${headerContent}</div>
+                <div style="border-top:1px solid ${accent}20;padding-top:24px;margin-bottom:24px;text-align:center;">
+                  <h2 style="font-family:'${font}',Georgia,serif;font-size:1.3rem;font-weight:400;margin:0 0 6px;color:${accent};text-align:center;">Your gallery is ready</h2>
+                  <p style="font-size:0.8rem;color:${accent};opacity:0.5;margin:0 0 18px;text-align:center;">${projectName}</p>
+                  <p style="font-size:0.9rem;line-height:1.7;color:${accent};opacity:0.85;margin:0 0 24px;text-align:center;">Your photos are beautifully curated and ready to view.</p>
+                  <div style="text-align:center;margin:24px 0;">
+                    <span style="display:inline-block;background:${accent};color:${bg};font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;padding:14px 36px;">View Gallery</span>
+                  </div>
+                </div>
+                <div style="border-top:1px solid ${accent}20;padding-top:18px;text-align:center;">
+                  <p style="font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;margin:0;color:${accent};opacity:0.4;">Delivered with Orveil</p>
+                </div>
+              </td>
+              <td width="${dotFrame}" style="${borderCell}">&nbsp;</td>
+            </tr>
+            <tr><td colspan="3" height="${dotFrame}" style="${borderCell}">&nbsp;</td></tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+    </td></tr></table>
+  </body></html>`;
+}
+
+function updateEmailPreview() {
+  const iframe = document.getElementById('email-preview-iframe');
+  if (!iframe) return;
+  iframe.srcdoc = buildEmailPreviewHtml();
 }
 
 function closeDelivery() {
@@ -5053,6 +5275,7 @@ function closeDelivery() {
   document.getElementById('client-email').value = '';
   document.getElementById('delivery-customize').style.display = 'none';
   document.getElementById('customize-arrow').classList.remove('open');
+  document.getElementById('delivery-preview-panel').style.display = 'none';
 }
 
 function selectDelivery(el) {
