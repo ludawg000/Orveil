@@ -121,10 +121,9 @@
     letter-spacing: 0.08em; text-transform: uppercase;
     background: var(--black); color: var(--white);
     border: none; padding: 0.4rem 0.7rem; cursor: pointer;
-    opacity: 0; transition: opacity 0.2s;
+    display: none;
   }
-  .project-card:hover .card-invite-btn { opacity: 1; }
-  @media (max-width: 480px) { .card-invite-btn { opacity: 1; } }
+  @media (max-width: 480px) { .card-invite-btn { display: block; } }
   .project-thumb {
     width: 100%; aspect-ratio: 16/9;
     background: var(--g100); border-radius: 1px;
@@ -4160,10 +4159,10 @@ async function loadProjects() {
     target.innerHTML = projects.map(p => {
       const manageOverlay = manageMode ? `<div class="manage-actions">
         <button class="manage-action-btn manage-edit-btn" onclick="openProjectEditMode('${p.id}','${escHtml(p.name)}',event)">Edit</button>
-        <button class="manage-action-btn manage-invite-btn" onclick="openInviteModal('${p.id}','${escHtml(p.name)}',event)">+ Invite</button>
-        <button class="manage-action-btn manage-delete-btn" onclick="openDeleteModal('${p.id}','${escHtml(p.name)}',event)">Delete</button>
+        ${!p._collab ? `<button class="manage-action-btn manage-invite-btn" onclick="openInviteModal('${p.id}','${escHtml(p.name)}',event)">+ Invite</button>` : ''}
+        ${!p._collab ? `<button class="manage-action-btn manage-delete-btn" onclick="openDeleteModal('${p.id}','${escHtml(p.name)}',event)">Delete</button>` : ''}
       </div>` : '';
-      const inviteBtn = manageMode ? '' : `<button class="card-invite-btn" onclick="event.stopPropagation();openInviteModal('${p.id}','${escHtml(p.name)}',event)" title="Invite collaborator">+ Invite</button>`;
+      const inviteBtn = (!manageMode && !p._collab) ? `<button class="card-invite-btn" onclick="event.stopPropagation();openInviteModal('${p.id}','${escHtml(p.name)}',event)" title="Invite collaborator">+ Invite</button>` : '';
       return `<div class="project-card" onclick="${manageMode ? '' : `openProject('${p.id}','${escHtml(p.name)}')`}" style="${manageMode ? 'cursor:default;position:relative' : 'position:relative'}">
         ${manageOverlay}
         ${inviteBtn}
@@ -4262,6 +4261,10 @@ async function openProject(id, name) {
   document.getElementById('project-nav-title').textContent = name;
   document.getElementById('project-screen').classList.remove('edit-mode');
   document.getElementById('project-back-btn').innerHTML = '&#8592; Home';
+  // Only show invite button for project owners
+  const { data: proj } = await dbSelect('projects', 'user_id', `id=eq.${id}`, { single: true });
+  const isOwner = proj && proj.user_id === currentUser.id;
+  document.querySelector('.project-nav-actions .invite-btn').style.display = isOwner ? '' : 'none';
   showScreen('project-screen');
   await loadFiles();
 }
