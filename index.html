@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 <title>Orveil</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -112,6 +115,16 @@
     display: flex; flex-direction: column; gap: 0.8rem;
   }
   .project-card:hover { background: var(--g100); }
+  .card-invite-btn {
+    position: absolute; top: 0.6rem; right: 0.6rem; z-index: 5;
+    font-family: var(--sans); font-size: 0.55rem; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    background: var(--black); color: var(--white);
+    border: none; padding: 0.4rem 0.7rem; cursor: pointer;
+    opacity: 0; transition: opacity 0.2s;
+  }
+  .project-card:hover .card-invite-btn { opacity: 1; }
+  @media (max-width: 480px) { .card-invite-btn { opacity: 1; } }
   .project-thumb {
     width: 100%; aspect-ratio: 16/9;
     background: var(--g100); border-radius: 1px;
@@ -1637,13 +1650,13 @@
   .deliver-btn:hover { border-color: var(--black); }
 
   .invite-btn {
-    font-family: var(--sans); font-size: 0.68rem; font-weight: 400;
+    font-family: var(--sans); font-size: 0.68rem; font-weight: 500;
     letter-spacing: 0.1em; text-transform: uppercase;
-    background: transparent; color: var(--black);
-    border: 1px solid var(--g200); padding: 0.7rem 1.4rem; cursor: pointer;
+    background: var(--black); color: var(--white);
+    border: 1px solid var(--black); padding: 0.7rem 1.4rem; cursor: pointer;
     transition: all 0.3s;
   }
-  .invite-btn:hover { border-color: var(--black); }
+  .invite-btn:hover { opacity: 0.8; }
 
   .project-main { flex: 1; padding: 2.5rem; max-width: 1200px; margin: 0 auto; width: 100%; }
 
@@ -2984,6 +2997,20 @@
       </div>
     </div>
 
+    <!-- App -->
+    <div class="settings-section">
+      <div class="settings-section-header">App</div>
+      <div class="settings-section-body">
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Clear Cache</div>
+            <div class="settings-row-sub">Force reload with latest version</div>
+          </div>
+          <button class="upgrade-btn" onclick="clearCacheAndReload()" style="background:var(--black);color:var(--white);border-color:var(--black)">Clear &amp; Reload</button>
+        </div>
+      </div>
+    </div>
+
     <!-- Subscription -->
     <div class="settings-section">
       <div class="settings-section-header">Subscription</div>
@@ -4136,8 +4163,10 @@ async function loadProjects() {
         <button class="manage-action-btn manage-invite-btn" onclick="openInviteModal('${p.id}','${escHtml(p.name)}',event)">+ Invite</button>
         <button class="manage-action-btn manage-delete-btn" onclick="openDeleteModal('${p.id}','${escHtml(p.name)}',event)">Delete</button>
       </div>` : '';
-      return `<div class="project-card" onclick="${manageMode ? '' : `openProject('${p.id}','${escHtml(p.name)}')`}" style="${manageMode ? 'cursor:default;position:relative' : ''}">
+      const inviteBtn = manageMode ? '' : `<button class="card-invite-btn" onclick="event.stopPropagation();openInviteModal('${p.id}','${escHtml(p.name)}',event)" title="Invite collaborator">+ Invite</button>`;
+      return `<div class="project-card" onclick="${manageMode ? '' : `openProject('${p.id}','${escHtml(p.name)}')`}" style="${manageMode ? 'cursor:default;position:relative' : 'position:relative'}">
         ${manageOverlay}
+        ${inviteBtn}
         <div class="project-thumb" id="pthumb-${p.id}"><div class="project-thumb-placeholder">${p.file_count ? p.file_count + ' files' : (() => { const q = randomQuip(); return q.emoji + '<br><span style="font-size:0.55rem;letter-spacing:0.05em;opacity:0.7">' + q.text + '</span>'; })()}</div></div>
         <div class="project-name">${escHtml(p.name)}${p._collab ? '<span style="font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--g400);margin-left:0.5rem;font-weight:400">Shared</span>' : ''}</div>
         <div class="project-meta">${p.file_count || 0} files · ${timeAgo(p.created_at)}</div>
@@ -5466,6 +5495,15 @@ function showScreen(id) {
 }
 
 // ─── SETTINGS ───
+function clearCacheAndReload() {
+  if ('caches' in window) {
+    caches.keys().then(names => names.forEach(n => caches.delete(n)));
+  }
+  localStorage.removeItem('orveil_cache');
+  sessionStorage.clear();
+  window.location.href = window.location.pathname + '?t=' + Date.now();
+}
+
 function openSettings() {
   showScreen('settings-screen');
   const meta = currentUser.user_metadata || {};
