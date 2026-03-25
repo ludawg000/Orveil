@@ -4279,7 +4279,13 @@ async function createProject() {
 
 // ─── PROJECT / FILES ───
 async function openProject(id, name) {
-  const { data: proj } = await dbSelect('projects', 'user_id,allow_collab_invite', `id=eq.${id}`, { single: true });
+  let proj = null;
+  const { data: p1 } = await dbSelect('projects', 'user_id,allow_collab_invite', `id=eq.${id}`, { single: true });
+  if (p1) { proj = p1; } else {
+    // Fallback if allow_collab_invite column doesn't exist yet
+    const { data: p2 } = await dbSelect('projects', 'user_id', `id=eq.${id}`, { single: true });
+    proj = p2;
+  }
   const isOwner = proj && proj.user_id === currentUser.id;
   currentProject = { id, name, isOwner, allowCollabInvite: proj?.allow_collab_invite || false };
   document.getElementById('project-nav-title').textContent = name;
@@ -5455,7 +5461,12 @@ async function openInviteModal(id, name, e) {
   document.getElementById('invite-project-name').textContent = '> ' + name;
   document.getElementById('invite-email-input').value = '';
   // Show permissions toggle only for project owners
-  const { data: proj } = await dbSelect('projects', 'user_id,allow_collab_invite', `id=eq.${id}`, { single: true });
+  let proj = null;
+  const { data: p1 } = await dbSelect('projects', 'user_id,allow_collab_invite', `id=eq.${id}`, { single: true });
+  if (p1) { proj = p1; } else {
+    const { data: p2 } = await dbSelect('projects', 'user_id', `id=eq.${id}`, { single: true });
+    proj = p2;
+  }
   const isOwner = proj && proj.user_id === currentUser.id;
   const permsEl = document.getElementById('invite-permissions');
   permsEl.style.display = isOwner ? 'block' : 'none';
