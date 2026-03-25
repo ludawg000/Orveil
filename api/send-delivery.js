@@ -24,16 +24,25 @@ export default async function handler(req, res) {
   const logoUrl = branding?.logoUrl;
   const wallpaper = branding?.wallpaper || 'none';
 
-  // Wallpaper patterns — hosted PNGs for email client compatibility
+  // Wallpaper patterns — SVG data URIs colored with accent color (same approach as gallery)
   const BASE_URL = 'https://orveil.vercel.app';
-  const wpImages = {
-    linen: `${BASE_URL}/patterns/linen.png`,
-    paper: `${BASE_URL}/patterns/paper.png`,
-    geometric: `${BASE_URL}/patterns/geometric.png`,
-    dots: `${BASE_URL}/patterns/dots.png`,
-    marble: `${BASE_URL}/patterns/marble.png`
+  const hexToRgb = hex => { const h = hex.replace('#', ''); return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)]; };
+  const [ar, ag, ab] = hexToRgb(accentColor);
+  const c = `${ar},${ag},${ab}`;
+  const o = 0.15;
+  const enc = s => encodeURIComponent(s);
+  const svgPatterns = {
+    linen:    `url("data:image/svg+xml,${enc(`<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><line x1='0' y1='0' x2='8' y2='0' stroke='rgba(${c},${o})' stroke-width='0.5'/><line x1='0' y1='4' x2='8' y2='4' stroke='rgba(${c},${o*0.7})' stroke-width='0.5'/><line x1='0' y1='0' x2='0' y2='8' stroke='rgba(${c},${o})' stroke-width='0.5'/><line x1='4' y1='0' x2='4' y2='8' stroke='rgba(${c},${o*0.7})' stroke-width='0.5'/></svg>`)}")`,
+    paper:    `url("data:image/svg+xml,${enc(`<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100' height='100' filter='url(%23n)' opacity='${o*1.2}'/></svg>`)}")`,
+    geometric:`url("data:image/svg+xml,${enc(`<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><path d='M20 0L40 20L20 40L0 20Z' fill='none' stroke='rgba(${c},${o*1.5})' stroke-width='0.6'/><path d='M20 8L32 20L20 32L8 20Z' fill='none' stroke='rgba(${c},${o})' stroke-width='0.4'/></svg>`)}")`,
+    dots:     `url("data:image/svg+xml,${enc(`<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24'><circle cx='12' cy='12' r='1.5' fill='rgba(${c},${o*2})'/></svg>`)}")`,
+    marble:   `url("data:image/svg+xml,${enc(`<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='m'><feTurbulence type='turbulence' baseFrequency='0.015' numOctaves='3' seed='2'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23m)' opacity='${o*1.8}'/></svg>`)}"`)`
   };
-  const patternUrl = wpImages[wallpaper] || '';
+  const wpSizes = { linen: '8px 8px', paper: '100px 100px', geometric: '40px 40px', dots: '24px 24px', marble: '200px 200px' };
+  const patternDataUri = svgPatterns[wallpaper] || '';
+  const patternSize = wpSizes[wallpaper] || 'auto';
+  // PNG fallback for Outlook VML only
+  const patternUrl = wallpaper !== 'none' ? `${BASE_URL}/patterns/${wallpaper}.png` : '';
 
   const headerContent = logoUrl
     ? `<img src="${logoUrl}" alt="Brand" style="max-height: 80px; max-width: 320px;">`
@@ -43,8 +52,8 @@ export default async function handler(req, res) {
     ? `<img src="${logoUrl}" alt="Brand" style="max-height: 48px; max-width: 200px; opacity: 0.5;">`
     : `<span style="color: ${accentColor}; opacity: 0.4;">Delivered with Orveil</span>`;
 
-  const bgStyle = patternUrl
-    ? `background-color: ${bgColor}; background-image: url(${patternUrl}); background-repeat: repeat;`
+  const bgStyle = patternDataUri
+    ? `background-color: ${bgColor}; background-image: ${patternDataUri}; background-repeat: repeat; background-size: ${patternSize};`
     : `background-color: ${bgColor};`;
 
   const html = `

@@ -3627,7 +3627,7 @@ function applyGalleryCustomization(project) {
   const hexToRgb = (hex) => { const h = hex.replace('#', ''); return [parseInt(h.substring(0,2),16), parseInt(h.substring(2,4),16), parseInt(h.substring(4,6),16)]; };
   const [pr, pg, pb] = hexToRgb(accent);
   // SVG-based wallpaper patterns — crisp, scalable, professional
-  const o = 0.08; // base opacity for patterns
+  const o = 0.13; // base opacity for patterns
   const c = `${pr},${pg},${pb}`;
   const svgPatterns = {
     none: '',
