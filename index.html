@@ -1815,11 +1815,11 @@
   .wallpaper-opt.active { border-color: var(--black); }
   .wallpaper-opt::after { content: attr(data-label); position: absolute; bottom: 2px; left: 0; right: 0; text-align: center; font-size: 0.5rem; color: var(--g400); letter-spacing: 0.05em; }
   .wallpaper-opt[data-wp="none"]::before { content: '—'; position: absolute; top: 35%; left: 0; right: 0; text-align: center; font-size: 0.7rem; color: var(--g300); }
-  .wallpaper-opt[data-wp="linen"]::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 3px), repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 3px); }
-  .wallpaper-opt[data-wp="paper"]::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0,0,0,0.10) 3px, rgba(0,0,0,0.10) 4px), repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(0,0,0,0.14) 3px, rgba(0,0,0,0.14) 4px); }
-  .wallpaper-opt[data-wp="geometric"]::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 7px, rgba(0,0,0,0.18) 7px, rgba(0,0,0,0.18) 8px), repeating-linear-gradient(-45deg, transparent, transparent 7px, rgba(0,0,0,0.18) 7px, rgba(0,0,0,0.18) 8px); }
-  .wallpaper-opt[data-wp="dots"]::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle, rgba(0,0,0,0.25) 2px, transparent 2px); background-size: 10px 10px; }
-  .wallpaper-opt[data-wp="marble"]::before { content: ''; position: absolute; inset: 0; background: linear-gradient(125deg, transparent 20%, rgba(0,0,0,0.12) 28%, transparent 35%), linear-gradient(235deg, transparent 30%, rgba(0,0,0,0.16) 40%, transparent 50%); }
+  .wallpaper-opt[data-wp="linen"]::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cline x1='0' y1='0' x2='8' y2='0' stroke='rgba(0,0,0,0.15)' stroke-width='0.5'/%3E%3Cline x1='0' y1='4' x2='8' y2='4' stroke='rgba(0,0,0,0.1)' stroke-width='0.5'/%3E%3Cline x1='0' y1='0' x2='0' y2='8' stroke='rgba(0,0,0,0.15)' stroke-width='0.5'/%3E%3Cline x1='4' y1='0' x2='4' y2='8' stroke='rgba(0,0,0,0.1)' stroke-width='0.5'/%3E%3C/svg%3E") repeat; background-size: 8px 8px; }
+  .wallpaper-opt[data-wp="paper"]::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E") repeat; background-size: 100px 100px; }
+  .wallpaper-opt[data-wp="geometric"]::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M20 0L40 20L20 40L0 20Z' fill='none' stroke='rgba(0,0,0,0.15)' stroke-width='0.6'/%3E%3Cpath d='M20 8L32 20L20 32L8 20Z' fill='none' stroke='rgba(0,0,0,0.1)' stroke-width='0.4'/%3E%3C/svg%3E") repeat; background-size: 40px 40px; }
+  .wallpaper-opt[data-wp="dots"]::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='12' cy='12' r='1.5' fill='rgba(0,0,0,0.2)'/%3E%3C/svg%3E") repeat; background-size: 24px 24px; }
+  .wallpaper-opt[data-wp="marble"]::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.015' numOctaves='3' seed='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23m)' opacity='0.15'/%3E%3C/svg%3E") repeat; background-size: 200px 200px; }
   .delivery-email-input { width: 100%; font-family: var(--sans); font-size: 0.82rem; padding: 0.75rem 1rem; border: 1px solid var(--g200); background: transparent; color: var(--black); outline: none; margin-bottom: 0.8rem; }
   .delivery-email-input:focus { border-color: var(--black); }
   .delivery-custom-input {
@@ -3107,6 +3107,24 @@
         </div>
         <div class="toggle-switch" id="collab-invite-toggle" onclick="toggleCollabInvite()"></div>
       </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0">
+        <div>
+          <div style="font-size:0.78rem;color:var(--g600)">Allow collaborators to upload</div>
+          <div style="font-size:0.65rem;color:var(--g400);margin-top:0.2rem">Collaborators can add files to this project</div>
+        </div>
+        <div class="toggle-switch" id="collab-edit-toggle" onclick="toggleCollabEdit()"></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0">
+        <div>
+          <div style="font-size:0.78rem;color:var(--g600)">Allow collaborators to delete</div>
+          <div style="font-size:0.65rem;color:var(--g400);margin-top:0.2rem">Collaborators can delete files from this project</div>
+        </div>
+        <div class="toggle-switch" id="collab-delete-toggle" onclick="toggleCollabDelete()"></div>
+      </div>
+    </div>
+    <div id="collab-list-section" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--g200)">
+      <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--g400);margin-bottom:0.8rem">Current Access</div>
+      <div id="collab-list"></div>
     </div>
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeInviteModal()">Cancel</button>
@@ -3608,16 +3626,19 @@ function applyGalleryCustomization(project) {
   const wp = project.gallery_wallpaper || 'none';
   const hexToRgb = (hex) => { const h = hex.replace('#', ''); return [parseInt(h.substring(0,2),16), parseInt(h.substring(2,4),16), parseInt(h.substring(4,6),16)]; };
   const [pr, pg, pb] = hexToRgb(accent);
-  const wpPatterns = {
-    none: 'none',
-    linen: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(${pr},${pg},${pb},0.06) 2px, rgba(${pr},${pg},${pb},0.06) 3px), repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(${pr},${pg},${pb},0.06) 2px, rgba(${pr},${pg},${pb},0.06) 3px)`,
-    paper: `repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(${pr},${pg},${pb},0.05) 3px, rgba(${pr},${pg},${pb},0.05) 4px), repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(${pr},${pg},${pb},0.07) 3px, rgba(${pr},${pg},${pb},0.07) 4px)`,
-    geometric: `repeating-linear-gradient(45deg, transparent, transparent 19px, rgba(${pr},${pg},${pb},0.10) 19px, rgba(${pr},${pg},${pb},0.10) 20px), repeating-linear-gradient(-45deg, transparent, transparent 19px, rgba(${pr},${pg},${pb},0.10) 19px, rgba(${pr},${pg},${pb},0.10) 20px)`,
-    dots: `radial-gradient(circle, rgba(${pr},${pg},${pb},0.15) 2px, transparent 2px)`,
-    marble: `linear-gradient(125deg, transparent 20%, rgba(${pr},${pg},${pb},0.06) 28%, transparent 35%), linear-gradient(235deg, transparent 30%, rgba(${pr},${pg},${pb},0.08) 40%, transparent 50%), linear-gradient(155deg, transparent 45%, rgba(${pr},${pg},${pb},0.05) 55%, transparent 65%), linear-gradient(15deg, transparent 60%, rgba(${pr},${pg},${pb},0.07) 68%, transparent 76%)`
+  // SVG-based wallpaper patterns — crisp, scalable, professional
+  const o = 0.08; // base opacity for patterns
+  const c = `${pr},${pg},${pb}`;
+  const svgPatterns = {
+    none: '',
+    linen: `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><rect width='8' height='8' fill='none'/><line x1='0' y1='0' x2='8' y2='0' stroke='rgba(${c},${o})' stroke-width='0.5'/><line x1='0' y1='4' x2='8' y2='4' stroke='rgba(${c},${o * 0.7})' stroke-width='0.5'/><line x1='0' y1='0' x2='0' y2='8' stroke='rgba(${c},${o})' stroke-width='0.5'/><line x1='4' y1='0' x2='4' y2='8' stroke='rgba(${c},${o * 0.7})' stroke-width='0.5'/></svg>`)}")`,
+    paper: `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100' height='100' filter='url(%23n)' opacity='${o * 1.2}'/></svg>`)}")`,
+    geometric: `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><rect width='40' height='40' fill='none'/><path d='M20 0L40 20L20 40L0 20Z' fill='none' stroke='rgba(${c},${o * 1.5})' stroke-width='0.6'/><path d='M20 8L32 20L20 32L8 20Z' fill='none' stroke='rgba(${c},${o})' stroke-width='0.4'/></svg>`)}")`,
+    dots: `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24'><circle cx='12' cy='12' r='1.5' fill='rgba(${c},${o * 2})'/></svg>`)}")`,
+    marble: `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='m'><feTurbulence type='turbulence' baseFrequency='0.015' numOctaves='3' seed='2'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23m)' opacity='${o * 1.8}'/></svg>`)}")`
   };
-  root.style.backgroundImage = wpPatterns[wp] || 'none';
-  const wpSizes = { none: 'auto', linen: 'auto', paper: 'auto', geometric: 'auto', dots: '20px 20px', marble: '400px 400px' };
+  const wpSizes = { none: 'auto', linen: '8px 8px', paper: '100px 100px', geometric: '40px 40px', dots: '24px 24px', marble: '200px 200px' };
+  root.style.backgroundImage = svgPatterns[wp] || 'none';
   root.style.backgroundSize = wpSizes[wp] || 'auto';
 
   // Load Google Font if not default
@@ -4372,19 +4393,27 @@ async function openProject(id, name) {
   showScreen('project-screen');
   const [, { data: proj }] = await Promise.all([
     loadFiles(),
-    dbSelect('projects', 'user_id', `id=eq.${id}`, { single: true })
+    dbSelect('projects', 'user_id,allow_collab_edit,allow_collab_delete', `id=eq.${id}`, { single: true })
   ]);
   const isOwner = proj && proj.user_id === currentUser.id;
   currentProject.isOwner = isOwner;
+  currentProject.allowCollabEdit = proj?.allow_collab_edit || false;
+  currentProject.allowCollabDelete = proj?.allow_collab_delete || false;
   // Update button visibility after ownership check
   const isMobile = window.innerWidth <= 480;
   const showInviteSetting = localStorage.getItem(userKey('show-invite')) === '1';
   const showInviteBtn = isOwner && (isMobile || showInviteSetting);
   document.querySelector('.project-nav-actions .invite-btn').style.display = showInviteBtn ? 'inline-block' : 'none';
   document.querySelector('.project-nav-actions .deliver-btn').style.display = isOwner ? '' : 'none';
-  // Re-render delete buttons if not owner
   if (!isOwner) {
-    document.querySelectorAll('.file-delete').forEach(b => b.remove());
+    if (!currentProject.allowCollabEdit) {
+      document.querySelector('.project-nav-actions .upload-btn').style.display = 'none';
+      const dz = document.getElementById('drop-zone');
+      if (dz) dz.style.display = 'none';
+    }
+    if (!currentProject.allowCollabDelete) {
+      document.querySelectorAll('.file-delete').forEach(b => b.remove());
+    }
   }
 }
 
@@ -4463,6 +4492,20 @@ async function handleFileSelect(fileList) {
   const files = allFiles.filter(f => f.size <= MAX_FILE_SIZE);
   tooLarge.forEach(f => showToast(`File too large (5GB max): ${f.name}`));
   if (!files.length) return;
+
+  // Check storage limit before uploading
+  const totalUploadBytes = files.reduce((sum, f) => sum + f.size, 0);
+  const { data: profileCheck } = await dbSelect('profiles', 'storage_used', `id=eq.${currentUser.id}`, { single: true });
+  const currentUsed = profileCheck?.storage_used || 0;
+  if (currentUsed + totalUploadBytes > STORAGE_LIMIT) {
+    const available = STORAGE_LIMIT - currentUsed;
+    if (available <= 0) {
+      showToast('Storage full. Delete files or upgrade your plan.');
+    } else {
+      showToast(`Not enough storage. ${formatBytes(available)} available, ${formatBytes(totalUploadBytes)} needed.`);
+    }
+    return;
+  }
 
   const progress = document.getElementById('upload-progress');
   const fill = document.getElementById('progress-fill');
@@ -5546,21 +5589,28 @@ async function confirmDeleteProject() {
   }
 }
 
-function openInviteModal(id, name, e) {
+async function openInviteModal(id, name, e) {
   e.stopPropagation();
   pendingInviteId = id;
   document.getElementById('invite-project-name').textContent = '> ' + name;
   document.getElementById('invite-email-input').value = '';
-  // Use cached ownership from currentProject if available
-  const isOwner = currentProject && currentProject.id === id ? currentProject.isOwner : false;
-  const permsEl = document.getElementById('invite-permissions');
-  permsEl.style.display = isOwner ? 'block' : 'none';
-  if (isOwner) {
-    const toggle = document.getElementById('collab-invite-toggle');
-    toggle.classList.toggle('active', !!currentProject.allowCollabInvite);
-  }
+  document.getElementById('invite-link-result').style.display = 'none';
+  document.getElementById('invite-permissions').style.display = 'none';
+  document.getElementById('collab-list-section').style.display = 'none';
   document.getElementById('invite-modal').classList.add('active');
   setTimeout(() => document.getElementById('invite-email-input').focus(), 100);
+
+  document.getElementById('invite-permissions').style.display = 'block';
+  const { data: settings } = await dbSelect('projects', 'allow_collab_invite,allow_collab_edit,allow_collab_delete', `id=eq.${id}`, { single: true });
+  document.getElementById('collab-invite-toggle').classList.toggle('active', !!settings?.allow_collab_invite);
+  document.getElementById('collab-edit-toggle').classList.toggle('active', !!settings?.allow_collab_edit);
+  document.getElementById('collab-delete-toggle').classList.toggle('active', !!settings?.allow_collab_delete);
+  if (currentProject && currentProject.id === id) {
+    currentProject.allowCollabInvite = settings?.allow_collab_invite || false;
+    currentProject.allowCollabEdit = settings?.allow_collab_edit || false;
+    currentProject.allowCollabDelete = settings?.allow_collab_delete || false;
+  }
+  loadCollabList(id);
 }
 
 function openInviteFromProject(e) {
@@ -5573,15 +5623,60 @@ async function toggleCollabInvite() {
   const newVal = !toggle.classList.contains('active');
   toggle.classList.toggle('active', newVal);
   await dbUpdate('projects', { allow_collab_invite: newVal }, `id=eq.${pendingInviteId}`);
-  if (currentProject && currentProject.id === pendingInviteId) {
-    currentProject.allowCollabInvite = newVal;
-  }
+  if (currentProject && currentProject.id === pendingInviteId) currentProject.allowCollabInvite = newVal;
   showToast(newVal ? 'Collaborators can now invite others' : 'Only you can invite');
+}
+
+async function toggleCollabEdit() {
+  const toggle = document.getElementById('collab-edit-toggle');
+  const newVal = !toggle.classList.contains('active');
+  toggle.classList.toggle('active', newVal);
+  await dbUpdate('projects', { allow_collab_edit: newVal }, `id=eq.${pendingInviteId}`);
+  if (currentProject && currentProject.id === pendingInviteId) currentProject.allowCollabEdit = newVal;
+  showToast(newVal ? 'Collaborators can now upload files' : 'Only you can upload');
+}
+
+async function toggleCollabDelete() {
+  const toggle = document.getElementById('collab-delete-toggle');
+  const newVal = !toggle.classList.contains('active');
+  toggle.classList.toggle('active', newVal);
+  await dbUpdate('projects', { allow_collab_delete: newVal }, `id=eq.${pendingInviteId}`);
+  if (currentProject && currentProject.id === pendingInviteId) currentProject.allowCollabDelete = newVal;
+  showToast(newVal ? 'Collaborators can now delete files' : 'Only you can delete');
+}
+
+async function loadCollabList(projectId) {
+  const section = document.getElementById('collab-list-section');
+  const listEl = document.getElementById('collab-list');
+  section.style.display = 'block';
+  listEl.innerHTML = '<div style="font-size:0.72rem;color:var(--g400)">Loading...</div>';
+
+  const { data: collabs } = await dbSelect('collaborators', 'id,email,status', `project_id=eq.${projectId}`);
+  if (!collabs || !collabs.length) {
+    listEl.innerHTML = '<div style="font-size:0.72rem;color:var(--g400);font-style:italic">No collaborators yet.</div>';
+    return;
+  }
+  listEl.innerHTML = collabs.map(c => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0.45rem 0;border-bottom:1px solid var(--g200)">
+      <div>
+        <div style="font-size:0.78rem;color:var(--g600)">${escHtml(c.email)}</div>
+        <div style="font-size:0.6rem;color:var(--g400);text-transform:uppercase;letter-spacing:0.06em;margin-top:0.15rem">${c.status}</div>
+      </div>
+      <button onclick="removeCollaborator('${c.id}')" style="font-family:var(--sans);font-size:0.6rem;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;background:none;color:#c85050;border:1px solid rgba(200,80,80,0.3);padding:0.3rem 0.65rem;cursor:pointer">Remove</button>
+    </div>
+  `).join('');
+}
+
+async function removeCollaborator(collabId) {
+  await dbDelete('collaborators', `id=eq.${collabId}`);
+  showToast('Access removed.');
+  await loadCollabList(pendingInviteId);
 }
 
 function closeInviteModal() {
   document.getElementById('invite-modal').classList.remove('active');
   document.getElementById('invite-link-result').style.display = 'none';
+  document.getElementById('collab-list-section').style.display = 'none';
   pendingInviteId = null;
 }
 
