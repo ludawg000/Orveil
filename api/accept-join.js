@@ -21,14 +21,15 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Check if project exists
-    const projResp = await fetch(`${SUPABASE_URL}/rest/v1/projects?id=eq.${projectId}&select=id`, {
+    // Check if project exists and get owner
+    const projResp = await fetch(`${SUPABASE_URL}/rest/v1/projects?id=eq.${projectId}&select=id,user_id`, {
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SERVICE_KEY}` }
     });
     const projects = await projResp.json();
     if (!Array.isArray(projects) || projects.length === 0) {
       return res.status(404).json({ error: 'Project not found' });
     }
+    const projectOwner = projects[0].user_id;
 
     // Check if already a collaborator
     const existResp = await fetch(`${SUPABASE_URL}/rest/v1/collaborators?project_id=eq.${projectId}&user_id=eq.${userId}&select=id`, {
@@ -52,7 +53,7 @@ export default async function handler(req, res) {
         project_id: projectId,
         user_id: userId,
         email: email || 'joined@link',
-        invited_by: null,
+        invited_by: projectOwner,
         status: 'accepted'
       })
     });
