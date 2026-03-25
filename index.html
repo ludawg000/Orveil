@@ -802,7 +802,7 @@
     overflow-y: auto; overflow-x: hidden;
     position: relative;
     display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
-    align-content: start;
+    grid-auto-rows: 120px;
   }
   .tv-screen::-webkit-scrollbar { width: 4px; }
   .tv-screen::-webkit-scrollbar-track { background: #080c18; }
@@ -1505,7 +1505,7 @@
     background: #0c1028; padding: 0.4rem 0.5rem;
     cursor: pointer; transition: background 0.2s;
     display: flex; flex-direction: column; gap: 0.2rem;
-    position: relative;
+    position: relative; box-sizing: border-box;
   }
   .tv-screen .project-card:hover { background: #141c38; }
   .tv-screen .project-name {
@@ -1519,7 +1519,7 @@
     font-size: 0.6rem; color: #6090ff; opacity: 0.5;
   }
   .tv-screen .project-thumb {
-    width: 100%; height: 40px;
+    width: 100%; flex: 1; min-height: 0;
     background: #080c1a; border-radius: 1px;
     display: flex; align-items: center; justify-content: center;
     overflow: hidden; position: relative;
