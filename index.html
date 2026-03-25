@@ -801,7 +801,7 @@
     background: #0a0e1a; border-radius: 3px;
     overflow-y: auto; overflow-x: hidden;
     position: relative;
-    display: grid; grid-template-columns: 1fr; gap: 1px;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 1px;
     align-content: start;
   }
   .tv-screen::-webkit-scrollbar { width: 4px; }
@@ -1502,9 +1502,9 @@
 
   /* Cards inside the screen — blue CRT look */
   .tv-screen .project-card {
-    background: #0c1028; padding: 0.8rem;
+    background: #0c1028; padding: 0.5rem;
     cursor: pointer; transition: background 0.2s;
-    display: flex; flex-direction: column; gap: 0.35rem;
+    display: flex; flex-direction: column; gap: 0.25rem;
     position: relative; border-bottom: 1px solid #1a2440;
   }
   .tv-screen .project-card:hover { background: #141c38; }
@@ -1519,7 +1519,7 @@
     font-size: 0.6rem; color: #6090ff; opacity: 0.5;
   }
   .tv-screen .project-thumb {
-    width: 100%; aspect-ratio: 16/9;
+    width: 100%; aspect-ratio: 16/9; max-height: 38px;
     background: #080c1a; border-radius: 2px;
     display: flex; align-items: center; justify-content: center;
     overflow: hidden;
@@ -1541,6 +1541,8 @@
     color: #6090ff; opacity: 0.35;
   }
   .tv-screen .project-card:hover .manage-actions { display: flex; }
+  .tv-screen .manage-action-btn { width: 72px; padding: 0.3rem 0.4rem; font-size: 0.42rem; letter-spacing: 0.08em; }
+  .tv-screen .manage-actions { gap: 0.3rem; }
   .tv-screen .empty-state {
     grid-column: 1/-1; display: flex; flex-direction: column;
     align-items: center; justify-content: center;
@@ -2491,7 +2493,7 @@
     .tv-screen .project-card { padding: 0.35rem; gap: 0.25rem; }
     .tv-screen .project-name { font-size: 0.45rem; }
     .tv-screen .project-meta { font-size: 0.35rem; }
-    .tv-screen .project-thumb { aspect-ratio: 16/10; }
+    .tv-screen .project-thumb { max-height: 28px; }
   }
 
   /* ===== PHONE UI — PROJECT MANAGER ===== */
@@ -4391,9 +4393,8 @@ async function loadProjects() {
       </div>` : '';
       const inviteBtn = (!manageMode && !p._collab) ? `<button class="card-invite-btn" onclick="event.stopPropagation();openInviteModal('${p.id}','${escHtml(p.name)}',event)" title="Invite collaborator">+ Invite</button>` : '';
       return `<div class="project-card" onclick="${manageMode ? '' : `openProject('${p.id}','${escHtml(p.name)}')`}" style="${manageMode ? 'cursor:default;position:relative' : 'position:relative'}">
-        ${manageOverlay}
         ${inviteBtn}
-        <div class="project-thumb" id="pthumb-${p.id}"><div class="project-thumb-placeholder">${p.file_count ? p.file_count + ' files' : (() => { const q = randomQuip(); return q.emoji + '<br><span style="font-size:0.55rem;letter-spacing:0.05em;opacity:0.7">' + q.text + '</span>'; })()}</div></div>
+        <div class="project-thumb" id="pthumb-${p.id}">${manageOverlay}<div class="project-thumb-placeholder">${p.file_count ? p.file_count + ' files' : (() => { const q = randomQuip(); return q.emoji + '<br><span style="font-size:0.55rem;letter-spacing:0.05em;opacity:0.7">' + q.text + '</span>'; })()}</div></div>
         <div class="project-name">${escHtml(p.name)}${p._collab ? '<span style="font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--g400);margin-left:0.5rem;font-weight:400">Shared</span>' : ''}</div>
         <div class="project-meta">${p.file_count || 0} files · ${timeAgo(p.created_at)}</div>
       </div>`;
