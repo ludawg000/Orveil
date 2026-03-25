@@ -3823,7 +3823,14 @@ async function initApp() {
       avatar.textContent = initial.toUpperCase();
     }
 
-    // Restore dark mode preference
+    // Migrate old unprefixed keys to user-scoped keys (must run BEFORE restoring prefs)
+    ['room-config','room-positions','room-daytime','poster1-custom','poster2-custom','dark-mode','pink-mode'].forEach(k => {
+      const old = 'orveil-' + k, nk = userKey(k);
+      if (localStorage.getItem(old) !== null && localStorage.getItem(nk) === null)
+        localStorage.setItem(nk, localStorage.getItem(old));
+      localStorage.removeItem(old);
+    });
+
     // Restore user's theme preference
     document.body.classList.remove('dark-mode', 'pink-mode');
     if (localStorage.getItem(userKey('dark-mode')) === '1') {
@@ -3832,14 +3839,6 @@ async function initApp() {
     if (localStorage.getItem(userKey('pink-mode')) === '1') {
       document.body.classList.add('pink-mode');
     }
-
-    // Migrate old unprefixed room keys to user-scoped keys
-    ['room-config','room-positions','room-daytime','poster1-custom','poster2-custom','dark-mode','pink-mode'].forEach(k => {
-      const old = 'orveil-' + k, nk = userKey(k);
-      if (localStorage.getItem(old) !== null && localStorage.getItem(nk) === null)
-        localStorage.setItem(nk, localStorage.getItem(old));
-      localStorage.removeItem(old);
-    });
 
     // Accept pending invite if present
     if (pendingInviteToken) {
