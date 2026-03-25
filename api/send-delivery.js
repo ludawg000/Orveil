@@ -29,16 +29,16 @@ export default async function handler(req, res) {
   const hexToRgb = hex => { const h = hex.replace('#', ''); return [parseInt(h.slice(0,2),16), parseInt(h.slice(2,4),16), parseInt(h.slice(4,6),16)]; };
   const [ar, ag, ab] = hexToRgb(accentColor);
   const c = `${ar},${ag},${ab}`;
-  const o = 0.15;
+  const o = 0.11;
   const enc = s => encodeURIComponent(s);
   const svgPatterns = {
-    linen:    `url("data:image/svg+xml,${enc(`<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><line x1='0' y1='0' x2='8' y2='0' stroke='rgba(${c},${o})' stroke-width='0.5'/><line x1='0' y1='4' x2='8' y2='4' stroke='rgba(${c},${o*0.7})' stroke-width='0.5'/><line x1='0' y1='0' x2='0' y2='8' stroke='rgba(${c},${o})' stroke-width='0.5'/><line x1='4' y1='0' x2='4' y2='8' stroke='rgba(${c},${o*0.7})' stroke-width='0.5'/></svg>`)}")`,
-    paper:    `url("data:image/svg+xml,${enc(`<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100' height='100' filter='url(%23n)' opacity='${o*1.2}'/></svg>`)}")`,
-    geometric:`url("data:image/svg+xml,${enc(`<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><path d='M20 0L40 20L20 40L0 20Z' fill='none' stroke='rgba(${c},${o*1.5})' stroke-width='0.6'/><path d='M20 8L32 20L20 32L8 20Z' fill='none' stroke='rgba(${c},${o})' stroke-width='0.4'/></svg>`)}")`,
-    dots:     `url("data:image/svg+xml,${enc(`<svg xmlns='http://www.w3.org/2000/svg' width='24' height='24'><circle cx='12' cy='12' r='1.5' fill='rgba(${c},${o*2})'/></svg>`)}")`,
-    marble:   `url("data:image/svg+xml,${enc(`<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='m'><feTurbulence type='turbulence' baseFrequency='0.015' numOctaves='3' seed='2'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23m)' opacity='${o*1.8}'/></svg>`)}"`)`
+    linen:    `url("data:image/svg+xml,${enc(`<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12'><line x1='0' y1='0' x2='12' y2='0' stroke='rgba(${c},${o})' stroke-width='0.4'/><line x1='0' y1='6' x2='12' y2='6' stroke='rgba(${c},${o*0.5})' stroke-width='0.3'/><line x1='0' y1='0' x2='0' y2='12' stroke='rgba(${c},${o})' stroke-width='0.4'/><line x1='6' y1='0' x2='6' y2='12' stroke='rgba(${c},${o*0.5})' stroke-width='0.3'/></svg>`)}")`,
+    paper:    `url("data:image/svg+xml,${enc(`<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feBlend in='SourceGraphic' mode='multiply'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='${o*1.4}' fill='rgba(${c},1)'/></svg>`)}")`,
+    geometric:`url("data:image/svg+xml,${enc(`<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><path d='M24 2L46 24L24 46L2 24Z' fill='none' stroke='rgba(${c},${o*1.4})' stroke-width='0.5'/><path d='M24 12L36 24L24 36L12 24Z' fill='none' stroke='rgba(${c},${o*0.8})' stroke-width='0.4'/></svg>`)}")`,
+    dots:     `url("data:image/svg+xml,${enc(`<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32'><circle cx='16' cy='16' r='1' fill='rgba(${c},${o*1.6})'/></svg>`)}")`,
+    marble:   `url("data:image/svg+xml,${enc(`<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='m'><feTurbulence type='turbulence' baseFrequency='0.012' numOctaves='4' seed='5'/><feColorMatrix type='saturate' values='0'/></filter><rect width='300' height='300' filter='url(%23m)' opacity='${o*2}' fill='rgba(${c},1)'/></svg>`)}"`)`
   };
-  const wpSizes = { linen: '8px 8px', paper: '100px 100px', geometric: '40px 40px', dots: '24px 24px', marble: '200px 200px' };
+  const wpSizes = { linen: '12px 12px', paper: '120px 120px', geometric: '48px 48px', dots: '32px 32px', marble: '300px 300px' };
   const patternDataUri = svgPatterns[wallpaper] || '';
   const patternSize = wpSizes[wallpaper] || 'auto';
   // PNG fallback for Outlook VML only
@@ -64,18 +64,16 @@ export default async function handler(req, res) {
       <div style="text-align: center; margin-bottom: 40px;">
         ${headerContent}
       </div>
-      <div style="border-top: 1px solid ${accentColor}20; padding-top: 32px; margin-bottom: 32px;">
-        <h2 style="font-family: ${fontFamily}, Georgia, serif; font-size: 1.4rem; font-weight: 400; margin: 0 0 8px; color: ${accentColor};">Your gallery is ready</h2>
-        <p style="font-size: 0.85rem; color: ${accentColor}; opacity: 0.5; margin: 0 0 24px;">${projectName || 'Your Project'}</p>
-        <p style="font-size: 0.95rem; line-height: 1.7; color: ${accentColor}; opacity: 0.85; margin: 0 0 32px;">${message}</p>
+      <div style="border-top: 1px solid ${accentColor}20; padding-top: 32px; margin-bottom: 32px; text-align: center;">
+        <h2 style="font-family: ${fontFamily}, Georgia, serif; font-size: 1.4rem; font-weight: 400; margin: 0 0 8px; color: ${accentColor}; text-align: center;">Your gallery is ready</h2>
+        <p style="font-size: 0.85rem; color: ${accentColor}; opacity: 0.5; margin: 0 0 24px; text-align: center;">${projectName || 'Your Project'}</p>
+        <p style="font-size: 0.95rem; line-height: 1.7; color: ${accentColor}; opacity: 0.85; margin: 0 0 32px; text-align: center;">${message}</p>
         <div style="text-align: center; margin: 32px 0;">
           <a href="${galleryUrl}" style="display: inline-block; background: ${accentColor}; color: ${bgColor}; text-decoration: none; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 16px 40px;">View Gallery</a>
         </div>
       </div>
       <div style="border-top: 1px solid ${accentColor}20; padding-top: 24px; text-align: center;">
-        <p style="font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; margin: 0;">
-          ${footerContent}
-        </p>
+        <p style="font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; margin: 0; color: ${accentColor}; opacity: 0.4;">Delivered with Orveil</p>
       </div>
       <!--[if gte mso 9]></v:textbox></v:rect><![endif]-->
     </td></tr></table>
