@@ -3638,8 +3638,21 @@ function applyGalleryCustomization(project) {
     marble: `url("data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='m'><feTurbulence type='turbulence' baseFrequency='0.015' numOctaves='3' seed='2'/><feColorMatrix type='saturate' values='0'/></filter><rect width='200' height='200' filter='url(%23m)' opacity='${o * 1.8}'/></svg>`)}")`
   };
   const wpSizes = { none: 'auto', linen: '8px 8px', paper: '100px 100px', geometric: '40px 40px', dots: '24px 24px', marble: '200px 200px' };
-  root.style.backgroundImage = svgPatterns[wp] || 'none';
-  root.style.backgroundSize = wpSizes[wp] || 'auto';
+  // Pattern as border frame only — solid bg covers content area, pattern shows in 20px padding
+  document.body.style.backgroundColor = bg;
+  if (wp !== 'none' && svgPatterns[wp]) {
+    root.style.padding = '20px';
+    root.style.backgroundImage = `${svgPatterns[wp]}, linear-gradient(${bg}, ${bg})`;
+    root.style.backgroundSize = `${wpSizes[wp]}, auto`;
+    root.style.backgroundClip = 'padding-box, content-box';
+    root.style.backgroundColor = 'transparent';
+  } else {
+    root.style.padding = '';
+    root.style.backgroundImage = 'none';
+    root.style.backgroundSize = '';
+    root.style.backgroundClip = '';
+    root.style.backgroundColor = bg;
+  }
 
   // Load Google Font if not default
   if (font && font !== 'Playfair Display') {
