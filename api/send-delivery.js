@@ -32,12 +32,12 @@ export default async function handler(req, res) {
   const o = 0.3;
   const gradientPatterns = {
     linen:    `repeating-linear-gradient(0deg, rgba(${c},0.22) 0, rgba(${c},0.22) 0.5px, transparent 0.5px, transparent 5px), repeating-linear-gradient(90deg, rgba(${c},0.22) 0, rgba(${c},0.22) 0.5px, transparent 0.5px, transparent 5px)`,
-    paper:    `repeating-linear-gradient(90deg, rgba(${c},${o*0.7}) 0, rgba(${c},${o*0.7}) 0.3px, transparent 0.3px, transparent 7px)`,
+    lace:     `repeating-linear-gradient(45deg, rgba(${c},0.18) 0, rgba(${c},0.18) 0.6px, transparent 0.6px, transparent 14px), repeating-linear-gradient(-45deg, rgba(${c},0.18) 0, rgba(${c},0.18) 0.6px, transparent 0.6px, transparent 14px)`,
     geometric:`repeating-linear-gradient(45deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.5px, transparent 0.5px, transparent 22px)`,
     dots:     `radial-gradient(circle, rgba(${c},${o}) 1.5px, transparent 1.5px)`,
     marble:   `repeating-linear-gradient(55deg, rgba(${c},0.16) 0, rgba(${c},0.16) 1px, transparent 1px, transparent 20px), repeating-linear-gradient(130deg, rgba(${c},0.07) 0, rgba(${c},0.07) 0.5px, transparent 0.5px, transparent 30px)`
   };
-  const gradientSizes = { dots: '20px 20px', linen: '5px 5px', paper: '20px 20px', geometric: '40px 40px', marble: '20px 20px' };
+  const gradientSizes = { dots: '20px 20px', linen: '5px 5px', lace: '20px 20px', geometric: '40px 40px', marble: '20px 20px' };
   const patternBg = gradientPatterns[wallpaper] || '';
   const patternSize = gradientSizes[wallpaper] || 'auto';
 

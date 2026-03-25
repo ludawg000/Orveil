@@ -1816,7 +1816,7 @@
   .wallpaper-opt::after { content: attr(data-label); position: absolute; bottom: 2px; left: 0; right: 0; text-align: center; font-size: 0.5rem; color: var(--g400); letter-spacing: 0.05em; }
   .wallpaper-opt[data-wp="none"]::before { content: '—'; position: absolute; top: 35%; left: 0; right: 0; text-align: center; font-size: 0.7rem; color: var(--g300); }
   .wallpaper-opt[data-wp="linen"]::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cline x1='0' y1='0' x2='8' y2='0' stroke='rgba(0,0,0,0.15)' stroke-width='0.5'/%3E%3Cline x1='0' y1='4' x2='8' y2='4' stroke='rgba(0,0,0,0.1)' stroke-width='0.5'/%3E%3Cline x1='0' y1='0' x2='0' y2='8' stroke='rgba(0,0,0,0.15)' stroke-width='0.5'/%3E%3Cline x1='4' y1='0' x2='4' y2='8' stroke='rgba(0,0,0,0.1)' stroke-width='0.5'/%3E%3C/svg%3E") repeat; background-size: 8px 8px; }
-  .wallpaper-opt[data-wp="paper"]::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E") repeat; background-size: 100px 100px; }
+  .wallpaper-opt[data-wp="lace"]::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14'%3E%3Cline x1='0' y1='0' x2='14' y2='14' stroke='rgba(0,0,0,0.2)' stroke-width='0.5'/%3E%3Cline x1='14' y1='0' x2='0' y2='14' stroke='rgba(0,0,0,0.2)' stroke-width='0.5'/%3E%3C/svg%3E") repeat; background-size: 14px 14px; }
   .wallpaper-opt[data-wp="geometric"]::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M20 0L40 20L20 40L0 20Z' fill='none' stroke='rgba(0,0,0,0.15)' stroke-width='0.6'/%3E%3Cpath d='M20 8L32 20L20 32L8 20Z' fill='none' stroke='rgba(0,0,0,0.1)' stroke-width='0.4'/%3E%3C/svg%3E") repeat; background-size: 40px 40px; }
   .wallpaper-opt[data-wp="dots"]::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Ccircle cx='12' cy='12' r='1.5' fill='rgba(0,0,0,0.2)'/%3E%3C/svg%3E") repeat; background-size: 24px 24px; }
   .wallpaper-opt[data-wp="marble"]::before { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.015' numOctaves='3' seed='2'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23m)' opacity='0.15'/%3E%3C/svg%3E") repeat; background-size: 200px 200px; }
@@ -1895,7 +1895,7 @@
     margin-bottom: calc((280px * 0.75 - 280px) * 0.5);
   }
   #email-preview-pane iframe {
-    width: 100%; height: 380px; border: none; display: block;
+    width: 100%; min-height: 200px; border: none; display: block;
   }
   @media (max-width: 700px) {
     .customize-cols { flex-direction: column; }
@@ -3286,7 +3286,7 @@
               <div class="wallpaper-options">
                 <div class="wallpaper-opt active" data-wp="none" data-label="None" onclick="selectWallpaper('none')"></div>
                 <div class="wallpaper-opt" data-wp="linen" data-label="Linen" onclick="selectWallpaper('linen')"></div>
-                <div class="wallpaper-opt" data-wp="paper" data-label="Paper" onclick="selectWallpaper('paper')"></div>
+                <div class="wallpaper-opt" data-wp="lace" data-label="Lace" onclick="selectWallpaper('lace')"></div>
                 <div class="wallpaper-opt" data-wp="geometric" data-label="Geo" onclick="selectWallpaper('geometric')"></div>
                 <div class="wallpaper-opt" data-wp="dots" data-label="Dots" onclick="selectWallpaper('dots')"></div>
                 <div class="wallpaper-opt" data-wp="marble" data-label="Marble" onclick="selectWallpaper('marble')"></div>
@@ -3700,12 +3700,12 @@ function applyGalleryCustomization(project) {
   const svgPatterns = {
     none: '',
     linen:    `repeating-linear-gradient(0deg, rgba(${c},0.22) 0, rgba(${c},0.22) 0.5px, transparent 0.5px, transparent 5px), repeating-linear-gradient(90deg, rgba(${c},0.22) 0, rgba(${c},0.22) 0.5px, transparent 0.5px, transparent 5px)`,
-    paper:    `repeating-linear-gradient(90deg, rgba(${c},${o*0.7}) 0, rgba(${c},${o*0.7}) 0.3px, transparent 0.3px, transparent 7px)`,
+    lace:     `repeating-linear-gradient(45deg, rgba(${c},0.18) 0, rgba(${c},0.18) 0.6px, transparent 0.6px, transparent 14px), repeating-linear-gradient(-45deg, rgba(${c},0.18) 0, rgba(${c},0.18) 0.6px, transparent 0.6px, transparent 14px)`,
     geometric:`repeating-linear-gradient(45deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.5px, transparent 0.5px, transparent 22px)`,
     dots:     `radial-gradient(circle, rgba(${c},${o}) 1.5px, transparent 1.5px)`,
     marble:   `repeating-linear-gradient(55deg, rgba(${c},0.16) 0, rgba(${c},0.16) 1px, transparent 1px, transparent 20px), repeating-linear-gradient(130deg, rgba(${c},0.07) 0, rgba(${c},0.07) 0.5px, transparent 0.5px, transparent 30px)`
   };
-  const wpSizes = { none: 'auto', linen: '5px 5px', paper: '20px 20px', geometric: '40px 40px', dots: '20px 20px', marble: '20px 20px' };
+  const wpSizes = { none: 'auto', linen: '5px 5px', lace: '14px 14px', geometric: '40px 40px', dots: '20px 20px', marble: '20px 20px' };
   // Remove any previous overlays
   ['gallery-border-frame','gallery-wp-style','gallery-wp-top','gallery-wp-bottom','gallery-wp-left','gallery-wp-right'].forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
   document.body.style.backgroundColor = bg;
@@ -5161,12 +5161,12 @@ function updateGalleryPreview() {
   const patterns = {
     none: '',
     linen:    `repeating-linear-gradient(0deg, rgba(${c},0.22) 0, rgba(${c},0.22) 0.5px, transparent 0.5px, transparent 5px), repeating-linear-gradient(90deg, rgba(${c},0.22) 0, rgba(${c},0.22) 0.5px, transparent 0.5px, transparent 5px)`,
-    paper:    `repeating-linear-gradient(90deg, rgba(${c},${o*0.7}) 0, rgba(${c},${o*0.7}) 0.3px, transparent 0.3px, transparent 7px)`,
+    lace:     `repeating-linear-gradient(45deg, rgba(${c},0.18) 0, rgba(${c},0.18) 0.6px, transparent 0.6px, transparent 14px), repeating-linear-gradient(-45deg, rgba(${c},0.18) 0, rgba(${c},0.18) 0.6px, transparent 0.6px, transparent 14px)`,
     geometric:`repeating-linear-gradient(45deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.5px, transparent 0.5px, transparent 22px)`,
     dots:     `radial-gradient(circle, rgba(${c},${o}) 1.5px, transparent 1.5px)`,
     marble:   `repeating-linear-gradient(55deg, rgba(${c},0.16) 0, rgba(${c},0.16) 1px, transparent 1px, transparent 20px), repeating-linear-gradient(130deg, rgba(${c},0.07) 0, rgba(${c},0.07) 0.5px, transparent 0.5px, transparent 30px)`
   };
-  const sizes = { none:'auto', linen:'5px 5px', paper:'20px 20px', geometric:'40px 40px', dots:'20px 20px', marble:'20px 20px' };
+  const sizes = { none:'auto', linen:'5px 5px', lace:'14px 14px', geometric:'40px 40px', dots:'20px 20px', marble:'20px 20px' };
 
   const screen = document.getElementById('gal-preview-screen');
   screen.style.backgroundColor = bg;
@@ -5237,12 +5237,12 @@ function buildEmailPreviewHtml() {
   const o = 0.3;
   const gradientPatterns = {
     linen:    `repeating-linear-gradient(0deg, rgba(${c},0.22) 0, rgba(${c},0.22) 0.5px, transparent 0.5px, transparent 5px), repeating-linear-gradient(90deg, rgba(${c},0.22) 0, rgba(${c},0.22) 0.5px, transparent 0.5px, transparent 5px)`,
-    paper:    `repeating-linear-gradient(90deg, rgba(${c},${o*0.7}) 0, rgba(${c},${o*0.7}) 0.3px, transparent 0.3px, transparent 7px)`,
+    lace:     `repeating-linear-gradient(45deg, rgba(${c},0.18) 0, rgba(${c},0.18) 0.6px, transparent 0.6px, transparent 14px), repeating-linear-gradient(-45deg, rgba(${c},0.18) 0, rgba(${c},0.18) 0.6px, transparent 0.6px, transparent 14px)`,
     geometric:`repeating-linear-gradient(45deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.5px, transparent 0.5px, transparent 22px)`,
     dots:     `radial-gradient(circle, rgba(${c},${o}) 1.5px, transparent 1.5px)`,
     marble:   `repeating-linear-gradient(55deg, rgba(${c},0.16) 0, rgba(${c},0.16) 1px, transparent 1px, transparent 20px), repeating-linear-gradient(130deg, rgba(${c},0.07) 0, rgba(${c},0.07) 0.5px, transparent 0.5px, transparent 30px)`
   };
-  const gradientSizes = { dots:'20px 20px', linen:'5px 5px', paper:'20px 20px', geometric:'40px 40px', marble:'20px 20px' };
+  const gradientSizes = { dots:'20px 20px', linen:'5px 5px', lace:'20px 20px', geometric:'40px 40px', marble:'20px 20px' };
   const patternBg = gradientPatterns[wp] || '';
   const patternSize = gradientSizes[wp] || 'auto';
   const dotFrame = 20;
@@ -5260,7 +5260,7 @@ function buildEmailPreviewHtml() {
     ? `<link href="https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@300;400;500;700&display=swap" rel="stylesheet">`
     : '';
 
-  return `<!DOCTYPE html><html><head><meta charset="utf-8">${fontLink}</head><body style="margin:0;padding:0;background:#ffffff;">
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${fontLink}</head><body style="margin:0;padding:0;background:#ffffff;">
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;"><tr><td align="center" style="background-color:#ffffff;padding:12px 8px;">
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:500px;">
       <tr>
@@ -5298,6 +5298,9 @@ function updateEmailPreview() {
   const iframe = document.getElementById('email-preview-iframe');
   if (!iframe) return;
   iframe.srcdoc = buildEmailPreviewHtml();
+  iframe.onload = () => {
+    try { iframe.style.height = iframe.contentDocument.documentElement.scrollHeight + 'px'; } catch (e) {}
+  };
 }
 
 function closeDelivery() {
@@ -5364,11 +5367,10 @@ async function sendDelivery() {
     gallery_bg_color: currentGallerySettings.bg_color,
     gallery_accent_color: currentGallerySettings.accent_color,
     gallery_font_family: currentGallerySettings.font_family,
-    gallery_layout: currentGallerySettings.layout
+    gallery_layout: currentGallerySettings.layout,
+    gallery_wallpaper: currentGallerySettings.wallpaper
   };
   await dbUpdate('projects', galUpdate, `id=eq.${currentProject.id}`);
-  // Try wallpaper separately (column may not exist yet)
-  try { await dbUpdate('projects', { gallery_wallpaper: currentGallerySettings.wallpaper }, `id=eq.${currentProject.id}`); } catch {}
 
   // Save as default if checked
   if (document.getElementById('save-as-default').checked) {
@@ -5377,9 +5379,9 @@ async function sendDelivery() {
       gallery_bg_color: currentGallerySettings.bg_color,
       gallery_accent_color: currentGallerySettings.accent_color,
       gallery_font_family: currentGallerySettings.font_family,
-      gallery_layout: currentGallerySettings.layout
+      gallery_layout: currentGallerySettings.layout,
+      gallery_wallpaper: currentGallerySettings.wallpaper
     }, `id=eq.${currentUser.id}`);
-    try { await dbUpdate('profiles', { gallery_wallpaper: currentGallerySettings.wallpaper }, `id=eq.${currentUser.id}`); } catch {}
   }
 
   const galleryUrl = `${window.location.origin}${window.location.pathname}?gallery=${token}`;
