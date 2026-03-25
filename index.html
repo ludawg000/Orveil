@@ -1657,7 +1657,10 @@
     display: none;
   }
   .invite-btn:hover { opacity: 0.8; }
-  @media (max-width: 480px) { .invite-btn { display: inline-block; } }
+  @media (max-width: 480px) {
+    .invite-btn { display: inline-block; }
+    .desktop-only-setting { display: none; }
+  }
 
   .project-main { flex: 1; padding: 2.5rem; max-width: 1200px; margin: 0 auto; width: 100%; }
 
@@ -2995,7 +2998,7 @@
           </div>
           <div class="toggle-switch" id="pink-mode-toggle" onclick="togglePinkMode()"></div>
         </div>
-        <div class="settings-row">
+        <div class="settings-row desktop-only-setting">
           <div>
             <div class="settings-row-label">Show Invite Button</div>
             <div class="settings-row-sub">Show invite button in project view on desktop</div>
