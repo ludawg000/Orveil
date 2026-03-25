@@ -3638,38 +3638,33 @@ function applyGalleryCustomization(project) {
     marble:   `repeating-linear-gradient(55deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.8px, transparent 0.8px, transparent 34px)`
   };
   const wpSizes = { none: 'auto', linen: '20px 20px', paper: '20px 20px', geometric: '40px 40px', dots: '20px 20px', marble: '20px 20px' };
-  // Pattern border frame — universally compatible across mobile/desktop
+  // Remove any previous border overlays
+  ['gallery-border-frame','gallery-wp-style','gallery-wp-top','gallery-wp-bottom','gallery-wp-left','gallery-wp-right'].forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
   document.body.style.backgroundColor = bg;
-  // Remove any previous overlays
-  const oldFrame = document.getElementById('gallery-border-frame');
-  if (oldFrame) oldFrame.remove();
-  const oldStyle = document.getElementById('gallery-wp-style');
-  if (oldStyle) oldStyle.remove();
+  root.style.backgroundImage = 'none';
+  root.style.backgroundSize = '';
+  root.style.backgroundRepeat = '';
+  root.style.position = '';
+  root.style.backgroundColor = bg;
 
   if (wp !== 'none' && svgPatterns[wp]) {
-    const bw = 36;
-    // Pattern fills gallery-screen; ::before pseudo-element masks center with solid bg
-    // This approach works on all mobile browsers without background-clip hacks
-    root.style.backgroundColor = bg;
-    root.style.backgroundImage = svgPatterns[wp];
-    root.style.backgroundSize = wpSizes[wp];
-    root.style.backgroundRepeat = 'repeat';
-    root.style.position = 'relative';
-    const styleEl = document.createElement('style');
-    styleEl.id = 'gallery-wp-style';
-    styleEl.textContent = `#gallery-screen::before { content:''; display:block; position:absolute; top:${bw}px; left:${bw}px; right:${bw}px; bottom:0; background-color:${bg}; z-index:0; pointer-events:none; } #gallery-screen > * { position:relative; z-index:1; }`;
-    document.head.appendChild(styleEl);
-    // Solid accent outer border
-    const frame = document.createElement('div');
-    frame.id = 'gallery-border-frame';
-    frame.style.cssText = `position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:9998;border:10px solid ${accentColor};`;
-    document.body.appendChild(frame);
-  } else {
-    root.style.backgroundImage = 'none';
-    root.style.backgroundSize = '';
-    root.style.backgroundRepeat = '';
-    root.style.position = '';
-    root.style.backgroundColor = bg;
+    // 4 fixed strips — one per side. Works on all mobile/desktop browsers.
+    // Each strip: dots pattern + solid accent border on the inner edge.
+    const sw = 44;  // total strip width (px)
+    const bw = 8;   // solid border line on inner edge (px)
+    const base = `background-color:${bg};background-image:${svgPatterns[wp]};background-size:${wpSizes[wp]};background-repeat:repeat;position:fixed;pointer-events:none;z-index:9998;`;
+    const defs = {
+      'gallery-wp-top':    `top:0;left:0;right:0;height:${sw}px;border-bottom:${bw}px solid ${accentColor};`,
+      'gallery-wp-bottom': `bottom:0;left:0;right:0;height:${sw}px;border-top:${bw}px solid ${accentColor};`,
+      'gallery-wp-left':   `top:0;bottom:0;left:0;width:${sw}px;border-right:${bw}px solid ${accentColor};`,
+      'gallery-wp-right':  `top:0;bottom:0;right:0;width:${sw}px;border-left:${bw}px solid ${accentColor};`,
+    };
+    Object.entries(defs).forEach(([id, pos]) => {
+      const div = document.createElement('div');
+      div.id = id;
+      div.style.cssText = base + pos;
+      document.body.appendChild(div);
+    });
   }
 
   // Load Google Font if not default
