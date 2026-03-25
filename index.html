@@ -1789,11 +1789,11 @@
   .wallpaper-opt.active { border-color: var(--black); }
   .wallpaper-opt::after { content: attr(data-label); position: absolute; bottom: 2px; left: 0; right: 0; text-align: center; font-size: 0.5rem; color: var(--g400); letter-spacing: 0.05em; }
   .wallpaper-opt[data-wp="none"]::before { content: '—'; position: absolute; top: 35%; left: 0; right: 0; text-align: center; font-size: 0.7rem; color: var(--g300); }
-  .wallpaper-opt[data-wp="linen"]::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px), repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px); }
-  .wallpaper-opt[data-wp="paper"]::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0,0,0,0.10) 3px, rgba(0,0,0,0.10) 4px), repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba(0,0,0,0.06) 5px, rgba(0,0,0,0.06) 6px); }
-  .wallpaper-opt[data-wp="geometric"]::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(60deg, transparent, transparent 6px, rgba(0,0,0,0.12) 6px, rgba(0,0,0,0.12) 7px), repeating-linear-gradient(-60deg, transparent, transparent 6px, rgba(0,0,0,0.12) 6px, rgba(0,0,0,0.12) 7px); }
-  .wallpaper-opt[data-wp="dots"]::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle, rgba(0,0,0,0.18) 1.2px, transparent 1.2px); background-size: 8px 8px; }
-  .wallpaper-opt[data-wp="marble"]::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 25%, rgba(0,0,0,0.10) 30%, transparent 35%, rgba(0,0,0,0.06) 50%, transparent 55%, rgba(0,0,0,0.10) 70%, transparent 75%), linear-gradient(225deg, transparent 25%, rgba(0,0,0,0.06) 35%, transparent 40%); }
+  .wallpaper-opt[data-wp="linen"]::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.25) 2px, rgba(0,0,0,0.25) 4px), repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,0.18) 2px, rgba(0,0,0,0.18) 4px); }
+  .wallpaper-opt[data-wp="paper"]::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0,0,0,0.22) 3px, rgba(0,0,0,0.22) 4px), repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba(0,0,0,0.14) 5px, rgba(0,0,0,0.14) 6px); }
+  .wallpaper-opt[data-wp="geometric"]::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(60deg, transparent, transparent 6px, rgba(0,0,0,0.25) 6px, rgba(0,0,0,0.25) 7px), repeating-linear-gradient(-60deg, transparent, transparent 6px, rgba(0,0,0,0.25) 6px, rgba(0,0,0,0.25) 7px); }
+  .wallpaper-opt[data-wp="dots"]::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle, rgba(0,0,0,0.35) 1.5px, transparent 1.5px); background-size: 8px 8px; }
+  .wallpaper-opt[data-wp="marble"]::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 25%, rgba(0,0,0,0.22) 30%, transparent 35%, rgba(0,0,0,0.14) 50%, transparent 55%, rgba(0,0,0,0.22) 70%, transparent 75%), linear-gradient(225deg, transparent 25%, rgba(0,0,0,0.14) 35%, transparent 40%); }
   .delivery-email-input { width: 100%; font-family: var(--sans); font-size: 0.82rem; padding: 0.75rem 1rem; border: 1px solid var(--g200); background: transparent; color: var(--black); outline: none; margin-bottom: 0.8rem; }
   .delivery-email-input:focus { border-color: var(--black); }
   .delivery-custom-input {
@@ -3383,14 +3383,14 @@ function applyGalleryCustomization(project) {
   const [pr, pg, pb] = hexToRgb(accent);
   const wpPatterns = {
     none: 'none',
-    linen: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(${pr},${pg},${pb},0.07) 2px, rgba(${pr},${pg},${pb},0.07) 4px), repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(${pr},${pg},${pb},0.05) 2px, rgba(${pr},${pg},${pb},0.05) 4px)`,
-    paper: `repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(${pr},${pg},${pb},0.06) 3px, rgba(${pr},${pg},${pb},0.06) 4px), repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba(${pr},${pg},${pb},0.04) 5px, rgba(${pr},${pg},${pb},0.04) 6px)`,
-    geometric: `repeating-linear-gradient(60deg, transparent, transparent 8px, rgba(${pr},${pg},${pb},0.08) 8px, rgba(${pr},${pg},${pb},0.08) 9px), repeating-linear-gradient(-60deg, transparent, transparent 8px, rgba(${pr},${pg},${pb},0.08) 8px, rgba(${pr},${pg},${pb},0.08) 9px), repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(${pr},${pg},${pb},0.04) 8px, rgba(${pr},${pg},${pb},0.04) 9px)`,
-    dots: `radial-gradient(circle, rgba(${pr},${pg},${pb},0.14) 1.2px, transparent 1.2px)`,
-    marble: `linear-gradient(135deg, transparent 25%, rgba(${pr},${pg},${pb},0.08) 30%, transparent 35%, rgba(${pr},${pg},${pb},0.05) 50%, transparent 55%, rgba(${pr},${pg},${pb},0.08) 70%, transparent 75%), linear-gradient(225deg, transparent 25%, rgba(${pr},${pg},${pb},0.05) 35%, transparent 40%)`
+    linen: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(${pr},${pg},${pb},0.18) 2px, rgba(${pr},${pg},${pb},0.18) 4px), repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(${pr},${pg},${pb},0.12) 2px, rgba(${pr},${pg},${pb},0.12) 4px)`,
+    paper: `repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(${pr},${pg},${pb},0.15) 3px, rgba(${pr},${pg},${pb},0.15) 4px), repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba(${pr},${pg},${pb},0.10) 5px, rgba(${pr},${pg},${pb},0.10) 6px)`,
+    geometric: `repeating-linear-gradient(60deg, transparent, transparent 8px, rgba(${pr},${pg},${pb},0.20) 8px, rgba(${pr},${pg},${pb},0.20) 9px), repeating-linear-gradient(-60deg, transparent, transparent 8px, rgba(${pr},${pg},${pb},0.20) 8px, rgba(${pr},${pg},${pb},0.20) 9px), repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(${pr},${pg},${pb},0.10) 8px, rgba(${pr},${pg},${pb},0.10) 9px)`,
+    dots: `radial-gradient(circle, rgba(${pr},${pg},${pb},0.35) 1.5px, transparent 1.5px)`,
+    marble: `linear-gradient(135deg, transparent 25%, rgba(${pr},${pg},${pb},0.18) 30%, transparent 35%, rgba(${pr},${pg},${pb},0.12) 50%, transparent 55%, rgba(${pr},${pg},${pb},0.18) 70%, transparent 75%), linear-gradient(225deg, transparent 25%, rgba(${pr},${pg},${pb},0.12) 35%, transparent 40%)`
   };
   root.style.backgroundImage = wpPatterns[wp] || 'none';
-  const wpSizes = { none: 'auto', linen: 'auto', paper: 'auto', geometric: 'auto', dots: '20px 20px', marble: '200px 200px' };
+  const wpSizes = { none: 'auto', linen: 'auto', paper: 'auto', geometric: 'auto', dots: '24px 24px', marble: '200px 200px' };
   root.style.backgroundSize = wpSizes[wp] || 'auto';
 
   // Load Google Font if not default
