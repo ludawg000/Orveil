@@ -3308,6 +3308,10 @@ let pendingInviteToken = new URLSearchParams(window.location.search).get('invite
 let pendingJoinProject = new URLSearchParams(window.location.search).get('join');
 
 // REST helpers — bypass Supabase JS client for data queries
+async function ensureFreshToken() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (session?.access_token) accessToken = session.access_token;
+}
 function authHeaders() {
   return { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${accessToken || SUPABASE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
 }
@@ -3319,7 +3323,15 @@ async function dbSelect(table, columns, filters, opts) {
   const h = authHeaders();
   if (opts?.single) h['Accept'] = 'application/vnd.pgrst.object+json';
   else h['Accept'] = 'application/json';
-  const resp = await fetch(url, { headers: h });
+  let resp = await fetch(url, { headers: h });
+  // Auto-refresh token on 401 and retry once
+  if (resp.status === 401) {
+    await ensureFreshToken();
+    const h2 = authHeaders();
+    if (opts?.single) h2['Accept'] = 'application/vnd.pgrst.object+json';
+    else h2['Accept'] = 'application/json';
+    resp = await fetch(url, { headers: h2 });
+  }
   if (!resp.ok) { const e = await resp.json().catch(() => ({})); return { data: null, error: e }; }
   const data = await resp.json();
   return { data, error: null };
@@ -4352,28 +4364,28 @@ async function createProject() {
 
 // ─── PROJECT / FILES ───
 async function openProject(id, name) {
-  let proj = null;
-  const { data: p1 } = await dbSelect('projects', 'user_id,allow_collab_invite', `id=eq.${id}`, { single: true });
-  if (p1) { proj = p1; } else {
-    // Fallback if allow_collab_invite column doesn't exist yet
-    const { data: p2 } = await dbSelect('projects', 'user_id', `id=eq.${id}`, { single: true });
-    proj = p2;
-  }
-  const isOwner = proj && proj.user_id === currentUser.id;
-  currentProject = { id, name, isOwner, allowCollabInvite: proj?.allow_collab_invite || false };
+  currentProject = { id, name, isOwner: true, allowCollabInvite: false };
   document.getElementById('project-nav-title').textContent = name;
   document.getElementById('project-screen').classList.remove('edit-mode');
   document.getElementById('project-back-btn').innerHTML = '&#8592; Home';
-  // Show invite: on mobile always for owners/allowed collabs; on desktop only if setting enabled
-  const canInvite = isOwner || currentProject.allowCollabInvite;
-  const showInviteSetting = localStorage.getItem(userKey('show-invite')) === '1';
-  const isMobile = window.innerWidth <= 480;
-  const showInviteBtn = canInvite && (isMobile || showInviteSetting);
-  document.querySelector('.project-nav-actions .invite-btn').style.display = showInviteBtn ? 'inline-block' : 'none';
-  // Show deliver button only for owners
-  document.querySelector('.project-nav-actions .deliver-btn').style.display = isOwner ? '' : 'none';
+  // Show screen + start loading files immediately
   showScreen('project-screen');
-  await loadFiles();
+  const [, { data: proj }] = await Promise.all([
+    loadFiles(),
+    dbSelect('projects', 'user_id', `id=eq.${id}`, { single: true })
+  ]);
+  const isOwner = proj && proj.user_id === currentUser.id;
+  currentProject.isOwner = isOwner;
+  // Update button visibility after ownership check
+  const isMobile = window.innerWidth <= 480;
+  const showInviteSetting = localStorage.getItem(userKey('show-invite')) === '1';
+  const showInviteBtn = isOwner && (isMobile || showInviteSetting);
+  document.querySelector('.project-nav-actions .invite-btn').style.display = showInviteBtn ? 'inline-block' : 'none';
+  document.querySelector('.project-nav-actions .deliver-btn').style.display = isOwner ? '' : 'none';
+  // Re-render delete buttons if not owner
+  if (!isOwner) {
+    document.querySelectorAll('.file-delete').forEach(b => b.remove());
+  }
 }
 
 function openProjectEditMode(id, name, event) {
@@ -5534,24 +5546,18 @@ async function confirmDeleteProject() {
   }
 }
 
-async function openInviteModal(id, name, e) {
+function openInviteModal(id, name, e) {
   e.stopPropagation();
   pendingInviteId = id;
   document.getElementById('invite-project-name').textContent = '> ' + name;
   document.getElementById('invite-email-input').value = '';
-  // Show permissions toggle only for project owners
-  let proj = null;
-  const { data: p1 } = await dbSelect('projects', 'user_id,allow_collab_invite', `id=eq.${id}`, { single: true });
-  if (p1) { proj = p1; } else {
-    const { data: p2 } = await dbSelect('projects', 'user_id', `id=eq.${id}`, { single: true });
-    proj = p2;
-  }
-  const isOwner = proj && proj.user_id === currentUser.id;
+  // Use cached ownership from currentProject if available
+  const isOwner = currentProject && currentProject.id === id ? currentProject.isOwner : false;
   const permsEl = document.getElementById('invite-permissions');
   permsEl.style.display = isOwner ? 'block' : 'none';
   if (isOwner) {
     const toggle = document.getElementById('collab-invite-toggle');
-    toggle.classList.toggle('active', !!proj.allow_collab_invite);
+    toggle.classList.toggle('active', !!currentProject.allowCollabInvite);
   }
   document.getElementById('invite-modal').classList.add('active');
   setTimeout(() => document.getElementById('invite-email-input').focus(), 100);
