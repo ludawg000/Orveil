@@ -2435,10 +2435,12 @@
     .retro-tv .tv-frame { display: none !important; }
     .retro-tv { background: var(--white) !important; min-height: auto !important; padding: 0 !important; overflow: visible !important; width: 100% !important; margin-left: 0 !important; }
     .retro-tv .projects-grid { display: grid !important; }
-    .retro-tv .dash-header { position: static; }
-    .retro-tv .dash-title { color: var(--black); }
-    .retro-tv .dash-name-input { color: var(--black); border-bottom-color: var(--g200); }
-    .retro-tv .new-project-btn { opacity: 1; }
+    .retro-tv .dash-header { position: static !important; padding: 1rem 0 !important; z-index: auto !important; }
+    .retro-tv .dash-title { color: var(--black) !important; }
+    .retro-tv .dash-name-input { color: var(--black) !important; border-bottom-color: var(--g200) !important; }
+    .retro-tv .dash-name-input::placeholder { color: var(--g400) !important; }
+    .retro-tv .new-project-btn { opacity: 1 !important; }
+    .retro-tv .manage-btn { display: none !important; }
 
     /* Nav */
     .app-nav { padding: 0.7rem 1rem; }
