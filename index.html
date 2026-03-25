@@ -3258,6 +3258,7 @@ let currentUser = null;
 let currentProject = null;
 let isGalleryMode = false;
 let pendingInviteToken = new URLSearchParams(window.location.search).get('invite');
+let pendingJoinProject = new URLSearchParams(window.location.search).get('join');
 
 // REST helpers — bypass Supabase JS client for data queries
 function authHeaders() {
@@ -4017,6 +4018,26 @@ async function initApp() {
         }
       } catch (e) { console.error('Invite accept error:', e); }
       pendingInviteToken = null;
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+
+    // Accept join link — add user as collaborator via server API (bypasses RLS)
+    if (pendingJoinProject) {
+      try {
+        const joinResp = await fetch('/api/accept-join', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ projectId: pendingJoinProject, userId: currentUser.id, email: currentUser.email })
+        });
+        const joinData = await joinResp.json();
+        if (joinResp.ok) {
+          showToast(joinData.message || 'You now have access to the project!');
+        } else {
+          console.error('Join error:', joinData);
+          showToast(joinData.error || 'Could not join project.');
+        }
+      } catch (e) { console.error('Join error:', e); }
+      pendingJoinProject = null;
       window.history.replaceState(null, '', window.location.pathname);
     }
 
