@@ -3360,7 +3360,7 @@
             </div>
           </div>
           <div id="email-preview-pane">
-            <iframe id="email-preview-iframe" sandbox="allow-same-origin"></iframe>
+            <iframe id="email-preview-iframe"></iframe>
           </div>
         </div>
       </div>
@@ -5211,14 +5211,22 @@ function updateGalleryPreview() {
   }
 }
 
+function getCurrentDeliveryMessage() {
+  const styleEl = document.querySelector('.delivery-opt.selected');
+  const style = styleEl?.dataset.style;
+  if (style === 'custom') return document.getElementById('delivery-custom-text').value || '';
+  return deliveryMessages[style]?.(currentProject?.name) || '';
+}
+
 function buildEmailPreviewHtml() {
   const s = currentGallerySettings;
   const bg = s.bg_color || '#0a0a0a';
   const accent = s.accent_color || '#fafafa';
-  const font = s.font_family || 'Georgia, serif';
+  const font = s.font_family || 'Playfair Display';
   const wp = s.wallpaper || 'none';
   const logoPath = s.logo_path;
   const projectName = window._previewProjectName || 'Your Project';
+  const message = getCurrentDeliveryMessage() || 'Your photos are beautifully curated and ready to view.';
 
   const hexToRgb = hex => {
     const h = hex.replace('#', '');
@@ -5248,27 +5256,31 @@ function buildEmailPreviewHtml() {
     ? `<img src="${logoUrl}" alt="Brand" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">`
     : `<h1 style="font-family:'${font}',Georgia,serif;font-size:2rem;font-weight:400;letter-spacing:0.02em;margin:0;color:${accent};">Orveil</h1>`;
 
-  return `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#ffffff;">
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;"><tr><td align="center" style="background-color:#ffffff;padding:24px 16px;">
-    <table width="500" cellpadding="0" cellspacing="0" border="0">
+  const fontLink = font !== 'Georgia'
+    ? `<link href="https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@300;400;500;700&display=swap" rel="stylesheet">`
+    : '';
+
+  return `<!DOCTYPE html><html><head><meta charset="utf-8">${fontLink}</head><body style="margin:0;padding:0;background:#ffffff;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#ffffff;"><tr><td align="center" style="background-color:#ffffff;padding:12px 8px;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:500px;">
       <tr>
         <td bgcolor="${accent}" style="background-color:${accent};padding:10px;">
           <table width="100%" cellpadding="0" cellspacing="0" border="0">
             <tr><td colspan="3" height="${dotFrame}" style="${borderCell}">&nbsp;</td></tr>
             <tr>
               <td width="${dotFrame}" style="${borderCell}">&nbsp;</td>
-              <td bgcolor="${bg}" style="background-color:${bg};font-family:'${font}',Georgia,serif;color:${accent};padding:36px 28px;">
-                <div style="text-align:center;margin-bottom:28px;">${headerContent}</div>
-                <div style="border-top:1px solid ${accent}20;padding-top:24px;margin-bottom:24px;text-align:center;">
-                  <h2 style="font-family:'${font}',Georgia,serif;font-size:1.3rem;font-weight:400;margin:0 0 6px;color:${accent};text-align:center;">Your gallery is ready</h2>
-                  <p style="font-size:0.8rem;color:${accent};opacity:0.5;margin:0 0 18px;text-align:center;">${projectName}</p>
-                  <p style="font-size:0.9rem;line-height:1.7;color:${accent};opacity:0.85;margin:0 0 24px;text-align:center;">Your photos are beautifully curated and ready to view.</p>
-                  <div style="text-align:center;margin:24px 0;">
-                    <span style="display:inline-block;background:${accent};color:${bg};font-size:0.75rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;padding:14px 36px;">View Gallery</span>
+              <td bgcolor="${bg}" style="background-color:${bg};font-family:'${font}',Georgia,serif;color:${accent};padding:28px 20px;">
+                <div style="text-align:center;margin-bottom:20px;">${headerContent}</div>
+                <div style="border-top:1px solid ${accent}20;padding-top:18px;margin-bottom:18px;text-align:center;">
+                  <h2 style="font-family:'${font}',Georgia,serif;font-size:1.2rem;font-weight:400;margin:0 0 5px;color:${accent};text-align:center;">Your gallery is ready</h2>
+                  <p style="font-size:0.75rem;color:${accent};opacity:0.5;margin:0 0 14px;text-align:center;">${projectName}</p>
+                  <p style="font-size:0.85rem;line-height:1.7;color:${accent};opacity:0.85;margin:0 0 18px;text-align:center;">${message}</p>
+                  <div style="text-align:center;margin:18px 0;">
+                    <span style="display:inline-block;background:${accent};color:${bg};font-size:0.7rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;padding:12px 28px;">View Gallery</span>
                   </div>
                 </div>
-                <div style="border-top:1px solid ${accent}20;padding-top:18px;text-align:center;">
-                  <p style="font-size:0.65rem;letter-spacing:0.08em;text-transform:uppercase;margin:0;color:${accent};opacity:0.4;">Delivered with Orveil</p>
+                <div style="border-top:1px solid ${accent}20;padding-top:14px;text-align:center;">
+                  <p style="font-size:0.6rem;letter-spacing:0.08em;text-transform:uppercase;margin:0;color:${accent};opacity:0.4;">Delivered with Orveil</p>
                 </div>
               </td>
               <td width="${dotFrame}" style="${borderCell}">&nbsp;</td>
@@ -5304,12 +5316,14 @@ function selectDelivery(el) {
     customInput.style.display = 'block';
     customInput.oninput = () => {
       document.getElementById('delivery-preview-text').textContent = customInput.value ? `"${customInput.value}"` : '"Type your message above..."';
+      updateEmailPreview();
     };
     document.getElementById('delivery-preview-text').textContent = customInput.value ? `"${customInput.value}"` : '"Type your message above..."';
   } else {
     customInput.style.display = 'none';
     updateDeliveryPreview(el.dataset.style);
   }
+  updateEmailPreview();
 }
 
 function updateDeliveryPreview(style) {
