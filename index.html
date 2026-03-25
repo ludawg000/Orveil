@@ -1654,8 +1654,10 @@
     background: var(--black); color: var(--white);
     border: 1px solid var(--black); padding: 0.7rem 1.4rem; cursor: pointer;
     transition: all 0.3s;
+    display: none;
   }
   .invite-btn:hover { opacity: 0.8; }
+  @media (max-width: 480px) { .invite-btn { display: inline-block; } }
 
   .project-main { flex: 1; padding: 2.5rem; max-width: 1200px; margin: 0 auto; width: 100%; }
 
@@ -3087,6 +3089,16 @@
         <button onclick="copyInviteLink()" style="font-family:var(--sans);font-size:0.7rem;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;background:var(--black);color:var(--white);border:none;padding:0.7rem 1rem;cursor:pointer;white-space:nowrap">Copy Link</button>
       </div>
     </div>
+    <div id="invite-permissions" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--g200)">
+      <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--g400);margin-bottom:0.8rem">Collaborator Permissions</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0">
+        <div>
+          <div style="font-size:0.78rem;color:var(--g600)">Allow collaborators to invite others</div>
+          <div style="font-size:0.65rem;color:var(--g400);margin-top:0.2rem">Collaborators can share the invite link</div>
+        </div>
+        <div class="toggle-switch" id="collab-invite-toggle" onclick="toggleCollabInvite()"></div>
+      </div>
+    </div>
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeInviteModal()">Cancel</button>
       <button class="modal-confirm" id="invite-generate-btn" onclick="generateInviteLink()">Generate Link</button>
@@ -4257,14 +4269,17 @@ async function createProject() {
 
 // ─── PROJECT / FILES ───
 async function openProject(id, name) {
-  currentProject = { id, name };
+  const { data: proj } = await dbSelect('projects', 'user_id,allow_collab_invite', `id=eq.${id}`, { single: true });
+  const isOwner = proj && proj.user_id === currentUser.id;
+  currentProject = { id, name, isOwner, allowCollabInvite: proj?.allow_collab_invite || false };
   document.getElementById('project-nav-title').textContent = name;
   document.getElementById('project-screen').classList.remove('edit-mode');
   document.getElementById('project-back-btn').innerHTML = '&#8592; Home';
-  // Only show invite button for project owners
-  const { data: proj } = await dbSelect('projects', 'user_id', `id=eq.${id}`, { single: true });
-  const isOwner = proj && proj.user_id === currentUser.id;
-  document.querySelector('.project-nav-actions .invite-btn').style.display = isOwner ? '' : 'none';
+  // Show invite for owners, or collaborators if allowed
+  const canInvite = isOwner || currentProject.allowCollabInvite;
+  document.querySelector('.project-nav-actions .invite-btn').style.display = canInvite ? '' : 'none';
+  // Show deliver button only for owners
+  document.querySelector('.project-nav-actions .deliver-btn').style.display = isOwner ? '' : 'none';
   showScreen('project-screen');
   await loadFiles();
 }
@@ -4308,7 +4323,7 @@ async function loadFiles() {
         <div class="file-name">${escHtml(f.name)}</div>
         <div class="file-size">${formatBytes(f.size)}</div>
       </div>
-      <button class="file-delete" onclick="deleteFile('${f.id}','${f.path}',${f.size},event)" title="Delete">&#10005;</button>
+      ${currentProject.isOwner ? `<button class="file-delete" onclick="deleteFile('${f.id}','${f.path}',${f.size},event)" title="Delete">&#10005;</button>` : ''}
     </div>`;
   }).join('');
 
@@ -5421,11 +5436,20 @@ async function confirmDeleteProject() {
   }
 }
 
-function openInviteModal(id, name, e) {
+async function openInviteModal(id, name, e) {
   e.stopPropagation();
   pendingInviteId = id;
   document.getElementById('invite-project-name').textContent = '> ' + name;
   document.getElementById('invite-email-input').value = '';
+  // Show permissions toggle only for project owners
+  const { data: proj } = await dbSelect('projects', 'user_id,allow_collab_invite', `id=eq.${id}`, { single: true });
+  const isOwner = proj && proj.user_id === currentUser.id;
+  const permsEl = document.getElementById('invite-permissions');
+  permsEl.style.display = isOwner ? 'block' : 'none';
+  if (isOwner) {
+    const toggle = document.getElementById('collab-invite-toggle');
+    toggle.classList.toggle('active', !!proj.allow_collab_invite);
+  }
   document.getElementById('invite-modal').classList.add('active');
   setTimeout(() => document.getElementById('invite-email-input').focus(), 100);
 }
@@ -5433,6 +5457,17 @@ function openInviteModal(id, name, e) {
 function openInviteFromProject(e) {
   if (!currentProject) return;
   openInviteModal(currentProject.id, currentProject.name || 'Project', e);
+}
+
+async function toggleCollabInvite() {
+  const toggle = document.getElementById('collab-invite-toggle');
+  const newVal = !toggle.classList.contains('active');
+  toggle.classList.toggle('active', newVal);
+  await dbUpdate('projects', { allow_collab_invite: newVal }, `id=eq.${pendingInviteId}`);
+  if (currentProject && currentProject.id === pendingInviteId) {
+    currentProject.allowCollabInvite = newVal;
+  }
+  showToast(newVal ? 'Collaborators can now invite others' : 'Only you can invite');
 }
 
 function closeInviteModal() {
