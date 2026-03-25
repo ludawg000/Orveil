@@ -2570,6 +2570,20 @@
     .app-main { padding: 0.8rem 0.6rem !important; }
     .project-main { padding: 0.8rem !important; }
   }
+
+  /* ===== GALLERY MOBILE ===== */
+  @media(max-width: 600px) {
+    .gallery-header { padding: 3rem 1.2rem 1.5rem; }
+    .gallery-project-name { font-size: 2rem; }
+    .gallery-meta { margin-top: 0.6rem; }
+    .gallery-divider { margin: 1.2rem auto 0; }
+    .gallery-download-all { margin-top: 1.2rem; padding: 0.65rem 1.5rem; }
+    .gallery-grid { column-count: 2; column-gap: 6px; padding: 0 0.8rem 2.5rem; }
+    .gallery-grid.layout-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .gallery-footer { padding: 2rem 1.2rem 2.5rem; }
+    .gallery-brand.has-logo { top: 0.8rem; right: 1rem; }
+    .gallery-brand-logo { width: 56px; height: 56px; }
+  }
 </style>
 </head>
 <body>
@@ -3729,9 +3743,10 @@ function applyGalleryCustomization(project) {
   if (wp !== 'none' && svgPatterns[wp]) {
     // Use real CSS border + padding on gallery-screen — no position:fixed needed.
     // Works on all mobile browsers including iOS.
+    const isMobile = window.innerWidth <= 600;
     root.style.boxSizing = 'border-box';
-    root.style.border = `10px solid ${accent}`;
-    root.style.padding = '34px';
+    root.style.border = `${isMobile ? 6 : 10}px solid ${accent}`;
+    root.style.padding = isMobile ? '12px' : '34px';
     root.style.backgroundImage = svgPatterns[wp];
     root.style.backgroundSize = wpSizes[wp];
     root.style.backgroundRepeat = 'repeat';
