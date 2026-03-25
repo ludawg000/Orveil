@@ -3642,10 +3642,12 @@ function applyGalleryCustomization(project) {
   document.body.style.backgroundColor = bg;
   if (wp !== 'none' && svgPatterns[wp]) {
     root.style.padding = '20px';
-    root.style.backgroundImage = `${svgPatterns[wp]}, linear-gradient(${bg}, ${bg})`;
-    root.style.backgroundSize = `${wpSizes[wp]}, auto`;
-    root.style.backgroundClip = 'padding-box, content-box';
-    root.style.backgroundColor = 'transparent';
+    // Solid layer first (on top) clips to content-box, masking pattern behind content
+    // Pattern layer second (behind) clips to padding-box, visible only in the 20px padding frame
+    root.style.backgroundImage = `linear-gradient(${bg}, ${bg}), ${svgPatterns[wp]}`;
+    root.style.backgroundSize = `auto, ${wpSizes[wp]}`;
+    root.style.backgroundClip = 'content-box, padding-box';
+    root.style.backgroundColor = bg;
   } else {
     root.style.padding = '';
     root.style.backgroundImage = 'none';
