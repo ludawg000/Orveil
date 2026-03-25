@@ -2995,6 +2995,13 @@
           </div>
           <div class="toggle-switch" id="pink-mode-toggle" onclick="togglePinkMode()"></div>
         </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Show Invite Button</div>
+            <div class="settings-row-sub">Show invite button in project view on desktop</div>
+          </div>
+          <div class="toggle-switch" id="show-invite-toggle" onclick="toggleShowInvite()"></div>
+        </div>
       </div>
     </div>
 
@@ -4275,9 +4282,12 @@ async function openProject(id, name) {
   document.getElementById('project-nav-title').textContent = name;
   document.getElementById('project-screen').classList.remove('edit-mode');
   document.getElementById('project-back-btn').innerHTML = '&#8592; Home';
-  // Show invite for owners, or collaborators if allowed
+  // Show invite: on mobile always for owners/allowed collabs; on desktop only if setting enabled
   const canInvite = isOwner || currentProject.allowCollabInvite;
-  document.querySelector('.project-nav-actions .invite-btn').style.display = canInvite ? '' : 'none';
+  const showInviteSetting = localStorage.getItem(userKey('show-invite')) === '1';
+  const isMobile = window.innerWidth <= 480;
+  const showInviteBtn = canInvite && (isMobile || showInviteSetting);
+  document.querySelector('.project-nav-actions .invite-btn').style.display = showInviteBtn ? 'inline-block' : 'none';
   // Show deliver button only for owners
   document.querySelector('.project-nav-actions .deliver-btn').style.display = isOwner ? '' : 'none';
   showScreen('project-screen');
@@ -5571,6 +5581,11 @@ function openSettings() {
   if (document.body.classList.contains('pink-mode')) pm.classList.add('active');
   else pm.classList.remove('active');
 
+  // Show invite toggle
+  const si = document.getElementById('show-invite-toggle');
+  if (localStorage.getItem(userKey('show-invite')) === '1') si.classList.add('active');
+  else si.classList.remove('active');
+
   updateStorage();
 }
 
@@ -5638,6 +5653,14 @@ async function removeAvatar() {
   document.getElementById('remove-avatar-btn').style.display = 'none';
 
   showToast('Profile photo removed');
+}
+
+function toggleShowInvite() {
+  const toggle = document.getElementById('show-invite-toggle');
+  toggle.classList.toggle('active');
+  const on = toggle.classList.contains('active');
+  localStorage.setItem(userKey('show-invite'), on ? '1' : '0');
+  showToast(on ? 'Invite button enabled on desktop' : 'Invite button hidden on desktop');
 }
 
 function toggleDarkMode() {
