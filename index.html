@@ -3627,7 +3627,7 @@ function applyGalleryCustomization(project) {
   const hexToRgb = (hex) => { const h = hex.replace('#', ''); return [parseInt(h.substring(0,2),16), parseInt(h.substring(2,4),16), parseInt(h.substring(4,6),16)]; };
   const [pr, pg, pb] = hexToRgb(accent);
   // SVG-based wallpaper patterns — crisp, scalable, professional
-  const o = 0.13; // base opacity for patterns
+  const o = 0.25; // base opacity for patterns
   const c = `${pr},${pg},${pb}`;
   const svgPatterns = {
     none: '',
@@ -3641,7 +3641,7 @@ function applyGalleryCustomization(project) {
   // Pattern as border frame only — solid bg covers content area, pattern shows in 20px padding
   document.body.style.backgroundColor = bg;
   if (wp !== 'none' && svgPatterns[wp]) {
-    root.style.padding = '20px';
+    root.style.padding = '28px';
     // Solid layer first (on top) clips to content-box, masking pattern behind content
     // Pattern layer second (behind) clips to padding-box, visible only in the 20px padding frame
     root.style.backgroundImage = `linear-gradient(${bg}, ${bg}), ${svgPatterns[wp]}`;
