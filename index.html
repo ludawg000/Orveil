@@ -4614,39 +4614,60 @@ async function handleFileSelect(fileList) {
   progress.classList.add('active');
   label.textContent = `Uploading ${files.length} file${files.length !== 1 ? 's' : ''}...`;
 
-  // Per-file progress tracking
+  // Per-file progress tracking — all writes go to arrays, DOM flushed via RAF
   const fileProgress = new Array(files.length).fill(0);
-  const fileSizes = files.map(f => f.size);
-  const totalBytes = fileSizes.reduce((a, b) => a + b, 0);
+  const fileDone = new Array(files.length).fill(false);
+  const totalBytes = files.reduce((a, f) => a + f.size, 0);
+  const largeBatch = files.length > 15;
+  let doneCount = 0;
+  let rafPending = false;
 
-  fileListEl.innerHTML = files.map((f, i) =>
-    `<div class="upload-file-item"><span>${f.name.length > 30 ? f.name.slice(0, 27) + '...' : f.name}</span><span class="file-pct" id="uf-${i}">0%</span></div>`
-  ).join('');
-
-  function updateOverall() {
-    const loaded = fileProgress.reduce((a, b) => a + b, 0);
-    fill.style.width = ((loaded / totalBytes) * 100) + '%';
+  if (largeBatch) {
+    // For big batches: simple count display, no per-file rows
+    fileListEl.innerHTML = `<div class="upload-file-item" id="upload-count-label"><span>0 / ${files.length} files</span></div>`;
+  } else {
+    fileListEl.innerHTML = files.map((f, i) =>
+      `<div class="upload-file-item"><span>${f.name.length > 30 ? f.name.slice(0, 27) + '...' : f.name}</span><span class="file-pct" id="uf-${i}">0%</span></div>`
+    ).join('');
   }
 
-  // Phase 1: Parallel file uploads (3 concurrent)
+  function scheduleProgressFlush() {
+    if (rafPending) return;
+    rafPending = true;
+    requestAnimationFrame(() => {
+      rafPending = false;
+      const loaded = fileProgress.reduce((a, b) => a + b, 0);
+      fill.style.width = ((loaded / totalBytes) * 100) + '%';
+      if (largeBatch) {
+        const el = document.getElementById('upload-count-label');
+        if (el) el.firstElementChild.textContent = `${doneCount} / ${files.length} files`;
+      }
+    });
+  }
+
+  // Phase 1: Parallel file uploads (8 concurrent)
   const uploadResults = [];
   const uploadTasks = files.map((file, i) => async () => {
     const path = `${currentUser.id}/${currentProject.id}/${Date.now()}-${i}-${file.name}`;
     const { error } = await storageUploadWithProgress('projects', path, file, (loaded, total) => {
       fileProgress[i] = loaded;
-      const el = document.getElementById(`uf-${i}`);
-      if (el) el.textContent = Math.round((loaded / total) * 100) + '%';
-      updateOverall();
+      if (!largeBatch) {
+        const el = document.getElementById(`uf-${i}`);
+        if (el) el.textContent = Math.round((loaded / total) * 100) + '%';
+      }
+      scheduleProgressFlush();
     });
     if (error) {
       console.error('Upload error:', error);
       showToast(`Failed: ${file.name}`);
       uploadResults[i] = null;
     } else {
+      doneCount++;
       uploadResults[i] = { file, path, index: i, thumbPath: null };
+      scheduleProgressFlush();
     }
   });
-  await parallelLimit(uploadTasks, 6);
+  await parallelLimit(uploadTasks, 8);
 
   const successful = uploadResults.filter(Boolean);
 
