@@ -3098,7 +3098,7 @@
         <button onclick="copyInviteLink()" style="font-family:var(--sans);font-size:0.7rem;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;background:var(--black);color:var(--white);border:none;padding:0.7rem 1rem;cursor:pointer;white-space:nowrap">Copy Link</button>
       </div>
     </div>
-    <div id="invite-permissions" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--g200)">
+    <div id="invite-permissions" style="margin-top:1rem;padding-top:1rem;border-top:1px solid var(--g200)">
       <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--g400);margin-bottom:0.8rem">Collaborator Permissions</div>
       <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0">
         <div>
@@ -5595,12 +5595,9 @@ async function openInviteModal(id, name, e) {
   document.getElementById('invite-project-name').textContent = '> ' + name;
   document.getElementById('invite-email-input').value = '';
   document.getElementById('invite-link-result').style.display = 'none';
-  document.getElementById('invite-permissions').style.display = 'none';
   document.getElementById('collab-list-section').style.display = 'none';
   document.getElementById('invite-modal').classList.add('active');
   setTimeout(() => document.getElementById('invite-email-input').focus(), 100);
-
-  document.getElementById('invite-permissions').style.display = 'block';
   const { data: settings } = await dbSelect('projects', 'allow_collab_invite,allow_collab_edit,allow_collab_delete', `id=eq.${id}`, { single: true });
   document.getElementById('collab-invite-toggle').classList.toggle('active', !!settings?.allow_collab_invite);
   document.getElementById('collab-edit-toggle').classList.toggle('active', !!settings?.allow_collab_edit);
