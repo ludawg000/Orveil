@@ -2208,7 +2208,7 @@
     position: fixed; top: 1.5rem; right: 2rem; z-index: 50;
     margin-bottom: 0; opacity: 1;
   }
-  .gallery-brand-logo { max-height: 108px; max-width: 420px; display: block; }
+  .gallery-brand-logo { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; display: block; }
   .gallery-project-name {
     font-family: var(--gal-font, var(--serif)); font-size: 3.5rem; color: var(--gal-accent, var(--white));
     font-style: italic; font-weight: 400; line-height: 1.15;
@@ -2313,7 +2313,7 @@
     font-family: var(--gal-font, var(--serif)); font-size: 0.9rem; color: var(--gal-accent, rgba(255,255,255,0.2));
     letter-spacing: 0.08em; opacity: 0.3;
   }
-  .gallery-footer-logo-img { max-height: 48px; max-width: 200px; opacity: 0.5; }
+  .gallery-footer-logo-img { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; opacity: 0.5; }
   .gallery-footer-sub {
     font-size: 0.6rem; color: var(--gal-accent, rgba(255,255,255,0.1)); opacity: 0.2;
     letter-spacing: 0.15em; text-transform: uppercase; margin-top: 0.5rem;
@@ -2425,7 +2425,7 @@
     .slideshow-next { right: 0.5rem; }
     .slideshow-container { padding: 3rem 3.5rem 4rem; }
     .gallery-brand.has-logo { top: 1rem; right: 1rem; }
-    .gallery-brand-logo { max-height: 84px; max-width: 300px; }
+    .gallery-brand-logo { width: 64px; height: 64px; }
   }
   @media(max-width:480px) {
     .gallery-grid { column-count: 1; column-gap: 0; max-width: 500px; }
@@ -5367,10 +5367,10 @@ async function sendDelivery() {
     gallery_bg_color: currentGallerySettings.bg_color,
     gallery_accent_color: currentGallerySettings.accent_color,
     gallery_font_family: currentGallerySettings.font_family,
-    gallery_layout: currentGallerySettings.layout,
-    gallery_wallpaper: currentGallerySettings.wallpaper
+    gallery_layout: currentGallerySettings.layout
   };
   await dbUpdate('projects', galUpdate, `id=eq.${currentProject.id}`);
+  await dbUpdate('projects', { gallery_wallpaper: currentGallerySettings.wallpaper }, `id=eq.${currentProject.id}`);
 
   // Save as default if checked
   if (document.getElementById('save-as-default').checked) {
@@ -5379,9 +5379,9 @@ async function sendDelivery() {
       gallery_bg_color: currentGallerySettings.bg_color,
       gallery_accent_color: currentGallerySettings.accent_color,
       gallery_font_family: currentGallerySettings.font_family,
-      gallery_layout: currentGallerySettings.layout,
-      gallery_wallpaper: currentGallerySettings.wallpaper
+      gallery_layout: currentGallerySettings.layout
     }, `id=eq.${currentUser.id}`);
+    await dbUpdate('profiles', { gallery_wallpaper: currentGallerySettings.wallpaper }, `id=eq.${currentUser.id}`);
   }
 
   const galleryUrl = `${window.location.origin}${window.location.pathname}?gallery=${token}`;
