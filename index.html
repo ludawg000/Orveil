@@ -1502,10 +1502,10 @@
 
   /* Cards inside the screen — blue CRT look */
   .tv-screen .project-card {
-    background: #0c1028; padding: 0.5rem;
+    background: #0c1028; padding: 0.4rem 0.5rem;
     cursor: pointer; transition: background 0.2s;
-    display: flex; flex-direction: column; gap: 0.25rem;
-    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; gap: 0.2rem;
+    position: relative;
   }
   .tv-screen .project-card:hover { background: #141c38; }
   .tv-screen .project-name {
@@ -1519,14 +1519,14 @@
     font-size: 0.6rem; color: #6090ff; opacity: 0.5;
   }
   .tv-screen .project-thumb {
-    width: 100%; aspect-ratio: 16/9; max-height: 38px;
-    background: #080c1a; border-radius: 2px;
+    width: 100%; height: 30px;
+    background: #080c1a; border-radius: 1px;
     display: flex; align-items: center; justify-content: center;
-    overflow: hidden;
+    overflow: hidden; position: relative;
     filter: saturate(1.3) brightness(0.85) contrast(1.1);
   }
   .tv-screen .project-thumb img {
-    width: 100%; height: 100%; object-fit: contain;
+    width: 100%; height: 100%; object-fit: cover;
     filter: brightness(1.1) contrast(1.1);
   }
   /* Blue tint overlay on thumbnails */
@@ -2492,7 +2492,7 @@
     .tv-screen .project-card { padding: 0.35rem; gap: 0.25rem; }
     .tv-screen .project-name { font-size: 0.45rem; }
     .tv-screen .project-meta { font-size: 0.35rem; }
-    .tv-screen .project-thumb { max-height: 28px; }
+    .tv-screen .project-thumb { height: 22px; }
   }
 
   /* ===== PHONE UI — PROJECT MANAGER ===== */
