@@ -2573,16 +2573,21 @@
 
   /* ===== GALLERY MOBILE ===== */
   @media(max-width: 600px) {
-    .gallery-header { padding: 3rem 1.2rem 1.5rem; }
-    .gallery-project-name { font-size: 2rem; }
-    .gallery-meta { margin-top: 0.6rem; }
-    .gallery-divider { margin: 1.2rem auto 0; }
-    .gallery-download-all { margin-top: 1.2rem; padding: 0.65rem 1.5rem; }
-    .gallery-grid { column-count: 2; column-gap: 6px; padding: 0 0.8rem 2.5rem; }
+    .gallery-header { padding: 2.5rem 1.2rem 1.2rem; }
+    .gallery-project-name { font-size: 1.9rem; }
+    .gallery-meta { margin-top: 0.5rem; }
+    .gallery-divider { margin: 0.9rem auto 0; }
+    .gallery-download-all { margin-top: 0.9rem; padding: 0.55rem 1.3rem; font-size: 0.62rem; }
+    .gallery-grid { column-count: 2; column-gap: 6px; padding: 0 0.8rem 2rem; }
     .gallery-grid.layout-grid { grid-template-columns: repeat(2, 1fr); gap: 6px; }
-    .gallery-footer { padding: 2rem 1.2rem 2.5rem; }
+    .gallery-footer { padding: 1.5rem 1.2rem 2rem; }
     .gallery-brand.has-logo { top: 0.8rem; right: 1rem; }
     .gallery-brand-logo { width: 56px; height: 56px; }
+    /* Slideshow — reduce min-height and padding so it doesn't force scrolling */
+    .slideshow-container { min-height: 48vh; padding: 1.2rem 3rem 2rem; }
+    .slideshow-img { max-height: 50vh; }
+    .slideshow-video { max-height: 50vh; }
+    .slideshow-bottom { bottom: 0.8rem; gap: 1.2rem; }
   }
 </style>
 </head>
