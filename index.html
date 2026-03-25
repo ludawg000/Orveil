@@ -4646,11 +4646,11 @@ async function handleFileSelect(fileList) {
       uploadResults[i] = { file, path, index: i, thumbPath: null };
     }
   });
-  await parallelLimit(uploadTasks, 3);
+  await parallelLimit(uploadTasks, 6);
 
   const successful = uploadResults.filter(Boolean);
 
-  // Phase 2: Deferred video thumbnail generation (2 concurrent, non-blocking)
+  // Phase 2: Deferred video thumbnail generation (3 concurrent, non-blocking)
   if (successful.some(u => u.file.type.startsWith('video/'))) {
     label.textContent = 'Processing thumbnails...';
     const thumbTasks = successful.filter(u => u.file.type.startsWith('video/')).map(u => async () => {
@@ -4662,14 +4662,15 @@ async function handleFileSelect(fileList) {
         }
       } catch (e) { /* no thumbnail — ok */ }
     });
-    await parallelLimit(thumbTasks, 2);
+    await parallelLimit(thumbTasks, 3);
   }
 
-  // Phase 3: DB writes — insert records, then single storage + file count update
+  // Phase 3: DB writes — single batch insert for all files, then count update
   label.textContent = 'Saving...';
   let totalNewBytes = 0;
-  for (const u of successful) {
-    await dbInsert('files', {
+  const rows = successful.map(u => {
+    totalNewBytes += u.file.size;
+    return {
       project_id: currentProject.id,
       user_id: currentUser.id,
       name: u.file.name,
@@ -4677,15 +4678,19 @@ async function handleFileSelect(fileList) {
       type: u.file.type,
       path: u.path,
       thumb_path: u.thumbPath
-    });
-    totalNewBytes += u.file.size;
-  }
+    };
+  });
+  if (rows.length > 0) await dbInsert('files', rows);
 
   if (successful.length > 0) {
-    const { data: profile } = await dbSelect('profiles', 'storage_used', `id=eq.${currentUser.id}`, { single: true });
-    if (profile) await dbUpdate('profiles', { storage_used: (profile.storage_used || 0) + totalNewBytes }, `id=eq.${currentUser.id}`);
-    const { data: proj } = await dbSelect('projects', 'file_count', `id=eq.${currentProject.id}`, { single: true });
-    if (proj) await dbUpdate('projects', { file_count: (proj.file_count || 0) + successful.length }, `id=eq.${currentProject.id}`);
+    const [profileRes, projRes] = await Promise.all([
+      dbSelect('profiles', 'storage_used', `id=eq.${currentUser.id}`, { single: true }),
+      dbSelect('projects', 'file_count', `id=eq.${currentProject.id}`, { single: true })
+    ]);
+    await Promise.all([
+      profileRes.data ? dbUpdate('profiles', { storage_used: (profileRes.data.storage_used || 0) + totalNewBytes }, `id=eq.${currentUser.id}`) : Promise.resolve(),
+      projRes.data ? dbUpdate('projects', { file_count: (projRes.data.file_count || 0) + successful.length }, `id=eq.${currentProject.id}`) : Promise.resolve()
+    ]);
   }
 
   label.textContent = `${successful.length} file${successful.length !== 1 ? 's' : ''} uploaded.`;
