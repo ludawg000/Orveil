@@ -49,44 +49,45 @@ export default async function handler(req, res) {
     ? `<img src="${logoUrl}" alt="Brand" style="max-height: 48px; max-width: 200px; opacity: 0.5;">`
     : `<span style="color: ${accentColor}; opacity: 0.4;">Delivered with Orveil</span>`;
 
-  const bw = 36; // dots border frame width in px
-  const solidLine = 4; // solid accent border line in px
-  const solidColor = `rgba(${ar},${ag},${ab},0.75)`;
+  // Outer: thick solid accent border wrapping the entire block
+  // Inner: dots pattern frame, then solid content
+  const outerBorder = 10; // solid border thickness px
+  const dotFrame = 24;    // dots decoration inside the border
   const borderCell = patternBg
     ? `background-color: ${bgColor}; background-image: ${patternBg}; background-repeat: repeat; background-size: ${patternSize}; font-size: 0; line-height: 0;`
     : `background-color: ${bgColor}; font-size: 0; line-height: 0;`;
-  const solidCellH = `background-color: ${solidColor}; font-size: 0; line-height: 0;`;
-  const solidCellV = `background-color: ${solidColor}; font-size: 0; line-height: 0; width: ${solidLine}px;`;
 
   const html = `
     <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: ${bgColor};"><tr><td align="center" style="background-color: ${bgColor}; padding: 32px 16px;">
     <table width="600" cellpadding="0" cellspacing="0" border="0">
-      <tr><td colspan="5" height="${bw}" style="${borderCell}">&nbsp;</td></tr>
-      <tr><td colspan="5" height="${solidLine}" style="${solidCellH}">&nbsp;</td></tr>
       <tr>
-        <td width="${bw}" style="${borderCell}">&nbsp;</td>
-        <td width="${solidLine}" style="${solidCellV}">&nbsp;</td>
-        <td bgcolor="${bgColor}" style="background-color: ${bgColor}; font-family: '${fontFamily}', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: ${accentColor}; padding: 48px 32px;">
-          <div style="text-align: center; margin-bottom: 40px;">
-            ${headerContent}
-          </div>
-          <div style="border-top: 1px solid ${accentColor}20; padding-top: 32px; margin-bottom: 32px; text-align: center;">
-            <h2 style="font-family: ${fontFamily}, Georgia, serif; font-size: 1.4rem; font-weight: 400; margin: 0 0 8px; color: ${accentColor}; text-align: center;">Your gallery is ready</h2>
-            <p style="font-size: 0.85rem; color: ${accentColor}; opacity: 0.5; margin: 0 0 24px; text-align: center;">${projectName || 'Your Project'}</p>
-            <p style="font-size: 0.95rem; line-height: 1.7; color: ${accentColor}; opacity: 0.85; margin: 0 0 32px; text-align: center;">${message}</p>
-            <div style="text-align: center; margin: 32px 0;">
-              <a href="${galleryUrl}" style="display: inline-block; background: ${accentColor}; color: ${bgColor}; text-decoration: none; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 16px 40px;">View Gallery</a>
-            </div>
-          </div>
-          <div style="border-top: 1px solid ${accentColor}20; padding-top: 24px; text-align: center;">
-            <p style="font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; margin: 0; color: ${accentColor}; opacity: 0.4;">Delivered with Orveil</p>
-          </div>
+        <td bgcolor="${accentColor}" style="background-color: ${accentColor}; padding: ${outerBorder}px;">
+          <table width="100%" cellpadding="0" cellspacing="0" border="0">
+            <tr><td colspan="3" height="${dotFrame}" style="${borderCell}">&nbsp;</td></tr>
+            <tr>
+              <td width="${dotFrame}" style="${borderCell}">&nbsp;</td>
+              <td bgcolor="${bgColor}" style="background-color: ${bgColor}; font-family: '${fontFamily}', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: ${accentColor}; padding: 48px 32px;">
+                <div style="text-align: center; margin-bottom: 40px;">
+                  ${headerContent}
+                </div>
+                <div style="border-top: 1px solid ${accentColor}20; padding-top: 32px; margin-bottom: 32px; text-align: center;">
+                  <h2 style="font-family: ${fontFamily}, Georgia, serif; font-size: 1.4rem; font-weight: 400; margin: 0 0 8px; color: ${accentColor}; text-align: center;">Your gallery is ready</h2>
+                  <p style="font-size: 0.85rem; color: ${accentColor}; opacity: 0.5; margin: 0 0 24px; text-align: center;">${projectName || 'Your Project'}</p>
+                  <p style="font-size: 0.95rem; line-height: 1.7; color: ${accentColor}; opacity: 0.85; margin: 0 0 32px; text-align: center;">${message}</p>
+                  <div style="text-align: center; margin: 32px 0;">
+                    <a href="${galleryUrl}" style="display: inline-block; background: ${accentColor}; color: ${bgColor}; text-decoration: none; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 16px 40px;">View Gallery</a>
+                  </div>
+                </div>
+                <div style="border-top: 1px solid ${accentColor}20; padding-top: 24px; text-align: center;">
+                  <p style="font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; margin: 0; color: ${accentColor}; opacity: 0.4;">Delivered with Orveil</p>
+                </div>
+              </td>
+              <td width="${dotFrame}" style="${borderCell}">&nbsp;</td>
+            </tr>
+            <tr><td colspan="3" height="${dotFrame}" style="${borderCell}">&nbsp;</td></tr>
+          </table>
         </td>
-        <td width="${solidLine}" style="${solidCellV}">&nbsp;</td>
-        <td width="${bw}" style="${borderCell}">&nbsp;</td>
       </tr>
-      <tr><td colspan="5" height="${solidLine}" style="${solidCellH}">&nbsp;</td></tr>
-      <tr><td colspan="5" height="${bw}" style="${borderCell}">&nbsp;</td></tr>
     </table>
     </td></tr></table>
   `;

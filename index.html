@@ -3654,7 +3654,7 @@ function applyGalleryCustomization(project) {
     // Solid accent border line overlaid on top of the dots frame
     const frame = document.createElement('div');
     frame.id = 'gallery-border-frame';
-    frame.style.cssText = `position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:9998;border:4px solid rgba(${pr},${pg},${pb},0.75);`;
+    frame.style.cssText = `position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:9998;border:10px solid ${accentColor};`;
     document.body.appendChild(frame);
   } else {
     root.style.padding = '';
