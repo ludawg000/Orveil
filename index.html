@@ -3753,6 +3753,28 @@ function resetAppState() {
     el.style.bottom = '';
   });
 
+  // Reset room scene to defaults (wall color, desk, computer, posters, etc.)
+  const scene = document.querySelector('.room-scene');
+  if (scene) {
+    Object.keys(ROOM_DEFAULTS).forEach(key => {
+      scene.setAttribute('data-' + key, ROOM_DEFAULTS[key]);
+    });
+  }
+
+  // Reset day/night to night (default)
+  const glass = document.getElementById('room-window-glass');
+  const glass2 = document.getElementById('room-window-glass-2');
+  const wBtn = document.getElementById('window-toggle');
+  if (glass) glass.classList.remove('daytime');
+  if (glass2) glass2.classList.remove('daytime');
+  if (wBtn) wBtn.textContent = '🌙';
+
+  // Clear custom poster images
+  const cp1 = document.getElementById('custom-poster1-img');
+  const cp2 = document.getElementById('custom-poster2-img');
+  if (cp1) cp1.src = '';
+  if (cp2) cp2.src = '';
+
   // Clear project screen title
   const projTitle = document.getElementById('project-nav-title');
   if (projTitle) projTitle.textContent = '';
@@ -3846,6 +3868,40 @@ async function initApp() {
     }
     if (localStorage.getItem(userKey('pink-mode')) === '1') {
       document.body.classList.add('pink-mode');
+    }
+
+    // Restore user's room config (wall, desk, posters, etc.) + day/night + positions
+    loadRoomConfig();
+    const isDay = localStorage.getItem(userKey('room-daytime')) === '1';
+    const glass = document.getElementById('room-window-glass');
+    const glass2 = document.getElementById('room-window-glass-2');
+    const wBtn = document.getElementById('window-toggle');
+    if (isDay) {
+      if (glass) glass.classList.add('daytime');
+      if (glass2) glass2.classList.add('daytime');
+      if (wBtn) wBtn.textContent = '☀';
+    } else {
+      if (glass) glass.classList.remove('daytime');
+      if (glass2) glass2.classList.remove('daytime');
+      if (wBtn) wBtn.textContent = '🌙';
+    }
+    // Apply saved drag positions
+    const savedPositions = JSON.parse(localStorage.getItem(userKey('room-positions')) || '{}');
+    const scene = document.querySelector('.room-scene');
+    if (scene) {
+      scene.querySelectorAll('[data-draggable]').forEach(el => {
+        el.style.left = '';
+        el.style.top = '';
+        el.style.right = '';
+        el.style.bottom = '';
+        const id = el.dataset.draggable;
+        if (savedPositions[id]) {
+          el.style.left = savedPositions[id].left;
+          el.style.top = savedPositions[id].top;
+          el.style.right = 'auto';
+          el.style.bottom = 'auto';
+        }
+      });
     }
 
     // Accept pending invite if present
