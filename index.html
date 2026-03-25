@@ -123,7 +123,7 @@
     border: none; padding: 0.4rem 0.7rem; cursor: pointer;
     display: none;
   }
-  @media (max-width: 480px) { .card-invite-btn { display: block; } }
+  @media (max-width: 480px) { .card-invite-btn { display: none !important; } }
   .project-thumb {
     width: 100%; aspect-ratio: 16/9;
     background: var(--g100); border-radius: 1px;
@@ -2497,9 +2497,8 @@
     .file-name { font-size: 0.68rem; }
     .file-size { font-size: 0.55rem; }
 
-    /* Drop zone */
-    .drop-zone { padding: 0.8rem; flex-direction: column; gap: 0.5rem; }
-    .drop-zone-btn { width: 100%; padding: 0.7rem; }
+    /* Drop zone — hidden on mobile, use + Upload button instead */
+    .drop-zone { display: none !important; }
 
     /* Modals */
     .modal-overlay .modal { margin: 0.5rem; max-width: calc(100vw - 1rem); max-height: calc(100vh - 1rem); padding: 1.5rem 1.2rem; border-radius: 0; }
