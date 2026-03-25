@@ -2427,6 +2427,79 @@
     .tv-screen .project-meta { font-size: 0.35rem; }
     .tv-screen .project-thumb { aspect-ratio: 16/10; }
   }
+
+  /* ===== PHONE UI — PROJECT MANAGER ===== */
+  @media(max-width:480px) {
+    /* Hide room scene — not usable on phone */
+    .manage-btn { display: none !important; }
+    .retro-tv .tv-frame { display: none !important; }
+    .retro-tv { background: var(--white) !important; min-height: auto !important; padding: 0 !important; overflow: visible !important; width: 100% !important; margin-left: 0 !important; }
+    .retro-tv .projects-grid { display: grid !important; }
+    .retro-tv .dash-header { position: static; }
+    .retro-tv .dash-title { color: var(--black); }
+    .retro-tv .dash-name-input { color: var(--black); border-bottom-color: var(--g200); }
+    .retro-tv .new-project-btn { opacity: 1; }
+
+    /* Nav */
+    .app-nav { padding: 0.7rem 1rem; }
+    .app-nav-logo { font-size: 1.1rem; }
+    .sign-out-btn { font-size: 0.65rem; padding: 0.3rem 0.5rem; }
+
+    /* Dashboard header */
+    .dash-header { flex-direction: column; align-items: center; gap: 0.8rem; padding: 1rem 0; }
+    .dash-title { font-size: 1.4rem; }
+    .storage-bar-wrap { align-items: center; }
+    .new-project-btn { width: 100%; justify-content: center; padding: 0.8rem; font-size: 0.78rem; }
+
+    /* Projects grid — full width stacked cards */
+    .projects-grid { grid-template-columns: 1fr !important; gap: 0 !important; }
+    .project-card { border-bottom: 1px solid var(--g200); }
+
+    /* Project nav — wrap actions to second row */
+    .project-nav { flex-wrap: wrap; padding: 0.7rem 1rem; gap: 0.5rem; }
+    .project-nav-title { font-size: 1rem; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .project-nav-actions { width: 100%; display: flex; gap: 0.4rem; margin-left: 0; }
+    .project-nav-actions .upload-btn,
+    .project-nav-actions .deliver-btn,
+    .project-nav-actions .invite-btn { flex: 1; text-align: center; justify-content: center; padding: 0.6rem 0; font-size: 0.65rem; }
+
+    /* Files grid — 2 columns */
+    .files-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px; }
+    .file-info { padding: 0.5rem 0.6rem; }
+    .file-name { font-size: 0.68rem; }
+    .file-size { font-size: 0.55rem; }
+
+    /* Drop zone */
+    .drop-zone { padding: 0.8rem; flex-direction: column; gap: 0.5rem; }
+    .drop-zone-btn { width: 100%; padding: 0.7rem; }
+
+    /* Modals */
+    .modal-overlay .modal { margin: 0.5rem; max-width: calc(100vw - 1rem); max-height: calc(100vh - 1rem); padding: 1.5rem 1.2rem; border-radius: 0; }
+    .modal-title { font-size: 1.2rem; margin-bottom: 1rem; }
+
+    /* Delivery modal */
+    .delivery-options { flex-wrap: wrap; }
+    .delivery-opt { flex: 1 1 45%; min-width: 0; font-size: 0.7rem; padding: 0.5rem 0.3rem; }
+    .delivery-opt-name { font-size: 0.68rem; }
+    .color-presets { justify-content: center; }
+    .wallpaper-options { justify-content: center; }
+    .layout-options { flex-wrap: wrap; gap: 0.4rem; }
+    .layout-opt { flex: 1 1 45%; padding: 0.6rem 0.3rem; }
+    .layout-opt span { font-size: 0.62rem; }
+
+    /* Settings */
+    .settings-main { padding: 1rem 0.8rem !important; }
+    .settings-title { font-size: 1.4rem; margin-bottom: 1.5rem; }
+    .settings-section { margin-bottom: 1rem; }
+    .settings-section-body { padding: 1rem; }
+    .settings-row { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    .settings-row-label { font-size: 0.8rem; }
+    .settings-avatar-wrap { flex-direction: column; align-items: center; }
+
+    /* Padding */
+    .app-main { padding: 0.8rem 0.6rem !important; }
+    .project-main { padding: 0.8rem !important; }
+  }
 </style>
 </head>
 <body>
