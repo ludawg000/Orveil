@@ -3056,7 +3056,14 @@
     <input class="modal-input" id="invite-email-input" type="email" placeholder="collaborator@email.com">
     <div class="modal-actions">
       <button class="modal-cancel" onclick="closeInviteModal()">Cancel</button>
-      <button class="modal-confirm" onclick="sendInvite()">Send Invite</button>
+      <button class="modal-confirm" onclick="generateInviteLink()">Generate Link</button>
+    </div>
+    <div id="invite-link-result" style="display:none;margin-top:1rem">
+      <div style="font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--g400);margin-bottom:0.5rem">Invite Link</div>
+      <div style="display:flex;gap:0.5rem">
+        <input id="invite-link-url" readonly style="flex:1;font-family:var(--sans);font-size:0.75rem;padding:0.7rem 0.8rem;border:1px solid var(--g200);background:var(--g100);color:var(--g600);outline:none">
+        <button onclick="copyInviteLink()" style="font-family:var(--sans);font-size:0.7rem;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;background:var(--black);color:var(--white);border:none;padding:0.7rem 1rem;cursor:pointer;white-space:nowrap">Copy</button>
+      </div>
     </div>
   </div>
 </div>
@@ -5377,7 +5384,44 @@ function openInviteFromProject(e) {
 
 function closeInviteModal() {
   document.getElementById('invite-modal').classList.remove('active');
+  document.getElementById('invite-link-result').style.display = 'none';
   pendingInviteId = null;
+}
+
+async function generateInviteLink() {
+  const email = document.getElementById('invite-email-input').value.trim();
+  const btn = document.querySelector('#invite-modal .modal-confirm');
+  btn.textContent = 'Creating...';
+  btn.disabled = true;
+
+  try {
+    const resp = await fetch('/api/create-invite', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: email || null,
+        projectId: pendingInviteId,
+        invitedBy: currentUser.id
+      })
+    });
+    const data = await resp.json();
+    if (!resp.ok) { console.error('Invite error:', data); showToast(data.error || 'Failed to create invite'); return; }
+
+    document.getElementById('invite-link-url').value = data.inviteUrl;
+    document.getElementById('invite-link-result').style.display = 'block';
+    showToast('Invite link created — copy and share it');
+  } catch (err) {
+    console.error('Invite error:', err);
+    showToast('Failed to create invite');
+  } finally {
+    btn.textContent = 'Generate Link';
+    btn.disabled = false;
+  }
+}
+
+function copyInviteLink() {
+  const input = document.getElementById('invite-link-url');
+  navigator.clipboard.writeText(input.value).then(() => showToast('Link copied'));
 }
 
 async function sendInvite() {
