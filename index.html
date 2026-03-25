@@ -1636,6 +1636,15 @@
   }
   .deliver-btn:hover { border-color: var(--black); }
 
+  .invite-btn {
+    font-family: var(--sans); font-size: 0.68rem; font-weight: 400;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    background: transparent; color: var(--black);
+    border: 1px solid var(--g200); padding: 0.7rem 1.4rem; cursor: pointer;
+    transition: all 0.3s;
+  }
+  .invite-btn:hover { border-color: var(--black); }
+
   .project-main { flex: 1; padding: 2.5rem; max-width: 1200px; margin: 0 auto; width: 100%; }
 
   /* FILES GRID */
@@ -2891,6 +2900,7 @@
     <div class="project-nav-title" id="project-nav-title"></div>
     <span class="edit-mode-badge">Edit Mode</span>
     <div class="project-nav-actions">
+      <button class="invite-btn" onclick="openInviteFromProject(event)">+ Invite</button>
       <button class="deliver-btn" onclick="openDelivery()">Deliver to Client</button>
       <button class="upload-btn" onclick="document.getElementById('file-input').click()">+ Upload</button>
     </div>
@@ -3040,13 +3050,13 @@
 
 <!-- INVITE COLLABORATOR MODAL -->
 <div class="modal-overlay" id="invite-modal">
-  <div class="modal" style="background:#1c1410;border:2px solid #6b4c30">
-    <div class="modal-title" style="color:#f5e6d0">Invite Collaborator</div>
-    <div style="font-size:0.72rem;color:#c8a882;opacity:0.6;margin-bottom:1rem" id="invite-project-name"></div>
-    <input class="modal-input" id="invite-email-input" type="email" placeholder="collaborator@email.com" style="background:#2a1c0e;color:#f5e6d0;border-color:#3d2b1a">
+  <div class="modal">
+    <div class="modal-title">Invite Collaborator</div>
+    <div style="font-size:0.72rem;color:var(--g400);margin-bottom:1rem" id="invite-project-name"></div>
+    <input class="modal-input" id="invite-email-input" type="email" placeholder="collaborator@email.com">
     <div class="modal-actions">
-      <button class="modal-cancel" onclick="closeInviteModal()" style="color:#c8a882;border-color:#3d2b1a">Cancel</button>
-      <button class="modal-confirm" onclick="sendInvite()" style="background:#f5e6d0;color:#2a1c0e">Send Invite</button>
+      <button class="modal-cancel" onclick="closeInviteModal()">Cancel</button>
+      <button class="modal-confirm" onclick="sendInvite()">Send Invite</button>
     </div>
   </div>
 </div>
@@ -5344,6 +5354,11 @@ function openInviteModal(id, name, e) {
   document.getElementById('invite-email-input').value = '';
   document.getElementById('invite-modal').classList.add('active');
   setTimeout(() => document.getElementById('invite-email-input').focus(), 100);
+}
+
+function openInviteFromProject(e) {
+  if (!currentProject) return;
+  openInviteModal(currentProject.id, currentProject.name || 'Project', e);
 }
 
 function closeInviteModal() {
