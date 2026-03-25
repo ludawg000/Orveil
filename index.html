@@ -1798,11 +1798,11 @@
   .wallpaper-opt.active { border-color: var(--black); }
   .wallpaper-opt::after { content: attr(data-label); position: absolute; bottom: 2px; left: 0; right: 0; text-align: center; font-size: 0.5rem; color: var(--g400); letter-spacing: 0.05em; }
   .wallpaper-opt[data-wp="none"]::before { content: '—'; position: absolute; top: 35%; left: 0; right: 0; text-align: center; font-size: 0.7rem; color: var(--g300); }
-  .wallpaper-opt[data-wp="linen"]::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.25) 2px, rgba(0,0,0,0.25) 4px), repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,0.18) 2px, rgba(0,0,0,0.18) 4px); }
-  .wallpaper-opt[data-wp="paper"]::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0,0,0,0.22) 3px, rgba(0,0,0,0.22) 4px), repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba(0,0,0,0.14) 5px, rgba(0,0,0,0.14) 6px); }
-  .wallpaper-opt[data-wp="geometric"]::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(60deg, transparent, transparent 6px, rgba(0,0,0,0.25) 6px, rgba(0,0,0,0.25) 7px), repeating-linear-gradient(-60deg, transparent, transparent 6px, rgba(0,0,0,0.25) 6px, rgba(0,0,0,0.25) 7px); }
-  .wallpaper-opt[data-wp="dots"]::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle, rgba(0,0,0,0.35) 1.5px, transparent 1.5px); background-size: 8px 8px; }
-  .wallpaper-opt[data-wp="marble"]::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, transparent 25%, rgba(0,0,0,0.22) 30%, transparent 35%, rgba(0,0,0,0.14) 50%, transparent 55%, rgba(0,0,0,0.22) 70%, transparent 75%), linear-gradient(225deg, transparent 25%, rgba(0,0,0,0.14) 35%, transparent 40%); }
+  .wallpaper-opt[data-wp="linen"]::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 3px), repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 3px); }
+  .wallpaper-opt[data-wp="paper"]::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(0,0,0,0.10) 3px, rgba(0,0,0,0.10) 4px), repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(0,0,0,0.14) 3px, rgba(0,0,0,0.14) 4px); }
+  .wallpaper-opt[data-wp="geometric"]::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(45deg, transparent, transparent 7px, rgba(0,0,0,0.18) 7px, rgba(0,0,0,0.18) 8px), repeating-linear-gradient(-45deg, transparent, transparent 7px, rgba(0,0,0,0.18) 7px, rgba(0,0,0,0.18) 8px); }
+  .wallpaper-opt[data-wp="dots"]::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle, rgba(0,0,0,0.25) 2px, transparent 2px); background-size: 10px 10px; }
+  .wallpaper-opt[data-wp="marble"]::before { content: ''; position: absolute; inset: 0; background: linear-gradient(125deg, transparent 20%, rgba(0,0,0,0.12) 28%, transparent 35%), linear-gradient(235deg, transparent 30%, rgba(0,0,0,0.16) 40%, transparent 50%); }
   .delivery-email-input { width: 100%; font-family: var(--sans); font-size: 0.82rem; padding: 0.75rem 1rem; border: 1px solid var(--g200); background: transparent; color: var(--black); outline: none; margin-bottom: 0.8rem; }
   .delivery-email-input:focus { border-color: var(--black); }
   .delivery-custom-input {
@@ -3313,9 +3313,16 @@ function storageUploadWithProgress(bucket, path, file, onProgress) {
     xhr.setRequestHeader('apikey', SUPABASE_KEY);
     xhr.setRequestHeader('Authorization', `Bearer ${accessToken || SUPABASE_KEY}`);
     xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+    xhr.timeout = 300000; // 5 min timeout for large files
     xhr.upload.onprogress = (e) => { if (e.lengthComputable && onProgress) onProgress(e.loaded, e.total); };
-    xhr.onload = () => resolve({ error: xhr.status >= 200 && xhr.status < 300 ? null : xhr.responseText });
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) return resolve({ error: null });
+      let msg = 'Upload failed';
+      try { const j = JSON.parse(xhr.responseText); msg = j.message || j.error || msg; } catch {}
+      resolve({ error: msg });
+    };
     xhr.onerror = () => resolve({ error: 'Network error' });
+    xhr.ontimeout = () => resolve({ error: 'Upload timed out — file may be too large' });
     xhr.send(file);
   });
 }
@@ -3468,14 +3475,14 @@ function applyGalleryCustomization(project) {
   const [pr, pg, pb] = hexToRgb(accent);
   const wpPatterns = {
     none: 'none',
-    linen: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(${pr},${pg},${pb},0.18) 2px, rgba(${pr},${pg},${pb},0.18) 4px), repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(${pr},${pg},${pb},0.12) 2px, rgba(${pr},${pg},${pb},0.12) 4px)`,
-    paper: `repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(${pr},${pg},${pb},0.15) 3px, rgba(${pr},${pg},${pb},0.15) 4px), repeating-linear-gradient(-45deg, transparent, transparent 5px, rgba(${pr},${pg},${pb},0.10) 5px, rgba(${pr},${pg},${pb},0.10) 6px)`,
-    geometric: `repeating-linear-gradient(60deg, transparent, transparent 8px, rgba(${pr},${pg},${pb},0.20) 8px, rgba(${pr},${pg},${pb},0.20) 9px), repeating-linear-gradient(-60deg, transparent, transparent 8px, rgba(${pr},${pg},${pb},0.20) 8px, rgba(${pr},${pg},${pb},0.20) 9px), repeating-linear-gradient(0deg, transparent, transparent 8px, rgba(${pr},${pg},${pb},0.10) 8px, rgba(${pr},${pg},${pb},0.10) 9px)`,
-    dots: `radial-gradient(circle, rgba(${pr},${pg},${pb},0.35) 1.5px, transparent 1.5px)`,
-    marble: `linear-gradient(135deg, transparent 25%, rgba(${pr},${pg},${pb},0.18) 30%, transparent 35%, rgba(${pr},${pg},${pb},0.12) 50%, transparent 55%, rgba(${pr},${pg},${pb},0.18) 70%, transparent 75%), linear-gradient(225deg, transparent 25%, rgba(${pr},${pg},${pb},0.12) 35%, transparent 40%)`
+    linen: `repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(${pr},${pg},${pb},0.06) 2px, rgba(${pr},${pg},${pb},0.06) 3px), repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(${pr},${pg},${pb},0.06) 2px, rgba(${pr},${pg},${pb},0.06) 3px)`,
+    paper: `repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(${pr},${pg},${pb},0.05) 3px, rgba(${pr},${pg},${pb},0.05) 4px), repeating-linear-gradient(-45deg, transparent, transparent 3px, rgba(${pr},${pg},${pb},0.07) 3px, rgba(${pr},${pg},${pb},0.07) 4px)`,
+    geometric: `repeating-linear-gradient(45deg, transparent, transparent 19px, rgba(${pr},${pg},${pb},0.10) 19px, rgba(${pr},${pg},${pb},0.10) 20px), repeating-linear-gradient(-45deg, transparent, transparent 19px, rgba(${pr},${pg},${pb},0.10) 19px, rgba(${pr},${pg},${pb},0.10) 20px)`,
+    dots: `radial-gradient(circle, rgba(${pr},${pg},${pb},0.15) 2px, transparent 2px)`,
+    marble: `linear-gradient(125deg, transparent 20%, rgba(${pr},${pg},${pb},0.06) 28%, transparent 35%), linear-gradient(235deg, transparent 30%, rgba(${pr},${pg},${pb},0.08) 40%, transparent 50%), linear-gradient(155deg, transparent 45%, rgba(${pr},${pg},${pb},0.05) 55%, transparent 65%), linear-gradient(15deg, transparent 60%, rgba(${pr},${pg},${pb},0.07) 68%, transparent 76%)`
   };
   root.style.backgroundImage = wpPatterns[wp] || 'none';
-  const wpSizes = { none: 'auto', linen: 'auto', paper: 'auto', geometric: 'auto', dots: '24px 24px', marble: '200px 200px' };
+  const wpSizes = { none: 'auto', linen: 'auto', paper: 'auto', geometric: 'auto', dots: '20px 20px', marble: '400px 400px' };
   root.style.backgroundSize = wpSizes[wp] || 'auto';
 
   // Load Google Font if not default
@@ -4262,7 +4269,14 @@ async function loadFiles() {
 }
 
 async function handleFileSelect(fileList) {
-  const files = Array.from(fileList);
+  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+  const allFiles = Array.from(fileList);
+  if (!allFiles.length) return;
+
+  // Filter out files that exceed max size
+  const tooLarge = allFiles.filter(f => f.size > MAX_FILE_SIZE);
+  const files = allFiles.filter(f => f.size <= MAX_FILE_SIZE);
+  tooLarge.forEach(f => showToast(`File too large (50MB max): ${f.name}`));
   if (!files.length) return;
 
   const progress = document.getElementById('upload-progress');
@@ -5387,7 +5401,7 @@ async function sendInvite() {
       })
     });
     const data = await resp.json();
-    if (!resp.ok) { showToast(data.error || 'Failed to send invite'); return; }
+    if (!resp.ok) { console.error('Invite API error:', data); showToast(data.error || 'Failed to send invite'); return; }
     showToast(`Invite sent to ${email}`);
     closeInviteModal();
   } catch (err) {

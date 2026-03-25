@@ -15,18 +15,22 @@ export default async function handler(req, res) {
   const RESEND_KEY = process.env.RESEND_API_KEY;
   const SUPABASE_URL = process.env.SUPABASE_URL || 'https://nconnthnchpmzzmbwuvv.supabase.co';
   const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jb25udGhuY2hwbXp6bWJ3dXZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQxMzMzMTUsImV4cCI6MjA4OTcwOTMxNX0.xoJ4-atYnd5_mcB1gUr3XqBBlwYahWm8REytpHllmDo';
+  const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!RESEND_KEY) {
     return res.status(500).json({ error: 'Email service not configured' });
   }
+  if (!SERVICE_KEY) {
+    return res.status(500).json({ error: 'Database service key not configured' });
+  }
 
   try {
-    // Create collaborator record in Supabase
+    // Create collaborator record in Supabase (service role bypasses RLS)
     const insertResp = await fetch(`${SUPABASE_URL}/rest/v1/collaborators`, {
       method: 'POST',
       headers: {
         'apikey': SUPABASE_KEY,
-        'Authorization': `Bearer ${accessToken}`,
+        'Authorization': `Bearer ${SERVICE_KEY}`,
         'Content-Type': 'application/json',
         'Prefer': 'return=representation'
       },
@@ -40,14 +44,21 @@ export default async function handler(req, res) {
 
     if (!insertResp.ok) {
       const err = await insertResp.json().catch(() => ({}));
-      // Duplicate invite check
+      console.error('Collaborator insert failed:', err);
       if (err.code === '23505') {
         return res.status(409).json({ error: 'This person has already been invited' });
       }
       return res.status(insertResp.status).json({ error: err.message || 'Failed to create invite' });
     }
 
-    const [collab] = await insertResp.json();
+    const rows = await insertResp.json();
+    const collab = Array.isArray(rows) ? rows[0] : rows;
+
+    if (!collab || !collab.invite_token) {
+      console.error('Missing invite_token in collaborator record:', collab);
+      return res.status(500).json({ error: 'Invite token not generated — check collaborators table has invite_token column with DEFAULT gen_random_uuid()' });
+    }
+
     const inviteUrl = `https://orveil.vercel.app?invite=${collab.invite_token}`;
 
     // Send invite email
