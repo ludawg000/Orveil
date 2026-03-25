@@ -31,28 +31,26 @@ export default async function handler(req, res) {
   const c = `${ar},${ag},${ab}`;
   const o = 0.3;
   const gradientPatterns = {
-    linen:    `repeating-linear-gradient(0deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.5px, transparent 0.5px, transparent 10px)`,
+    linen:    `repeating-linear-gradient(0deg, rgba(${c},0.22) 0, rgba(${c},0.22) 0.5px, transparent 0.5px, transparent 5px), repeating-linear-gradient(90deg, rgba(${c},0.22) 0, rgba(${c},0.22) 0.5px, transparent 0.5px, transparent 5px)`,
     paper:    `repeating-linear-gradient(90deg, rgba(${c},${o*0.7}) 0, rgba(${c},${o*0.7}) 0.3px, transparent 0.3px, transparent 7px)`,
     geometric:`repeating-linear-gradient(45deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.5px, transparent 0.5px, transparent 22px)`,
     dots:     `radial-gradient(circle, rgba(${c},${o}) 1.5px, transparent 1.5px)`,
-    marble:   `repeating-linear-gradient(55deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.8px, transparent 0.8px, transparent 34px)`
+    marble:   `repeating-linear-gradient(55deg, rgba(${c},0.16) 0, rgba(${c},0.16) 1px, transparent 1px, transparent 20px), repeating-linear-gradient(130deg, rgba(${c},0.07) 0, rgba(${c},0.07) 0.5px, transparent 0.5px, transparent 30px)`
   };
-  const gradientSizes = { dots: '20px 20px', linen: '20px 20px', paper: '20px 20px', geometric: '40px 40px', marble: '20px 20px' };
+  const gradientSizes = { dots: '20px 20px', linen: '5px 5px', paper: '20px 20px', geometric: '40px 40px', marble: '20px 20px' };
   const patternBg = gradientPatterns[wallpaper] || '';
   const patternSize = gradientSizes[wallpaper] || 'auto';
 
   const headerContent = logoUrl
-    ? `<img src="${logoUrl}" alt="Brand" style="max-height: 80px; max-width: 320px;">`
+    ? `<img src="${logoUrl}" alt="Brand" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">`
     : `<h1 style="font-family: ${fontFamily}, Georgia, serif; font-size: 2rem; font-weight: 400; letter-spacing: 0.02em; margin: 0; color: ${accentColor};">Orveil</h1>`;
 
   const footerContent = logoUrl
-    ? `<img src="${logoUrl}" alt="Brand" style="max-height: 48px; max-width: 200px; opacity: 0.5;">`
+    ? `<img src="${logoUrl}" alt="Brand" style="width:48px;height:48px;border-radius:50%;object-fit:cover;opacity:0.5;">`
     : `<span style="color: ${accentColor}; opacity: 0.4;">Delivered with Orveil</span>`;
 
-  // Outer: thick solid accent border wrapping the entire block
-  // Inner: dots pattern frame (size matches dot spacing exactly for perfect alignment)
-  const outerBorder = 10; // solid border thickness px
-  const dotFrame = patternSize.split(' ')[0].replace('px','') * 1 || 20; // match tile size exactly
+  const outerBorder = 10;
+  const dotFrame = 20;
   const borderCell = patternBg
     ? `background-color: ${bgColor}; background-image: ${patternBg}; background-repeat: repeat; background-size: ${patternSize}; font-size: 0; line-height: 0;`
     : `background-color: ${bgColor}; font-size: 0; line-height: 0;`;

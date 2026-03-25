@@ -1872,21 +1872,35 @@
     transition: color 0.2s, border-color 0.2s;
   }
   .preview-tab.active { color: var(--black); border-bottom-color: var(--black); }
-  #delivery-preview-panel {
-    border: 1px solid var(--g200); margin-top: 0.5rem; overflow: hidden;
+  .customize-cols {
+    display: flex; gap: 1.5rem; align-items: flex-start; margin-top: 0.5rem;
   }
+  .customize-settings-col {
+    flex: 0 0 280px; max-height: 520px; overflow-y: auto; padding-right: 0.5rem;
+  }
+  .customize-settings-col::-webkit-scrollbar { width: 3px; }
+  .customize-settings-col::-webkit-scrollbar-thumb { background: var(--g200); }
+  .customize-preview-col {
+    flex: 1; border: 1px solid var(--g200); overflow: hidden; min-width: 0;
+  }
+  .modal.customize-open { max-width: 820px !important; }
   #gallery-preview-pane, #email-preview-pane { display: none; }
   #gallery-preview-pane.active, #email-preview-pane.active { display: block; }
   .gal-preview-wrap {
     width: 100%; background: #f5f5f5; display: flex; justify-content: center;
-    align-items: flex-start; padding: 20px 0; overflow: hidden;
+    align-items: flex-start; padding: 16px 0; overflow: hidden;
   }
   .gal-preview-inner {
-    width: 320px; transform-origin: top center; transform: scale(0.72);
-    margin-bottom: calc((320px * 0.72 - 320px) * 0.5);
+    width: 280px; transform-origin: top center; transform: scale(0.75);
+    margin-bottom: calc((280px * 0.75 - 280px) * 0.5);
   }
   #email-preview-pane iframe {
-    width: 100%; height: 420px; border: none; display: block;
+    width: 100%; height: 380px; border: none; display: block;
+  }
+  @media (max-width: 700px) {
+    .customize-cols { flex-direction: column; }
+    .customize-settings-col { flex: none; width: 100%; max-height: none; overflow-y: visible; }
+    .modal.customize-open { max-width: 500px !important; }
   }
   .customize-label {
     font-size: 0.6rem; letter-spacing: 0.14em; text-transform: uppercase;
@@ -1920,7 +1934,7 @@
     display: flex; flex-direction: column; align-items: center; gap: 0.8rem; width: 100%;
   }
   .logo-preview img {
-    max-height: 80px; max-width: 320px; object-fit: contain; display: block;
+    width: 80px; height: 80px; border-radius: 50%; object-fit: cover; display: block;
     cursor: pointer; transition: opacity 0.2s;
   }
   .logo-preview img:hover { opacity: 0.7; }
@@ -3238,110 +3252,116 @@
       <span>Customize Gallery</span>
       <span class="customize-arrow" id="customize-arrow">&#9662;</span>
     </div>
-    <div class="delivery-customize" id="delivery-customize" style="display:none">
-      <div class="customize-section">
-        <label class="customize-label">Color Presets</label>
-        <div class="color-presets">
-          <div class="color-preset active" data-preset="classic" title="Classic" onclick="applyColorPreset('classic')"></div>
-          <div class="color-preset" data-preset="cream" title="Cream" onclick="applyColorPreset('cream')"></div>
-          <div class="color-preset" data-preset="blush" title="Blush" onclick="applyColorPreset('blush')"></div>
-          <div class="color-preset" data-preset="sage" title="Sage" onclick="applyColorPreset('sage')"></div>
-          <div class="color-preset" data-preset="lavender" title="Lavender" onclick="applyColorPreset('lavender')"></div>
-          <div class="color-preset" data-preset="sky" title="Sky" onclick="applyColorPreset('sky')"></div>
-        </div>
-      </div>
-      <div class="customize-section">
-        <label class="customize-label">Colors</label>
-        <div class="color-pickers-row">
-          <div class="color-picker-group">
-            <label class="color-label">Background</label>
-            <input type="color" id="gallery-bg-color" value="#0a0a0a" onchange="syncColor('bg')">
-          </div>
-          <div class="color-picker-group">
-            <label class="color-label">Text / Accent</label>
-            <input type="color" id="gallery-accent-color" value="#fafafa" onchange="syncColor('accent')">
-          </div>
-        </div>
-        <div class="contrast-warning" id="contrast-warning" style="display:none">Low contrast — text may be hard to read.</div>
-      </div>
-      <div class="customize-section">
-        <label class="customize-label">Wallpaper</label>
-        <div class="wallpaper-options">
-          <div class="wallpaper-opt active" data-wp="none" data-label="None" onclick="selectWallpaper('none')"></div>
-          <div class="wallpaper-opt" data-wp="linen" data-label="Linen" onclick="selectWallpaper('linen')"></div>
-          <div class="wallpaper-opt" data-wp="paper" data-label="Paper" onclick="selectWallpaper('paper')"></div>
-          <div class="wallpaper-opt" data-wp="geometric" data-label="Geo" onclick="selectWallpaper('geometric')"></div>
-          <div class="wallpaper-opt" data-wp="dots" data-label="Dots" onclick="selectWallpaper('dots')"></div>
-          <div class="wallpaper-opt" data-wp="marble" data-label="Marble" onclick="selectWallpaper('marble')"></div>
-        </div>
-      </div>
-      <div class="customize-section">
-        <label class="customize-label">Your Logo</label>
-        <div class="logo-upload-area" id="logo-upload-area" onclick="document.getElementById('logo-file-input').click()">
-          <div class="logo-preview" id="logo-preview" style="display:none">
-            <img id="logo-preview-img" src="" alt="Logo" onclick="event.stopPropagation();openLogoCrop()">
-            <div class="logo-preview-actions">
-              <button class="logo-action-btn" onclick="event.stopPropagation();openLogoCrop()">Crop</button>
-              <button class="logo-action-btn" onclick="event.stopPropagation();document.getElementById('logo-file-input').click()">Replace</button>
-              <button class="logo-action-btn remove" onclick="event.stopPropagation();removeLogo()">Remove</button>
+    <div id="customize-layout" style="display:none">
+      <div class="customize-cols">
+        <div class="customize-settings-col">
+          <div class="delivery-customize" id="delivery-customize">
+            <div class="customize-section">
+              <label class="customize-label">Color Presets</label>
+              <div class="color-presets">
+                <div class="color-preset active" data-preset="classic" title="Classic" onclick="applyColorPreset('classic')"></div>
+                <div class="color-preset" data-preset="cream" title="Cream" onclick="applyColorPreset('cream')"></div>
+                <div class="color-preset" data-preset="blush" title="Blush" onclick="applyColorPreset('blush')"></div>
+                <div class="color-preset" data-preset="sage" title="Sage" onclick="applyColorPreset('sage')"></div>
+                <div class="color-preset" data-preset="lavender" title="Lavender" onclick="applyColorPreset('lavender')"></div>
+                <div class="color-preset" data-preset="sky" title="Sky" onclick="applyColorPreset('sky')"></div>
+              </div>
             </div>
+            <div class="customize-section">
+              <label class="customize-label">Colors</label>
+              <div class="color-pickers-row">
+                <div class="color-picker-group">
+                  <label class="color-label">Background</label>
+                  <input type="color" id="gallery-bg-color" value="#0a0a0a" onchange="syncColor('bg')">
+                </div>
+                <div class="color-picker-group">
+                  <label class="color-label">Text / Accent</label>
+                  <input type="color" id="gallery-accent-color" value="#fafafa" onchange="syncColor('accent')">
+                </div>
+              </div>
+              <div class="contrast-warning" id="contrast-warning" style="display:none">Low contrast — text may be hard to read.</div>
+            </div>
+            <div class="customize-section">
+              <label class="customize-label">Wallpaper</label>
+              <div class="wallpaper-options">
+                <div class="wallpaper-opt active" data-wp="none" data-label="None" onclick="selectWallpaper('none')"></div>
+                <div class="wallpaper-opt" data-wp="linen" data-label="Linen" onclick="selectWallpaper('linen')"></div>
+                <div class="wallpaper-opt" data-wp="paper" data-label="Paper" onclick="selectWallpaper('paper')"></div>
+                <div class="wallpaper-opt" data-wp="geometric" data-label="Geo" onclick="selectWallpaper('geometric')"></div>
+                <div class="wallpaper-opt" data-wp="dots" data-label="Dots" onclick="selectWallpaper('dots')"></div>
+                <div class="wallpaper-opt" data-wp="marble" data-label="Marble" onclick="selectWallpaper('marble')"></div>
+              </div>
+            </div>
+            <div class="customize-section">
+              <label class="customize-label">Your Logo</label>
+              <div class="logo-upload-area" id="logo-upload-area" onclick="document.getElementById('logo-file-input').click()">
+                <div class="logo-preview" id="logo-preview" style="display:none">
+                  <img id="logo-preview-img" src="" alt="Logo" onclick="event.stopPropagation();openLogoCrop()">
+                  <div class="logo-preview-actions">
+                    <button class="logo-action-btn" onclick="event.stopPropagation();openLogoCrop()">Crop</button>
+                    <button class="logo-action-btn" onclick="event.stopPropagation();document.getElementById('logo-file-input').click()">Replace</button>
+                    <button class="logo-action-btn remove" onclick="event.stopPropagation();removeLogo()">Remove</button>
+                  </div>
+                </div>
+                <div class="logo-placeholder" id="logo-placeholder">
+                  <div class="logo-upload-btn">Select Logo</div>
+                  <span class="logo-upload-hint">PNG, SVG, or JPG</span>
+                </div>
+                <input type="file" id="logo-file-input" accept="image/png,image/jpeg,image/svg+xml,image/webp" style="display:none" onchange="handleLogoUpload(event)">
+              </div>
+            </div>
+            <div class="customize-section">
+              <label class="customize-label">Typography</label>
+              <input type="text" class="customize-input" id="font-search" placeholder="Search Google Fonts..." oninput="searchFonts(this.value)">
+              <div class="font-results" id="font-results"></div>
+              <div class="font-selected" id="font-selected" style="display:none">
+                Selected: <strong id="font-selected-name"></strong>
+                <span class="font-preview-text" id="font-preview-sample">The quick brown fox jumps over the lazy dog</span>
+              </div>
+            </div>
+            <div class="customize-section">
+              <label class="customize-label">Layout</label>
+              <div class="layout-options">
+                <div class="layout-opt selected" data-layout="masonry" onclick="selectLayout(this)">
+                  <div class="layout-icon layout-icon-masonry"></div>
+                  <span>Masonry</span>
+                </div>
+                <div class="layout-opt" data-layout="grid" onclick="selectLayout(this)">
+                  <div class="layout-icon layout-icon-grid"></div>
+                  <span>Grid</span>
+                </div>
+                <div class="layout-opt" data-layout="slideshow" onclick="selectLayout(this)">
+                  <div class="layout-icon layout-icon-slideshow"></div>
+                  <span>Slideshow</span>
+                </div>
+              </div>
+            </div>
+            <label class="save-default-label">
+              <input type="checkbox" id="save-as-default"> Save as default for all future projects
+            </label>
           </div>
-          <div class="logo-placeholder" id="logo-placeholder">
-            <div class="logo-upload-btn">Select Logo</div>
-            <span class="logo-upload-hint">PNG, SVG, or JPG</span>
-          </div>
-          <input type="file" id="logo-file-input" accept="image/png,image/jpeg,image/svg+xml,image/webp" style="display:none" onchange="handleLogoUpload(event)">
         </div>
-      </div>
-      <div class="customize-section">
-        <label class="customize-label">Typography</label>
-        <input type="text" class="customize-input" id="font-search" placeholder="Search Google Fonts..." oninput="searchFonts(this.value)">
-        <div class="font-results" id="font-results"></div>
-        <div class="font-selected" id="font-selected" style="display:none">
-          Selected: <strong id="font-selected-name"></strong>
-          <span class="font-preview-text" id="font-preview-sample">The quick brown fox jumps over the lazy dog</span>
-        </div>
-      </div>
-      <div class="customize-section">
-        <label class="customize-label">Layout</label>
-        <div class="layout-options">
-          <div class="layout-opt selected" data-layout="masonry" onclick="selectLayout(this)">
-            <div class="layout-icon layout-icon-masonry"></div>
-            <span>Masonry</span>
+        <div class="customize-preview-col" id="delivery-preview-panel">
+          <div class="preview-tabs-row">
+            <div class="preview-tab active" id="preview-tab-gallery" onclick="switchPreviewTab('gallery')">Gallery</div>
+            <div class="preview-tab" id="preview-tab-email" onclick="switchPreviewTab('email')">Email</div>
           </div>
-          <div class="layout-opt" data-layout="grid" onclick="selectLayout(this)">
-            <div class="layout-icon layout-icon-grid"></div>
-            <span>Grid</span>
-          </div>
-          <div class="layout-opt" data-layout="slideshow" onclick="selectLayout(this)">
-            <div class="layout-icon layout-icon-slideshow"></div>
-            <span>Slideshow</span>
-          </div>
-        </div>
-      </div>
-      <label class="save-default-label">
-        <input type="checkbox" id="save-as-default"> Save as default for all future projects
-      </label>
-      <div id="delivery-preview-panel" style="display:none">
-        <div class="preview-tabs-row">
-          <div class="preview-tab active" id="preview-tab-gallery" onclick="switchPreviewTab('gallery')">Gallery</div>
-          <div class="preview-tab" id="preview-tab-email" onclick="switchPreviewTab('email')">Email</div>
-        </div>
-        <div id="gallery-preview-pane" class="active">
-          <div class="gal-preview-wrap">
-            <div class="gal-preview-inner" id="gal-preview-inner">
-              <div id="gal-preview-screen" style="padding:10px;box-sizing:border-box;">
-                <div id="gal-preview-content" style="padding:24px 20px;min-height:200px;">
-                  <div id="gal-preview-title" style="text-align:center;font-size:1.1rem;font-weight:400;letter-spacing:0.04em;margin-bottom:6px;"></div>
-                  <div style="text-align:center;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;opacity:0.4;margin-bottom:16px;" id="gal-preview-subtitle">Gallery</div>
-                  <div id="gal-preview-grid" style="display:grid;gap:4px;"></div>
+          <div id="gallery-preview-pane" class="active">
+            <div class="gal-preview-wrap">
+              <div class="gal-preview-inner" id="gal-preview-inner">
+                <div id="gal-preview-screen" style="padding:10px;box-sizing:border-box;">
+                  <div id="gal-preview-content" style="padding:24px 20px;min-height:200px;">
+                    <div id="gal-preview-title" style="text-align:center;font-size:1.1rem;font-weight:400;letter-spacing:0.04em;margin-bottom:6px;"></div>
+                    <div style="text-align:center;font-size:0.55rem;letter-spacing:0.1em;text-transform:uppercase;opacity:0.4;margin-bottom:16px;" id="gal-preview-subtitle">Gallery</div>
+                    <div id="gal-preview-grid" style="display:grid;gap:4px;"></div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div id="email-preview-pane">
-          <iframe id="email-preview-iframe" sandbox="allow-same-origin"></iframe>
+          <div id="email-preview-pane">
+            <iframe id="email-preview-iframe" sandbox="allow-same-origin"></iframe>
+          </div>
         </div>
       </div>
     </div>
@@ -3679,13 +3699,13 @@ function applyGalleryCustomization(project) {
   const c = `${pr},${pg},${pb}`;
   const svgPatterns = {
     none: '',
-    linen:    `repeating-linear-gradient(0deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.5px, transparent 0.5px, transparent 10px)`,
+    linen:    `repeating-linear-gradient(0deg, rgba(${c},0.22) 0, rgba(${c},0.22) 0.5px, transparent 0.5px, transparent 5px), repeating-linear-gradient(90deg, rgba(${c},0.22) 0, rgba(${c},0.22) 0.5px, transparent 0.5px, transparent 5px)`,
     paper:    `repeating-linear-gradient(90deg, rgba(${c},${o*0.7}) 0, rgba(${c},${o*0.7}) 0.3px, transparent 0.3px, transparent 7px)`,
     geometric:`repeating-linear-gradient(45deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.5px, transparent 0.5px, transparent 22px)`,
     dots:     `radial-gradient(circle, rgba(${c},${o}) 1.5px, transparent 1.5px)`,
-    marble:   `repeating-linear-gradient(55deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.8px, transparent 0.8px, transparent 34px)`
+    marble:   `repeating-linear-gradient(55deg, rgba(${c},0.16) 0, rgba(${c},0.16) 1px, transparent 1px, transparent 20px), repeating-linear-gradient(130deg, rgba(${c},0.07) 0, rgba(${c},0.07) 0.5px, transparent 0.5px, transparent 30px)`
   };
-  const wpSizes = { none: 'auto', linen: '20px 20px', paper: '20px 20px', geometric: '40px 40px', dots: '20px 20px', marble: '20px 20px' };
+  const wpSizes = { none: 'auto', linen: '5px 5px', paper: '20px 20px', geometric: '40px 40px', dots: '20px 20px', marble: '20px 20px' };
   // Remove any previous overlays
   ['gallery-border-frame','gallery-wp-style','gallery-wp-top','gallery-wp-bottom','gallery-wp-left','gallery-wp-right'].forEach(id => { const el = document.getElementById(id); if (el) el.remove(); });
   document.body.style.backgroundColor = bg;
@@ -4820,16 +4840,14 @@ function populateCustomizeUI() {
 }
 
 function toggleCustomize() {
-  const panel = document.getElementById('delivery-customize');
+  const layout = document.getElementById('customize-layout');
   const arrow = document.getElementById('customize-arrow');
-  const isOpen = panel.style.display !== 'none';
-  panel.style.display = isOpen ? 'none' : 'block';
+  const modal = document.querySelector('#delivery-modal .modal');
+  const isOpen = layout.style.display !== 'none';
+  layout.style.display = isOpen ? 'none' : 'block';
   arrow.classList.toggle('open', !isOpen);
-  if (!isOpen) {
-    const previewPanel = document.getElementById('delivery-preview-panel');
-    previewPanel.style.display = 'block';
-    updateGalleryPreview();
-  }
+  modal.classList.toggle('customize-open', !isOpen);
+  if (!isOpen) updateGalleryPreview();
 }
 
 // Logo
@@ -5119,8 +5137,8 @@ function switchPreviewTab(tab) {
 }
 
 function updatePreviews() {
-  const panel = document.getElementById('delivery-preview-panel');
-  if (!panel || panel.style.display === 'none') return;
+  const layout = document.getElementById('customize-layout');
+  if (!layout || layout.style.display === 'none') return;
   updateGalleryPreview();
   if (document.getElementById('email-preview-pane').classList.contains('active')) updateEmailPreview();
 }
@@ -5142,13 +5160,13 @@ function updateGalleryPreview() {
   const o = 0.3;
   const patterns = {
     none: '',
-    linen:    `repeating-linear-gradient(0deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.5px, transparent 0.5px, transparent 10px)`,
+    linen:    `repeating-linear-gradient(0deg, rgba(${c},0.22) 0, rgba(${c},0.22) 0.5px, transparent 0.5px, transparent 5px), repeating-linear-gradient(90deg, rgba(${c},0.22) 0, rgba(${c},0.22) 0.5px, transparent 0.5px, transparent 5px)`,
     paper:    `repeating-linear-gradient(90deg, rgba(${c},${o*0.7}) 0, rgba(${c},${o*0.7}) 0.3px, transparent 0.3px, transparent 7px)`,
     geometric:`repeating-linear-gradient(45deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.5px, transparent 0.5px, transparent 22px)`,
     dots:     `radial-gradient(circle, rgba(${c},${o}) 1.5px, transparent 1.5px)`,
-    marble:   `repeating-linear-gradient(55deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.8px, transparent 0.8px, transparent 34px)`
+    marble:   `repeating-linear-gradient(55deg, rgba(${c},0.16) 0, rgba(${c},0.16) 1px, transparent 1px, transparent 20px), repeating-linear-gradient(130deg, rgba(${c},0.07) 0, rgba(${c},0.07) 0.5px, transparent 0.5px, transparent 30px)`
   };
-  const sizes = { none:'auto', linen:'20px 20px', paper:'20px 20px', geometric:'40px 40px', dots:'20px 20px', marble:'20px 20px' };
+  const sizes = { none:'auto', linen:'5px 5px', paper:'20px 20px', geometric:'40px 40px', dots:'20px 20px', marble:'20px 20px' };
 
   const screen = document.getElementById('gal-preview-screen');
   screen.style.backgroundColor = bg;
@@ -5210,16 +5228,16 @@ function buildEmailPreviewHtml() {
   const c = `${ar},${ag},${ab}`;
   const o = 0.3;
   const gradientPatterns = {
-    linen:    `repeating-linear-gradient(0deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.5px, transparent 0.5px, transparent 10px)`,
+    linen:    `repeating-linear-gradient(0deg, rgba(${c},0.22) 0, rgba(${c},0.22) 0.5px, transparent 0.5px, transparent 5px), repeating-linear-gradient(90deg, rgba(${c},0.22) 0, rgba(${c},0.22) 0.5px, transparent 0.5px, transparent 5px)`,
     paper:    `repeating-linear-gradient(90deg, rgba(${c},${o*0.7}) 0, rgba(${c},${o*0.7}) 0.3px, transparent 0.3px, transparent 7px)`,
     geometric:`repeating-linear-gradient(45deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.5px, transparent 0.5px, transparent 22px)`,
     dots:     `radial-gradient(circle, rgba(${c},${o}) 1.5px, transparent 1.5px)`,
-    marble:   `repeating-linear-gradient(55deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.8px, transparent 0.8px, transparent 34px)`
+    marble:   `repeating-linear-gradient(55deg, rgba(${c},0.16) 0, rgba(${c},0.16) 1px, transparent 1px, transparent 20px), repeating-linear-gradient(130deg, rgba(${c},0.07) 0, rgba(${c},0.07) 0.5px, transparent 0.5px, transparent 30px)`
   };
-  const gradientSizes = { dots:'20px 20px', linen:'20px 20px', paper:'20px 20px', geometric:'40px 40px', marble:'20px 20px' };
+  const gradientSizes = { dots:'20px 20px', linen:'5px 5px', paper:'20px 20px', geometric:'40px 40px', marble:'20px 20px' };
   const patternBg = gradientPatterns[wp] || '';
   const patternSize = gradientSizes[wp] || 'auto';
-  const dotFrame = parseInt(patternSize) || 20;
+  const dotFrame = 20;
 
   const borderCell = patternBg
     ? `background-color:${bg};background-image:${patternBg};background-repeat:repeat;background-size:${patternSize};font-size:0;line-height:0;`
@@ -5227,7 +5245,7 @@ function buildEmailPreviewHtml() {
 
   const logoUrl = logoPath ? `${SUPABASE_URL}/storage/v1/object/public/logos/${logoPath}` : null;
   const headerContent = logoUrl
-    ? `<img src="${logoUrl}" alt="Brand" style="max-height:80px;max-width:320px;">`
+    ? `<img src="${logoUrl}" alt="Brand" style="width:80px;height:80px;border-radius:50%;object-fit:cover;">`
     : `<h1 style="font-family:'${font}',Georgia,serif;font-size:2rem;font-weight:400;letter-spacing:0.02em;margin:0;color:${accent};">Orveil</h1>`;
 
   return `<!DOCTYPE html><html><body style="margin:0;padding:0;background:#ffffff;">
@@ -5273,9 +5291,9 @@ function updateEmailPreview() {
 function closeDelivery() {
   document.getElementById('delivery-modal').classList.remove('active');
   document.getElementById('client-email').value = '';
-  document.getElementById('delivery-customize').style.display = 'none';
+  document.getElementById('customize-layout').style.display = 'none';
   document.getElementById('customize-arrow').classList.remove('open');
-  document.getElementById('delivery-preview-panel').style.display = 'none';
+  document.querySelector('#delivery-modal .modal')?.classList.remove('customize-open');
 }
 
 function selectDelivery(el) {
