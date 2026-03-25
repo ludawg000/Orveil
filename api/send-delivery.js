@@ -37,7 +37,7 @@ export default async function handler(req, res) {
     dots:     `radial-gradient(circle, rgba(${c},${o}) 1.5px, transparent 1.5px)`,
     marble:   `repeating-linear-gradient(55deg, rgba(${c},${o}) 0, rgba(${c},${o}) 0.8px, transparent 0.8px, transparent 34px)`
   };
-  const gradientSizes = { dots: '20px 20px' };
+  const gradientSizes = { dots: '20px 20px', linen: '20px 20px', paper: '20px 20px', geometric: '40px 40px', marble: '20px 20px' };
   const patternBg = gradientPatterns[wallpaper] || '';
   const patternSize = gradientSizes[wallpaper] || 'auto';
 
@@ -50,15 +50,15 @@ export default async function handler(req, res) {
     : `<span style="color: ${accentColor}; opacity: 0.4;">Delivered with Orveil</span>`;
 
   // Outer: thick solid accent border wrapping the entire block
-  // Inner: dots pattern frame, then solid content
+  // Inner: dots pattern frame (size matches dot spacing exactly for perfect alignment)
   const outerBorder = 10; // solid border thickness px
-  const dotFrame = 24;    // dots decoration inside the border
+  const dotFrame = patternSize.split(' ')[0].replace('px','') * 1 || 20; // match tile size exactly
   const borderCell = patternBg
     ? `background-color: ${bgColor}; background-image: ${patternBg}; background-repeat: repeat; background-size: ${patternSize}; font-size: 0; line-height: 0;`
     : `background-color: ${bgColor}; font-size: 0; line-height: 0;`;
 
   const html = `
-    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: ${bgColor};"><tr><td align="center" style="background-color: ${bgColor}; padding: 32px 16px;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff;"><tr><td align="center" style="background-color: #ffffff; padding: 32px 16px;">
     <table width="600" cellpadding="0" cellspacing="0" border="0">
       <tr>
         <td bgcolor="${accentColor}" style="background-color: ${accentColor}; padding: ${outerBorder}px;">
