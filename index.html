@@ -3739,6 +3739,9 @@ function resetAppState() {
   const authErr = document.getElementById('auth-error');
   if (authErr) authErr.textContent = '';
 
+  // Reset theme
+  document.body.classList.remove('dark-mode', 'pink-mode');
+
   // Close any open modals
   document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
 
@@ -3821,15 +3824,17 @@ async function initApp() {
     }
 
     // Restore dark mode preference
-    if (localStorage.getItem('orveil-dark-mode') === '1') {
+    // Restore user's theme preference
+    document.body.classList.remove('dark-mode', 'pink-mode');
+    if (localStorage.getItem(userKey('dark-mode')) === '1') {
       document.body.classList.add('dark-mode');
     }
-    if (localStorage.getItem('orveil-pink-mode') === '1') {
+    if (localStorage.getItem(userKey('pink-mode')) === '1') {
       document.body.classList.add('pink-mode');
     }
 
     // Migrate old unprefixed room keys to user-scoped keys
-    ['room-config','room-positions','room-daytime','poster1-custom','poster2-custom'].forEach(k => {
+    ['room-config','room-positions','room-daytime','poster1-custom','poster2-custom','dark-mode','pink-mode'].forEach(k => {
       const old = 'orveil-' + k, nk = userKey(k);
       if (localStorage.getItem(old) !== null && localStorage.getItem(nk) === null)
         localStorage.setItem(nk, localStorage.getItem(old));
@@ -5352,9 +5357,9 @@ function toggleDarkMode() {
   if (document.body.classList.contains('dark-mode')) {
     document.body.classList.remove('pink-mode');
     document.getElementById('pink-mode-toggle').classList.remove('active');
-    localStorage.setItem('orveil-pink-mode', '0');
+    localStorage.setItem(userKey('pink-mode'), '0');
   }
-  localStorage.setItem('orveil-dark-mode', document.body.classList.contains('dark-mode') ? '1' : '0');
+  localStorage.setItem(userKey('dark-mode'), document.body.classList.contains('dark-mode') ? '1' : '0');
 }
 
 function togglePinkMode() {
@@ -5365,9 +5370,9 @@ function togglePinkMode() {
   if (document.body.classList.contains('pink-mode')) {
     document.body.classList.remove('dark-mode');
     document.getElementById('dark-mode-toggle').classList.remove('active');
-    localStorage.setItem('orveil-dark-mode', '0');
+    localStorage.setItem(userKey('dark-mode'), '0');
   }
-  localStorage.setItem('orveil-pink-mode', document.body.classList.contains('pink-mode') ? '1' : '0');
+  localStorage.setItem(userKey('pink-mode'), document.body.classList.contains('pink-mode') ? '1' : '0');
 }
 
 // ─── UTILS ───
