@@ -31,7 +31,7 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         project_id: projectId,
-        email: (email || '').toLowerCase() || null,
+        email: email ? email.toLowerCase() : 'pending@invite',
         invited_by: invitedBy,
         status: 'pending'
       })
