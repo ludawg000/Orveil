@@ -5395,25 +5395,45 @@ async function generateInviteLink() {
   btn.disabled = true;
 
   try {
-    const resp = await fetch('/api/create-invite', {
+    // Insert collaborator record directly via Supabase
+    const record = {
+      project_id: pendingInviteId,
+      email: email || 'pending@invite',
+      invited_by: currentUser.id,
+      status: 'pending'
+    };
+    const resp = await fetch(`${SUPABASE_URL}/rest/v1/collaborators`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: email || null,
-        projectId: pendingInviteId,
-        invitedBy: currentUser.id
-      })
+      headers: {
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+        'Prefer': 'return=representation'
+      },
+      body: JSON.stringify(record)
     });
-    const data = await resp.json();
+
     if (!resp.ok) {
-      console.error('Invite error:', data);
-      showToast(data.error || 'Failed to create invite');
+      const err = await resp.json().catch(() => ({}));
+      console.error('Invite insert error:', err);
+      if (err.code === '23505') { showToast('This person has already been invited'); return; }
+      showToast(err.message || 'Failed to create invite');
       return;
     }
 
-    document.getElementById('invite-link-url').value = data.inviteUrl;
+    const rows = await resp.json();
+    const collab = Array.isArray(rows) ? rows[0] : rows;
+
+    if (!collab || !collab.invite_token) {
+      console.error('No invite_token returned:', collab);
+      showToast('Invite created but no token — check database setup');
+      return;
+    }
+
+    const inviteUrl = `https://orveil.vercel.app?invite=${collab.invite_token}`;
+    document.getElementById('invite-link-url').value = inviteUrl;
     document.getElementById('invite-link-result').style.display = 'block';
-    showToast('Invite link ready — copy and share it');
+    showToast('Invite link ready');
   } catch (err) {
     console.error('Invite error:', err);
     showToast('Failed to create invite');
