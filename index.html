@@ -2188,7 +2188,7 @@
   .slideshow-dl {
     font-family: var(--gal-font, var(--serif)); font-size: 0.6rem; font-weight: 400;
     letter-spacing: 0.15em; text-transform: uppercase;
-    background: none; color: var(--gal-accent, rgba(255,255,255,0.5));
+    background: none; color: var(--gal-accent, rgba(255,255,255,0.5)); -webkit-text-fill-color: var(--gal-accent, rgba(255,255,255,0.5));
     border: 1px solid var(--gal-accent, rgba(255,255,255,0.15));
     padding: 0.5rem 1.4rem; cursor: pointer; transition: all 0.3s;
     opacity: 0.7;
@@ -2198,6 +2198,7 @@
   /* GALLERY SCREEN */
   #gallery-screen {
     background-color: var(--gal-bg, var(--black)); flex-direction: column;
+    color: var(--gal-accent, #fafafa);
   }
 
   .gallery-header {
@@ -2228,7 +2229,7 @@
     display: inline-block; margin-top: 2.5rem;
     font-family: var(--sans); font-size: 0.68rem; font-weight: 400;
     letter-spacing: 0.15em; text-transform: uppercase;
-    color: var(--gal-accent, var(--white)); background: none;
+    color: var(--gal-accent, var(--white)); -webkit-text-fill-color: var(--gal-accent, #fafafa); background: none;
     border: 1px solid; border-color: var(--gal-accent, rgba(255,255,255,0.2)); opacity: 0.8;
     padding: 0.8rem 2.2rem; cursor: pointer;
     transition: all 0.3s ease;
@@ -3711,6 +3712,7 @@ function applyGalleryCustomization(project) {
   root.style.setProperty('--gal-accent', accent);
   root.style.setProperty('--gal-font', `'${font}', serif`);
   root.style.backgroundColor = bg;
+  root.style.color = accent;
 
   // Apply wallpaper pattern (uses accent color for visibility on any background)
   const wp = project.gallery_wallpaper || 'none';
