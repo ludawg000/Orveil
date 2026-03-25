@@ -24,16 +24,16 @@ export default async function handler(req, res) {
   const logoUrl = branding?.logoUrl;
   const wallpaper = branding?.wallpaper || 'none';
 
-  // Wallpaper patterns (email-safe inline CSS)
-  const wpStyles = {
-    none: '',
-    linen: 'background-image: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(128,128,128,0.06) 2px, rgba(128,128,128,0.06) 4px), repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(128,128,128,0.04) 2px, rgba(128,128,128,0.04) 4px);',
-    paper: 'background-image: repeating-linear-gradient(45deg, transparent, transparent 3px, rgba(128,128,128,0.03) 3px, rgba(128,128,128,0.03) 4px);',
-    geometric: 'background-image: repeating-linear-gradient(60deg, transparent, transparent 8px, rgba(128,128,128,0.05) 8px, rgba(128,128,128,0.05) 9px), repeating-linear-gradient(-60deg, transparent, transparent 8px, rgba(128,128,128,0.05) 8px, rgba(128,128,128,0.05) 9px);',
-    dots: 'background-image: radial-gradient(circle, rgba(128,128,128,0.08) 1px, transparent 1px); background-size: 16px 16px;',
-    marble: 'background-image: linear-gradient(135deg, transparent 30%, rgba(128,128,128,0.04) 35%, transparent 40%, rgba(128,128,128,0.03) 55%, transparent 60%, rgba(128,128,128,0.04) 75%, transparent 80%);'
+  // Wallpaper patterns — hosted PNGs for email client compatibility
+  const BASE_URL = 'https://orveil.vercel.app';
+  const wpImages = {
+    linen: `${BASE_URL}/patterns/linen.png`,
+    paper: `${BASE_URL}/patterns/paper.png`,
+    geometric: `${BASE_URL}/patterns/geometric.png`,
+    dots: `${BASE_URL}/patterns/dots.png`,
+    marble: `${BASE_URL}/patterns/marble.png`
   };
-  const wallpaperStyle = wpStyles[wallpaper] || '';
+  const patternUrl = wpImages[wallpaper] || '';
 
   const headerContent = logoUrl
     ? `<img src="${logoUrl}" alt="Brand" style="max-height: 80px; max-width: 320px;">`
@@ -43,25 +43,34 @@ export default async function handler(req, res) {
     ? `<img src="${logoUrl}" alt="Brand" style="max-height: 48px; max-width: 200px; opacity: 0.5;">`
     : `<span style="color: ${accentColor}; opacity: 0.4;">Delivered with Orveil</span>`;
 
+  const bgStyle = patternUrl
+    ? `background-color: ${bgColor}; background-image: url(${patternUrl}); background-repeat: repeat;`
+    : `background-color: ${bgColor};`;
+
   const html = `
-    <div style="font-family: '${fontFamily}', 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background: ${bgColor}; color: ${accentColor}; padding: 3rem 2.5rem; ${wallpaperStyle}">
-      <div style="text-align: center; margin-bottom: 2.5rem;">
+    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: ${bgColor};"><tr><td align="center">
+    <table width="600" cellpadding="0" cellspacing="0" border="0"><tr>
+    <td style="${bgStyle} font-family: '${fontFamily}', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: ${accentColor}; padding: 48px 40px;">
+      <!--[if gte mso 9]><v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;"><v:fill type="tile" src="${patternUrl}" color="${bgColor}"/><v:textbox style="mso-fit-shape-to-text:true" inset="0,0,0,0"><![endif]-->
+      <div style="text-align: center; margin-bottom: 40px;">
         ${headerContent}
       </div>
-      <div style="border-top: 1px solid ${accentColor}20; padding-top: 2rem; margin-bottom: 2rem;">
-        <h2 style="font-family: ${fontFamily}, Georgia, serif; font-size: 1.4rem; font-weight: 400; margin: 0 0 0.5rem; color: ${accentColor};">Your gallery is ready</h2>
-        <p style="font-size: 0.85rem; color: ${accentColor}; opacity: 0.5; margin: 0 0 1.5rem;">${projectName || 'Your Project'}</p>
-        <p style="font-size: 0.95rem; line-height: 1.7; color: ${accentColor}; opacity: 0.85; margin: 0 0 2rem;">${message}</p>
-        <div style="text-align: center; margin: 2rem 0;">
-          <a href="${galleryUrl}" style="display: inline-block; background: ${accentColor}; color: ${bgColor}; text-decoration: none; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 1rem 2.5rem;">View Gallery</a>
+      <div style="border-top: 1px solid ${accentColor}20; padding-top: 32px; margin-bottom: 32px;">
+        <h2 style="font-family: ${fontFamily}, Georgia, serif; font-size: 1.4rem; font-weight: 400; margin: 0 0 8px; color: ${accentColor};">Your gallery is ready</h2>
+        <p style="font-size: 0.85rem; color: ${accentColor}; opacity: 0.5; margin: 0 0 24px;">${projectName || 'Your Project'}</p>
+        <p style="font-size: 0.95rem; line-height: 1.7; color: ${accentColor}; opacity: 0.85; margin: 0 0 32px;">${message}</p>
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${galleryUrl}" style="display: inline-block; background: ${accentColor}; color: ${bgColor}; text-decoration: none; font-size: 0.8rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; padding: 16px 40px;">View Gallery</a>
         </div>
       </div>
-      <div style="border-top: 1px solid ${accentColor}20; padding-top: 1.5rem; text-align: center;">
+      <div style="border-top: 1px solid ${accentColor}20; padding-top: 24px; text-align: center;">
         <p style="font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; margin: 0;">
           ${footerContent}
         </p>
       </div>
-    </div>
+      <!--[if gte mso 9]></v:textbox></v:rect><![endif]-->
+    </td></tr></table>
+    </td></tr></table>
   `;
 
   try {

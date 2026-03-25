@@ -1703,6 +1703,9 @@
   .progress-label { font-size: 0.72rem; color: var(--g600); margin-bottom: 0.6rem; letter-spacing: 0.03em; }
   .progress-bar { height: 2px; background: var(--g200); overflow: hidden; }
   .progress-fill { height: 100%; background: var(--black); transition: width 0.3s ease; width: 0%; }
+  .upload-file-list { max-height: 120px; overflow-y: auto; margin-bottom: 6px; }
+  .upload-file-item { font-size: 0.65rem; color: var(--g400); margin-bottom: 3px; display: flex; justify-content: space-between; }
+  .upload-file-item .file-pct { opacity: 0.6; min-width: 30px; text-align: right; }
 
   /* MODAL */
   .modal-overlay {
@@ -2828,6 +2831,7 @@
     <input type="file" id="file-input" multiple accept="image/*,video/*" onchange="handleFileSelect(this.files)">
     <div class="upload-progress" id="upload-progress">
       <div class="progress-label" id="progress-label">Uploading...</div>
+      <div class="upload-file-list" id="upload-file-list"></div>
       <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
     </div>
     <div class="files-grid" id="files-grid">
@@ -3217,6 +3221,25 @@ async function storageUpload(bucket, path, file, opts) {
   if (!resp.ok) { const e = await resp.json().catch(() => ({})); return { error: e }; }
   return { error: null };
 }
+function storageUploadWithProgress(bucket, path, file, onProgress) {
+  return new Promise((resolve) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`);
+    xhr.setRequestHeader('apikey', SUPABASE_KEY);
+    xhr.setRequestHeader('Authorization', `Bearer ${accessToken || SUPABASE_KEY}`);
+    xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+    xhr.upload.onprogress = (e) => { if (e.lengthComputable && onProgress) onProgress(e.loaded, e.total); };
+    xhr.onload = () => resolve({ error: xhr.status >= 200 && xhr.status < 300 ? null : xhr.responseText });
+    xhr.onerror = () => resolve({ error: 'Network error' });
+    xhr.send(file);
+  });
+}
+async function parallelLimit(tasks, limit) {
+  const results = []; let i = 0;
+  async function worker() { while (i < tasks.length) { const j = i++; results[j] = await tasks[j](); } }
+  await Promise.all(Array.from({ length: Math.min(limit, tasks.length) }, () => worker()));
+  return results;
+}
 async function storageRemove(bucket, paths) {
   const resp = await fetch(`${SUPABASE_URL}/storage/v1/object/${bucket}`, {
     method: 'DELETE',
@@ -3224,6 +3247,11 @@ async function storageRemove(bucket, paths) {
     body: JSON.stringify({ prefixes: paths })
   });
   return { error: resp.ok ? null : 'delete failed' };
+}
+
+function userKey(key) {
+  if (!currentUser?.id) return 'orveil-' + key;
+  return 'orveil-' + currentUser.id + '-' + key;
 }
 
 // Emergency reset: add ?reset to the URL to clear stuck sessions
@@ -3738,6 +3766,14 @@ async function initApp() {
       document.body.classList.add('pink-mode');
     }
 
+    // Migrate old unprefixed room keys to user-scoped keys
+    ['room-config','room-positions','room-daytime','poster1-custom','poster2-custom'].forEach(k => {
+      const old = 'orveil-' + k, nk = userKey(k);
+      if (localStorage.getItem(old) !== null && localStorage.getItem(nk) === null)
+        localStorage.setItem(nk, localStorage.getItem(old));
+      localStorage.removeItem(old);
+    });
+
     // Accept pending invite if present
     if (pendingInviteToken) {
       try {
@@ -4013,59 +4049,90 @@ async function handleFileSelect(fileList) {
   const progress = document.getElementById('upload-progress');
   const fill = document.getElementById('progress-fill');
   const label = document.getElementById('progress-label');
+  const fileListEl = document.getElementById('upload-file-list');
 
   progress.classList.add('active');
-  let uploaded = 0;
+  label.textContent = `Uploading ${files.length} file${files.length !== 1 ? 's' : ''}...`;
 
-  for (const file of files) {
-    label.textContent = `Uploading ${file.name}...`;
-    const path = `${currentUser.id}/${currentProject.id}/${Date.now()}-${file.name}`;
+  // Per-file progress tracking
+  const fileProgress = new Array(files.length).fill(0);
+  const fileSizes = files.map(f => f.size);
+  const totalBytes = fileSizes.reduce((a, b) => a + b, 0);
 
-    const { error: storageErr } = await storageUpload('projects', path, file);
-    if (storageErr) { console.error('Upload error:', storageErr); showToast(`Failed: ${file.name}`); continue; }
+  fileListEl.innerHTML = files.map((f, i) =>
+    `<div class="upload-file-item"><span>${f.name.length > 30 ? f.name.slice(0, 27) + '...' : f.name}</span><span class="file-pct" id="uf-${i}">0%</span></div>`
+  ).join('');
 
-    // Generate video thumbnail
-    let thumbPath = null;
-    if (file.type.startsWith('video/')) {
-      try {
-        const thumbBlob = await generateUploadThumb(file);
-        if (thumbBlob) {
-          thumbPath = path + '_thumb.jpg';
-          await storageUpload('projects', thumbPath, new Blob([thumbBlob], { type: 'image/jpeg' }));
-        }
-      } catch (e) { /* no thumbnail — that's ok */ }
+  function updateOverall() {
+    const loaded = fileProgress.reduce((a, b) => a + b, 0);
+    fill.style.width = ((loaded / totalBytes) * 100) + '%';
+  }
+
+  // Phase 1: Parallel file uploads (3 concurrent)
+  const uploadResults = [];
+  const uploadTasks = files.map((file, i) => async () => {
+    const path = `${currentUser.id}/${currentProject.id}/${Date.now()}-${i}-${file.name}`;
+    const { error } = await storageUploadWithProgress('projects', path, file, (loaded, total) => {
+      fileProgress[i] = loaded;
+      const el = document.getElementById(`uf-${i}`);
+      if (el) el.textContent = Math.round((loaded / total) * 100) + '%';
+      updateOverall();
+    });
+    if (error) {
+      console.error('Upload error:', error);
+      showToast(`Failed: ${file.name}`);
+      uploadResults[i] = null;
+    } else {
+      uploadResults[i] = { file, path, index: i, thumbPath: null };
     }
+  });
+  await parallelLimit(uploadTasks, 3);
 
+  const successful = uploadResults.filter(Boolean);
+
+  // Phase 2: Deferred video thumbnail generation (2 concurrent, non-blocking)
+  if (successful.some(u => u.file.type.startsWith('video/'))) {
+    label.textContent = 'Processing thumbnails...';
+    const thumbTasks = successful.filter(u => u.file.type.startsWith('video/')).map(u => async () => {
+      try {
+        const thumbBlob = await generateUploadThumb(u.file);
+        if (thumbBlob) {
+          u.thumbPath = u.path + '_thumb.jpg';
+          await storageUpload('projects', u.thumbPath, new Blob([thumbBlob], { type: 'image/jpeg' }));
+        }
+      } catch (e) { /* no thumbnail — ok */ }
+    });
+    await parallelLimit(thumbTasks, 2);
+  }
+
+  // Phase 3: DB writes — insert records, then single storage + file count update
+  label.textContent = 'Saving...';
+  let totalNewBytes = 0;
+  for (const u of successful) {
     await dbInsert('files', {
       project_id: currentProject.id,
       user_id: currentUser.id,
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      path,
-      thumb_path: thumbPath
+      name: u.file.name,
+      size: u.file.size,
+      type: u.file.type,
+      path: u.path,
+      thumb_path: u.thumbPath
     });
-
-    // Update storage used
-    const { data: profile } = await dbSelect('profiles', 'storage_used', `id=eq.${currentUser.id}`, { single: true });
-    if (profile) {
-      await dbUpdate('profiles', { storage_used: (profile.storage_used || 0) + file.size }, `id=eq.${currentUser.id}`);
-    }
-
-    // Update file count
-    const { data: proj } = await dbSelect('projects', 'file_count', `id=eq.${currentProject.id}`, { single: true });
-    if (proj) {
-      await dbUpdate('projects', { file_count: (proj.file_count || 0) + 1 }, `id=eq.${currentProject.id}`);
-    }
-
-    uploaded++;
-    fill.style.width = ((uploaded / files.length) * 100) + '%';
+    totalNewBytes += u.file.size;
   }
 
-  label.textContent = `${uploaded} file${uploaded !== 1 ? 's' : ''} uploaded.`;
+  if (successful.length > 0) {
+    const { data: profile } = await dbSelect('profiles', 'storage_used', `id=eq.${currentUser.id}`, { single: true });
+    if (profile) await dbUpdate('profiles', { storage_used: (profile.storage_used || 0) + totalNewBytes }, `id=eq.${currentUser.id}`);
+    const { data: proj } = await dbSelect('projects', 'file_count', `id=eq.${currentProject.id}`, { single: true });
+    if (proj) await dbUpdate('projects', { file_count: (proj.file_count || 0) + successful.length }, `id=eq.${currentProject.id}`);
+  }
+
+  label.textContent = `${successful.length} file${successful.length !== 1 ? 's' : ''} uploaded.`;
   setTimeout(() => {
     progress.classList.remove('active');
     fill.style.width = '0%';
+    fileListEl.innerHTML = '';
   }, 2000);
 
   document.getElementById('file-input').value = '';
@@ -4629,7 +4696,7 @@ function toggleDayNight() {
   if (glass2) glass2.classList.toggle('daytime');
   const isDay = glass.classList.contains('daytime');
   btn.textContent = isDay ? '☀' : '☽';
-  localStorage.setItem('orveil-room-daytime', isDay ? '1' : '0');
+  localStorage.setItem(userKey('room-daytime'), isDay ? '1' : '0');
 }
 
 function shutdownRoom() {
@@ -4661,7 +4728,7 @@ function toggleManageMode() {
     btn.textContent = 'Done';
     loadRoomConfig();
     // Restore day/night state
-    const isDay = localStorage.getItem('orveil-room-daytime') === '1';
+    const isDay = localStorage.getItem(userKey('room-daytime')) === '1';
     const glass = document.getElementById('room-window-glass');
     const wBtn = document.getElementById('window-toggle');
     const glass2 = document.getElementById('room-window-glass-2');
@@ -4705,7 +4772,7 @@ const ROOM_THEMES = {
 };
 
 function getRoomConfig() {
-  try { return { ...ROOM_DEFAULTS, ...JSON.parse(localStorage.getItem('orveil-room-config') || '{}') }; }
+  try { return { ...ROOM_DEFAULTS, ...JSON.parse(localStorage.getItem(userKey('room-config')) || '{}') }; }
   catch { return { ...ROOM_DEFAULTS }; }
 }
 
@@ -4727,7 +4794,7 @@ function loadRoomConfig() {
 function setRoomOption(key, value) {
   const config = getRoomConfig();
   config[key] = value;
-  localStorage.setItem('orveil-room-config', JSON.stringify(config));
+  localStorage.setItem(userKey('room-config'), JSON.stringify(config));
   const scene = document.querySelector('.room-scene');
   if (scene) scene.setAttribute('data-' + key, value);
   updateCustomizerUI(config);
@@ -4749,7 +4816,7 @@ function setRoomOption(key, value) {
 function applyRoomTheme(name) {
   const theme = ROOM_THEMES[name];
   if (!theme) return;
-  localStorage.setItem('orveil-room-config', JSON.stringify(theme));
+  localStorage.setItem(userKey('room-config'), JSON.stringify(theme));
   loadRoomConfig();
   document.querySelectorAll('.rc-theme').forEach(t => t.classList.remove('active'));
   const el = document.querySelector(`.rc-theme[data-theme="${name}"]`);
@@ -4788,7 +4855,7 @@ function handlePosterUpload(posterKey, input) {
   const reader = new FileReader();
   reader.onload = function(e) {
     const dataUrl = e.target.result;
-    localStorage.setItem('orveil-' + posterKey + '-custom', dataUrl);
+    localStorage.setItem(userKey(posterKey + '-custom'), dataUrl);
     setRoomOption(posterKey, 'custom');
     applyCustomPoster(posterKey, dataUrl);
   };
@@ -4805,11 +4872,11 @@ function applyCustomPoster(posterKey, dataUrl) {
 function loadCustomPosters() {
   const config = getRoomConfig();
   if (config.poster1 === 'custom') {
-    const url = localStorage.getItem('orveil-poster1-custom');
+    const url = localStorage.getItem(userKey('poster1-custom'));
     if (url) applyCustomPoster('poster1', url);
   }
   if (config.poster2 === 'custom') {
-    const url = localStorage.getItem('orveil-poster2-custom');
+    const url = localStorage.getItem(userKey('poster2-custom'));
     if (url) applyCustomPoster('poster2', url);
   }
 }
@@ -4881,7 +4948,7 @@ function initRoomDrag() {
   if (!scene) return;
 
   // Apply saved positions
-  const saved = JSON.parse(localStorage.getItem('orveil-room-positions') || '{}');
+  const saved = JSON.parse(localStorage.getItem(userKey('room-positions')) || '{}');
   scene.querySelectorAll('[data-draggable]').forEach(el => {
     const id = el.dataset.draggable;
     if (saved[id]) {
@@ -4962,9 +5029,9 @@ function initRoomDrag() {
 
     // Save position (after gravity settles)
     setTimeout(() => {
-      const saved = JSON.parse(localStorage.getItem('orveil-room-positions') || '{}');
+      const saved = JSON.parse(localStorage.getItem(userKey('room-positions')) || '{}');
       saved[id] = { left: el.style.left, top: el.style.top };
-      localStorage.setItem('orveil-room-positions', JSON.stringify(saved));
+      localStorage.setItem(userKey('room-positions'), JSON.stringify(saved));
     }, 550);
   }
 
@@ -4995,7 +5062,7 @@ function initRoomDrag() {
 }
 
 function resetRoomLayout() {
-  localStorage.removeItem('orveil-room-positions');
+  localStorage.removeItem(userKey('room-positions'));
   const scene = document.querySelector('.room-scene');
   if (!scene) return;
   scene.querySelectorAll('[data-draggable]').forEach(el => {
