@@ -3362,13 +3362,17 @@ async function storageUpload(bucket, path, file, opts) {
   return { error: null };
 }
 function storageUploadWithProgress(bucket, path, file, onProgress) {
+  // Files over 50MB use TUS resumable upload, smaller files use simple XHR
+  if (file.size > 50 * 1024 * 1024) {
+    return tusUpload(bucket, path, file, onProgress);
+  }
   return new Promise((resolve) => {
     const xhr = new XMLHttpRequest();
     xhr.open('POST', `${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`);
     xhr.setRequestHeader('apikey', SUPABASE_KEY);
     xhr.setRequestHeader('Authorization', `Bearer ${accessToken || SUPABASE_KEY}`);
     xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
-    xhr.timeout = 300000; // 5 min timeout for large files
+    xhr.timeout = 300000;
     xhr.upload.onprogress = (e) => { if (e.lengthComputable && onProgress) onProgress(e.loaded, e.total); };
     xhr.onload = () => {
       if (xhr.status >= 200 && xhr.status < 300) return resolve({ error: null });
@@ -3380,6 +3384,69 @@ function storageUploadWithProgress(bucket, path, file, onProgress) {
     xhr.ontimeout = () => resolve({ error: 'Upload timed out — file may be too large' });
     xhr.send(file);
   });
+}
+
+async function tusUpload(bucket, path, file, onProgress) {
+  const CHUNK_SIZE = 6 * 1024 * 1024; // 6MB chunks
+  const tusUrl = `${SUPABASE_URL}/storage/v1/upload/resumable`;
+  const headers = {
+    'Authorization': `Bearer ${accessToken || SUPABASE_KEY}`,
+    'apikey': SUPABASE_KEY,
+  };
+
+  try {
+    // Step 1: Create upload
+    const createResp = await fetch(tusUrl, {
+      method: 'POST',
+      headers: {
+        ...headers,
+        'Tus-Resumable': '1.0.0',
+        'Upload-Length': file.size.toString(),
+        'Upload-Metadata': `bucketName ${btoa(bucket)},objectName ${btoa(path)},contentType ${btoa(file.type || 'application/octet-stream')}`,
+      },
+    });
+
+    if (!createResp.ok) {
+      let msg = 'Failed to start upload';
+      try { const j = await createResp.json(); msg = j.message || j.error || msg; } catch {}
+      return { error: msg };
+    }
+
+    const uploadUrl = createResp.headers.get('Location');
+    if (!uploadUrl) return { error: 'No upload URL returned' };
+
+    // Step 2: Upload chunks
+    let offset = 0;
+    while (offset < file.size) {
+      const end = Math.min(offset + CHUNK_SIZE, file.size);
+      const chunk = file.slice(offset, end);
+
+      const patchResp = await fetch(uploadUrl, {
+        method: 'PATCH',
+        headers: {
+          ...headers,
+          'Tus-Resumable': '1.0.0',
+          'Upload-Offset': offset.toString(),
+          'Content-Type': 'application/offset+octet-stream',
+        },
+        body: chunk,
+      });
+
+      if (!patchResp.ok) {
+        let msg = 'Chunk upload failed';
+        try { const j = await patchResp.json(); msg = j.message || j.error || msg; } catch {}
+        return { error: msg };
+      }
+
+      offset = end;
+      if (onProgress) onProgress(offset, file.size);
+    }
+
+    return { error: null };
+  } catch (err) {
+    console.error('TUS upload error:', err);
+    return { error: err.message || 'Upload failed' };
+  }
 }
 async function parallelLimit(tasks, limit) {
   const results = []; let i = 0;
@@ -4362,14 +4429,13 @@ async function loadFiles() {
 }
 
 async function handleFileSelect(fileList) {
-  const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+  const MAX_FILE_SIZE = 5 * 1024 * 1024 * 1024; // 5GB max
   const allFiles = Array.from(fileList);
   if (!allFiles.length) return;
 
-  // Filter out files that exceed max size
   const tooLarge = allFiles.filter(f => f.size > MAX_FILE_SIZE);
   const files = allFiles.filter(f => f.size <= MAX_FILE_SIZE);
-  tooLarge.forEach(f => showToast(`File too large (50MB max): ${f.name}`));
+  tooLarge.forEach(f => showToast(`File too large (5GB max): ${f.name}`));
   if (!files.length) return;
 
   const progress = document.getElementById('upload-progress');
