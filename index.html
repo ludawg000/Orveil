@@ -3514,6 +3514,7 @@ const deliveryMessages = {
 
 // ─── GALLERY ───
 let galleryFiles = [];
+let projectFiles = [];
 let lightboxIndex = 0;
 
 async function loadGallery(token) {
@@ -3801,6 +3802,12 @@ function genThumb(url, name) {
 }
 
 // ─── LIGHTBOX ───
+function openProjectFile(index) {
+  // Use the lightbox to view project files
+  galleryFiles = projectFiles;
+  openLightbox(index);
+}
+
 function openLightbox(index) {
   lightboxIndex = index;
   renderLightbox();
@@ -4388,8 +4395,15 @@ async function loadFiles() {
   if (!files?.length) {
     const q = randomQuip();
     grid.innerHTML = `<div class="empty-state"><div style="font-size:2.5rem;margin-bottom:0.5rem">${q.emoji}</div><div class="empty-title">${q.text}</div><div class="empty-sub">Upload photos or videos to get started.</div></div>`;
+    projectFiles = [];
     return;
   }
+
+  // Store files for lightbox access
+  projectFiles = files.map(f => ({
+    ...f,
+    publicUrl: `${SUPABASE_URL}/storage/v1/object/public/projects/${f.path}`
+  }));
 
   grid.innerHTML = files.map((f, i) => {
     const isImage = f.type?.startsWith('image/');
@@ -4402,7 +4416,7 @@ async function loadFiles() {
     } else if (isVideo) {
       thumb = `<div class="file-thumb-placeholder" id="fthumb-${i}">Generating...</div>`;
     }
-    return `<div class="file-card">
+    return `<div class="file-card" ondblclick="openProjectFile(${i})">
       <div class="file-thumb">${thumb}</div>
       <div class="file-info">
         <div class="file-name">${escHtml(f.name)}</div>
