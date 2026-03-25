@@ -3745,6 +3745,14 @@ function resetAppState() {
   // Close any open modals
   document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
 
+  // Clear draggable element inline positions (prevent bleed between accounts)
+  document.querySelectorAll('[data-draggable]').forEach(el => {
+    el.style.left = '';
+    el.style.top = '';
+    el.style.right = '';
+    el.style.bottom = '';
+  });
+
   // Clear project screen title
   const projTitle = document.getElementById('project-nav-title');
   if (projTitle) projTitle.textContent = '';
@@ -5013,9 +5021,13 @@ function initRoomDrag() {
   const scene = document.querySelector('.room-scene');
   if (!scene) return;
 
-  // Apply saved positions
+  // Reset ALL draggable elements to CSS defaults first, then apply saved positions
   const saved = JSON.parse(localStorage.getItem(userKey('room-positions')) || '{}');
   scene.querySelectorAll('[data-draggable]').forEach(el => {
+    el.style.left = '';
+    el.style.top = '';
+    el.style.right = '';
+    el.style.bottom = '';
     const id = el.dataset.draggable;
     if (saved[id]) {
       el.style.left = saved[id].left;
