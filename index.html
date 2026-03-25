@@ -1502,10 +1502,10 @@
 
   /* Cards inside the screen — blue CRT look */
   .tv-screen .project-card {
-    background: #0c1028; padding: 0.4rem 0.5rem;
+    background: #0c1028; padding: 0;
     cursor: pointer; transition: background 0.2s;
-    display: flex; flex-direction: column; gap: 0.2rem;
-    position: relative; box-sizing: border-box;
+    display: flex; flex-direction: column; gap: 0;
+    position: relative;
   }
   .tv-screen .project-card:hover { background: #141c38; }
   .tv-screen .project-name {
@@ -1513,10 +1513,12 @@
     font-size: 0.75rem; font-weight: 700;
     text-shadow: 0 0 6px rgba(96,144,255,0.3);
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    padding: 0.25rem 0.5rem 0;
   }
   .tv-screen .project-meta {
     font-family: 'Courier New', monospace;
     font-size: 0.6rem; color: #6090ff; opacity: 0.5;
+    padding: 0 0.5rem 0.25rem;
   }
   .tv-screen .project-thumb {
     width: 100%; flex: 1; min-height: 0;
