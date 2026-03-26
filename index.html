@@ -8025,24 +8025,23 @@ document.addEventListener('keydown', e => {
     const btn  = document.querySelector('.landing-get-started');
     if (!logo || !btn) return;
 
-    // Use clientWidth/clientHeight — reliable across browsers, no scrollbar ambiguity
     const VW = document.documentElement.clientWidth;
     const VH = document.documentElement.clientHeight;
-    const logoRect = logo.getBoundingClientRect();
-    const btnRect  = btn.getBoundingClientRect();
+    const btnRect = btn.getBoundingClientRect();
 
-    const pad = 12;
-    const amp = 3.2;
+    // Exact "O" character bounds via Range API
+    const range = document.createRange();
+    range.setStart(logo.firstChild, 0);
+    range.setEnd(logo.firstChild, 1);
+    const oRect = range.getBoundingClientRect();
+    const sx = oRect.left + oRect.width / 2;   // O center-x
+    const sy = oRect.top  + oRect.height / 2;  // O center-y
+
+    const pad  = 12;
+    const bPad = 8;
+    const amp  = 3.2;
     const SEGS = 22;
 
-    // Start: bottom of the "O" in Orveil (first character)
-    const charW = logoRect.height * 0.62; // approximate width of 'O'
-    const sx = logoRect.left + charW * 0.5;
-    const sy = logoRect.bottom - 1;
-
-    // Wavy segment helper — appends points from (x1,y1)→(x2,y2)
-    // axis='x': horizontal travel, wave in y
-    // axis='y': vertical travel, wave in x
     function seg(pts, x1, y1, x2, y2, axis) {
       for (let i = 1; i <= SEGS; i++) {
         const t = i / SEGS;
@@ -8053,35 +8052,35 @@ document.addEventListener('keydown', e => {
       }
     }
 
+    const btnMidY = btnRect.top + btnRect.height * 0.5;
     const pts = [];
 
-    // ① Start AT the O — arc left+down to reach the left page edge
+    // ① Visible stem from O center — grows down then arcs left to page edge
     pts.push([sx, sy]);
-    pts.push([sx * 0.6, sy + 6]);
-    pts.push([pad, logoRect.bottom + 10]);
+    pts.push([sx + 3,    sy + oRect.height * 0.6]);
+    pts.push([sx - 4,    oRect.bottom + 12]);
+    pts.push([sx - 20,   oRect.bottom + 28]);
+    pts.push([sx * 0.4,  oRect.bottom + 40]);
+    pts.push([pad,       oRect.bottom + 52]);
 
     // ② Down the left side
-    seg(pts, pad, logoRect.bottom + 10, pad, VH - pad, 'y');
+    seg(pts, pad, oRect.bottom + 52, pad, VH - pad, 'y');
 
     // ③ Across the bottom
     seg(pts, pad, VH - pad, VW - pad, VH - pad, 'x');
 
-    // ④ Up the right side to below the Get Started button
-    const btnMidY = btnRect.top + btnRect.height * 0.5;
-    seg(pts, VW - pad, VH - pad, VW - pad, btnRect.bottom + 10, 'y');
+    // ④ Up the right side — stop exactly at button mid-height
+    seg(pts, VW - pad, VH - pad, VW - pad, btnMidY, 'y');
 
-    // ⑤ Wrap around Get Started button: approach from right → top → left side
-    const bPad = 7;
-    pts.push([btnRect.right + bPad, btnRect.bottom + 6]);   // below-right of btn
-    pts.push([btnRect.right + bPad, btnMidY]);               // right side
-    pts.push([btnRect.right + bPad, btnRect.top - bPad]);   // top-right corner
-    pts.push([btnRect.left + btnRect.width * 0.6, btnRect.top - bPad]); // across top
-    pts.push([btnRect.left + btnRect.width * 0.2, btnRect.top - bPad]); // continue top
-    pts.push([btnRect.left - bPad, btnRect.top - bPad]);    // top-left corner
-    pts.push([btnRect.left - bPad, btnMidY]);                // down left side
-    pts.push([btnRect.left - bPad, btnRect.bottom + 4]);    // bottom-left — end here
+    // ⑤ Turn left and wrap around Get Started button
+    pts.push([btnRect.right + bPad, btnMidY]);
+    pts.push([btnRect.right + bPad, btnRect.top - bPad]);
+    pts.push([btnRect.left + btnRect.width * 0.5, btnRect.top - bPad]);
+    pts.push([btnRect.left - bPad, btnRect.top - bPad]);
+    pts.push([btnRect.left - bPad, btnMidY]);
+    pts.push([btnRect.left - bPad, btnRect.bottom + bPad]);
 
-    // Build smooth quadratic bezier through all waypoints
+    // Build smooth quadratic bezier
     let d = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
     for (let i = 1; i < pts.length - 1; i++) {
       const [px, py] = pts[i], [nx, ny] = pts[i+1];
@@ -8090,7 +8089,6 @@ document.addEventListener('keydown', e => {
     const [lx, ly] = pts[pts.length-1];
     d += ` L${lx.toFixed(1)},${ly.toFixed(1)}`;
 
-    // Explicit pixel dimensions on SVG so coordinate space = viewport pixels exactly
     const svg = document.createElementNS(ns, 'svg');
     svg.setAttribute('class', 'landing-vine-svg');
     svg.setAttribute('width', VW);
@@ -8109,7 +8107,7 @@ document.addEventListener('keydown', e => {
     document.body.appendChild(svg);
 
     const totalLen = stem.getTotalLength();
-    const DRAW_MS  = 5000;
+    const DRAW_MS  = 5200;
 
     function spt(t) {
       const l = t * totalLen;
@@ -8118,26 +8116,26 @@ document.addEventListener('keydown', e => {
       return { x: a.x, y: a.y, angle: Math.atan2(b.y-a.y, b.x-a.x)*180/Math.PI };
     }
 
-    // Thorns every ~5%
-    for (let i = 2; i <= 97; i += 5) {
+    // Thorns every ~3% (~33 total)
+    for (let i = 2; i <= 98; i += 3) {
       const t = i / 100;
       const { x, y, angle } = spt(t);
       const el = makeThorn(x, y, angle, 4.5);
       el.style.opacity = '0';
-      el.style.transition = 'opacity 0.18s ease';
+      el.style.transition = 'opacity 0.15s ease';
       svg.appendChild(el);
       window._landingVineTimers.push(setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS + 60));
     }
 
-    // Leaves every ~7%
+    // Leaves every ~4% (~24 total)
     const lSz = [8,7,9,7,8,9,7,8,9,7,8,7,9,8,7];
     let li = 0;
-    for (let i = 4; i <= 96; i += 7) {
+    for (let i = 3; i <= 97; i += 4) {
       const t = i / 100;
       const { x, y, angle } = spt(t);
       const el = makeLeaf(x, y, lSz[li % lSz.length], angle + (li%2===0 ? -52 : 38), li);
       el.style.opacity = '0';
-      el.style.transition = 'opacity 0.28s ease';
+      el.style.transition = 'opacity 0.25s ease';
       svg.appendChild(el);
       window._landingVineTimers.push(setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS + 60));
       li++;
