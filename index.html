@@ -2057,6 +2057,9 @@
     height: auto; max-height: 75vh;
     background: var(--g100);
   }
+  /* In full-size view, select checkbox is not needed — visibility drives edits */
+  .files-grid.view-full .select-check { display: none !important; }
+
   .select-toolbar {
     display: none; align-items: center; gap: 1rem;
     padding: 0.75rem 2.5rem; background: var(--g100);
@@ -5478,12 +5481,35 @@ function buildEditorFilter(e, c, s, w, h, f) {
   return `brightness(${brightness.toFixed(3)}) contrast(${contrast.toFixed(3)}) saturate(${saturate.toFixed(3)}) hue-rotate(${hueRot}deg) sepia(${sepia})`;
 }
 
+// IntersectionObserver: track cards ≥75% visible in full-view mode
+let _visibleCards = new Set();
+let _fullViewObserver = null;
+
+function initFullViewObserver() {
+  if (_fullViewObserver) _fullViewObserver.disconnect();
+  _visibleCards.clear();
+  _fullViewObserver = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.intersectionRatio >= 0.75) _visibleCards.add(e.target);
+      else _visibleCards.delete(e.target);
+    });
+  }, { threshold: 0.75 });
+  document.querySelectorAll('#files-grid .file-card').forEach(c => _fullViewObserver.observe(c));
+}
+
+function getEditTargets() {
+  const grid = document.getElementById('files-grid');
+  const isFullView = grid?.classList.contains('view-full');
+  if (isFullView && _visibleCards.size) return [..._visibleCards];
+  return [...document.querySelectorAll('.file-card.selected')];
+}
+
 function previewEditsOnSelected() {
-  const selected = document.querySelectorAll('.file-card.selected');
-  if (!selected.length) return;
+  const targets = getEditTargets();
+  if (!targets.length) return;
   const { e, c, s, w, h, f } = getSliderValues();
   const filterStr = buildEditorFilter(e, c, s, w, h, f);
-  selected.forEach(card => {
+  targets.forEach(card => {
     const img = card.querySelector('.file-thumb img');
     if (img) img.style.filter = filterStr;
   });
@@ -5549,7 +5575,8 @@ function setFilesView(mode, btn) {
   if (!grid) return;
   grid.classList.remove('view-large', 'view-full');
   if (mode === 'large') grid.classList.add('view-large');
-  if (mode === 'full')  grid.classList.add('view-full');
+  if (mode === 'full')  { grid.classList.add('view-full'); initFullViewObserver(); }
+  else { if (_fullViewObserver) { _fullViewObserver.disconnect(); _visibleCards.clear(); } }
   document.querySelectorAll('.evt-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
 }
@@ -5720,7 +5747,10 @@ function buildCGFilter() {
 
 function onCGChange() {
   const filter = buildCGFilter();
-  document.querySelectorAll('.file-card.selected .file-thumb img').forEach(img => { img.style.filter = filter; });
+  getEditTargets().forEach(card => {
+    const img = card.querySelector('.file-thumb img');
+    if (img) img.style.filter = filter;
+  });
   drawCGHistogram();
 }
 
