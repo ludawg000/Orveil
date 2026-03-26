@@ -2057,8 +2057,23 @@
     height: auto; max-height: 75vh;
     background: var(--g100);
   }
-  /* In full-size view, select checkbox is not needed — visibility drives edits */
+  /* In full-size view, selection is disabled — visibility drives edits */
   .files-grid.view-full .select-check { display: none !important; }
+  .files-grid.view-full .file-card { cursor: default; pointer-events: none; }
+  .files-grid.view-full .file-card .file-delete { pointer-events: auto; }
+
+  /* Before/After button — hold to see original (Lightroom-style) */
+  .before-after-btn {
+    display: none; font-family: var(--sans); font-size: 0.62rem; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    background: transparent; border: 1px solid var(--g200);
+    color: var(--g400); padding: 0.45rem 1rem;
+    border-radius: 2px; cursor: pointer; transition: all 0.15s; user-select: none;
+  }
+  #project-screen.edit-mode .before-after-btn { display: inline-block; }
+  #project-screen.viewing-original .before-after-btn { background: var(--black); color: var(--white); border-color: var(--black); }
+  /* Strip all edit filters while holding Before */
+  #project-screen.viewing-original .file-thumb img { filter: none !important; }
 
   .select-toolbar {
     display: none; align-items: center; gap: 1rem;
@@ -3482,6 +3497,9 @@
       </button>
     </div>
     <div class="project-nav-actions">
+      <button class="before-after-btn" id="before-after-btn"
+        onmousedown="showOriginal()" onmouseup="showEdited()" onmouseleave="showEdited()"
+        ontouchstart="showOriginal()" ontouchend="showEdited()">Before</button>
       <button class="invite-btn" onclick="openInviteFromProject(event)">+ Invite</button>
       <button class="select-btn" id="select-mode-btn" onclick="toggleSelectMode()">Select</button>
       <button class="deliver-btn" onclick="openDelivery()">Deliver to Client</button>
@@ -5512,13 +5530,29 @@ function initFullViewObserver() {
       else _visibleCards.delete(e.target);
     });
   }, { threshold: 0.75 });
-  document.querySelectorAll('#files-grid .file-card').forEach(c => _fullViewObserver.observe(c));
+  const cards = document.querySelectorAll('#files-grid .file-card');
+  cards.forEach(c => _fullViewObserver.observe(c));
+  // Seed synchronously so edits work immediately without waiting for observer callback
+  const scrollEl = document.querySelector('.project-main');
+  if (scrollEl) {
+    const top = scrollEl.getBoundingClientRect().top;
+    const bot = top + scrollEl.clientHeight;
+    cards.forEach(card => {
+      const r = card.getBoundingClientRect();
+      const visible = (Math.min(r.bottom, bot) - Math.max(r.top, top)) / r.height;
+      if (visible >= 0.75) _visibleCards.add(card);
+    });
+  }
 }
 
 function getEditTargets() {
   const grid = document.getElementById('files-grid');
   const isFullView = grid?.classList.contains('view-full');
-  if (isFullView && _visibleCards.size) return [..._visibleCards];
+  if (isFullView) {
+    if (_visibleCards.size) return [..._visibleCards];
+    const first = grid?.querySelector('.file-card');
+    return first ? [first] : [];
+  }
   return [...document.querySelectorAll('.file-card.selected')];
 }
 
@@ -5596,13 +5630,28 @@ let _cgInited = false;
 let _cgDragging = null;
 let _cgCurveDragging = null;
 
+function showOriginal() {
+  document.getElementById('project-screen').classList.add('viewing-original');
+}
+function showEdited() {
+  document.getElementById('project-screen').classList.remove('viewing-original');
+}
+
 function setFilesView(mode, btn) {
   const grid = document.getElementById('files-grid');
   if (!grid) return;
   grid.classList.remove('view-large', 'view-full');
   if (mode === 'large') grid.classList.add('view-large');
-  if (mode === 'full')  { grid.classList.add('view-full'); initFullViewObserver(); }
-  else { if (_fullViewObserver) { _fullViewObserver.disconnect(); _visibleCards.clear(); } }
+  if (mode === 'full') {
+    grid.classList.add('view-full');
+    // Clear any existing selections — full-view uses visibility, not selection
+    document.querySelectorAll('.file-card.selected').forEach(c => c.classList.remove('selected'));
+    selectedFileIds?.clear?.();
+    initFullViewObserver();
+  } else {
+    if (_fullViewObserver) { _fullViewObserver.disconnect(); _visibleCards.clear(); }
+    showEdited(); // ensure not stuck in "before" state
+  }
   document.querySelectorAll('.evt-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
 }
@@ -8106,6 +8155,10 @@ function escHtml(str) {
 
 // ─── KEYBOARD ───
 document.addEventListener('keydown', e => {
+  // \ key = hold to see original (Lightroom-style before/after)
+  if (e.key === '\\' && !e.repeat && document.getElementById('project-screen')?.classList.contains('edit-mode')) {
+    showOriginal();
+  }
   if (e.key === 'Escape') {
     if (document.getElementById('lightbox').classList.contains('active')) {
       closeLightbox();
@@ -8120,6 +8173,9 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Enter' && document.getElementById('new-project-modal').classList.contains('active')) {
     createProject();
   }
+});
+document.addEventListener('keyup', e => {
+  if (e.key === '\\') showEdited();
 });
 
 // ── SHARED VINE HELPERS ───────────────────────────────────────────────────────
