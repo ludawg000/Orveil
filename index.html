@@ -6673,8 +6673,16 @@ async function generateGalleryDesign() {
     if (d.accent_color) { currentGallerySettings.accent_color = d.accent_color; document.getElementById('gallery-accent-color').value = d.accent_color; }
     if (d.bg_gradient) { currentGallerySettings.bg_gradient = d.bg_gradient; } else { currentGallerySettings.bg_gradient = null; }
     if (d.wallpaper) { currentGallerySettings.wallpaper = d.wallpaper; document.querySelectorAll('.wallpaper-opt').forEach(o => o.classList.toggle('active', o.dataset.wp === d.wallpaper)); }
-    if (d.layout) { currentGallerySettings.layout = d.layout; document.querySelectorAll('.layout-opt').forEach(o => o.classList.toggle('selected', o.dataset.layout === d.layout)); }
-    if (d.font) { loadGoogleFont(d.font); currentGallerySettings.font_family = d.font; document.getElementById('font-selected').style.display = 'block'; document.getElementById('font-selected-name').textContent = d.font; document.getElementById('font-preview-sample').style.fontFamily = `'${d.font}', serif`; }
+    // Layout is intentionally NOT set by AI — user controls this manually
+    if (d.font) {
+      loadGoogleFont(d.font);
+      currentGallerySettings.font_family = d.font;
+      document.getElementById('font-selected').style.display = 'block';
+      document.getElementById('font-selected-name').textContent = d.font;
+      document.getElementById('font-preview-sample').style.fontFamily = `'${d.font}', serif`;
+      // Wait for font to load before refreshing preview so it actually renders
+      document.fonts.load(`1em "${d.font}"`).catch(() => {}).finally(() => updateGalleryPreview());
+    }
     if (d.design_name) { document.getElementById('ai-design-toggle').textContent = `✦ ${d.design_name}`; }
     document.querySelectorAll('.color-preset').forEach(p => {
       const preset = COLOR_PRESETS[p.dataset.preset];

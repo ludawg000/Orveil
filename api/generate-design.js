@@ -24,7 +24,6 @@ Return ONLY a JSON object:
 - accent_color: hex — must strongly contrast bg_color
 - bg_gradient: CSS linear-gradient that deepens the bg_color (same hue, slightly lighter/darker). Always include.
 - wallpaper: "none" | "linen" | "lace" | "geometric" | "dots" | "marble" — match the mood
-- layout: "masonry" | "grid" | "slideshow"
 - font: Google Fonts name. Match aesthetics: wedding→"Cormorant Garamond", editorial→"Josefin Sans", fashion→"Bodoni Moda", romantic→"Italiana", minimal→"Raleway", warm→"Crimson Pro"
 - design_name: 2-3 words describing this specific design (not generic)
 - image_prompt: cinematic AI image prompt matching the exact described mood — specific location, lighting, colors, no people
