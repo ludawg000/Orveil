@@ -5465,7 +5465,7 @@ const CG_STATE = {
   gain:  { h: 0, s: 0, lum: 0 },
   temp: 0, tint: 0, contrast: 0, saturation: 0,
   shadows: 0, highlights: 0, blacks: 0, whites: 0,
-  curve: { p1: {x:42, y:103}, p2: {x:108, y:27} },
+  curve: { p1: {x:42, y:103}, mid: {x:75, y:65}, p2: {x:108, y:27} },
   curveColor: '#0a0a0a',
 };
 let _cgInited = false;
@@ -5578,17 +5578,34 @@ function moveCGCurvePoint(e) {
   if (el){ el.setAttribute('cx',x.toFixed(1)); el.setAttribute('cy',y.toFixed(1)); }
   if (_cgCurveDragging==='cg-cp2') { CG_STATE.curve.p1={x,y}; }
   else if (_cgCurveDragging==='cg-cp3') { CG_STATE.curve.p2={x,y}; }
+  else if (_cgCurveDragging==='cg-cp1') { CG_STATE.curve.mid={x,y}; }
   updateCGCurvePath();
   onCGChange();
 }
 
 function updateCGCurvePath() {
-  const p=document.getElementById('cg-curve-path');
-  const cp1=document.getElementById('cg-cp1');
-  const p1={x:parseFloat(cp1?.getAttribute('cx')||75),y:parseFloat(cp1?.getAttribute('cy')||65)};
-  const p2x=CG_STATE.curve.p1.x, p2y=CG_STATE.curve.p1.y;
-  const p3x=CG_STATE.curve.p2.x, p3y=CG_STATE.curve.p2.y;
-  if(p) p.setAttribute('d',`M10,120 C${p2x.toFixed(1)},120 ${p1.x.toFixed(1)},${p1.y.toFixed(1)} ${p3x.toFixed(1)},${p3y.toFixed(1)} C${p3x.toFixed(1)},${p3y.toFixed(1)} ${p3x.toFixed(1)},10 140,10`);
+  const p = document.getElementById('cg-curve-path');
+  if (!p) return;
+  // 5 anchor points the curve must pass through
+  const A = {x:10,  y:120};              // black anchor
+  const S = CG_STATE.curve.p1;           // shadow (cp2)
+  const M = CG_STATE.curve.mid;          // midtone (cp1)
+  const H = CG_STATE.curve.p2;           // highlight (cp3)
+  const B = {x:140, y:10};               // white anchor
+  // Catmull-Rom → cubic bezier (phantom endpoints duplicate A and B)
+  const cr = (P0,P1,P2,P3) => ({
+    b1:{x:P1.x+(P2.x-P0.x)/6, y:P1.y+(P2.y-P0.y)/6},
+    b2:{x:P2.x-(P3.x-P1.x)/6, y:P2.y-(P3.y-P1.y)/6}
+  });
+  const s0=cr(A,A,S,M), s1=cr(A,S,M,H), s2=cr(S,M,H,B), s3=cr(M,H,B,B);
+  const f=v=>v.toFixed(1);
+  p.setAttribute('d',
+    `M${f(A.x)},${f(A.y)} `+
+    `C${f(s0.b1.x)},${f(s0.b1.y)} ${f(s0.b2.x)},${f(s0.b2.y)} ${f(S.x)},${f(S.y)} `+
+    `C${f(s1.b1.x)},${f(s1.b1.y)} ${f(s1.b2.x)},${f(s1.b2.y)} ${f(M.x)},${f(M.y)} `+
+    `C${f(s2.b1.x)},${f(s2.b1.y)} ${f(s2.b2.x)},${f(s2.b2.y)} ${f(H.x)},${f(H.y)} `+
+    `C${f(s3.b1.x)},${f(s3.b1.y)} ${f(s3.b2.x)},${f(s3.b2.y)} ${f(B.x)},${f(B.y)}`
+  );
 }
 
 function setCGChannel(btn, color) {
@@ -5608,11 +5625,17 @@ function buildCGFilter() {
   const wheelH = lift.h*lift.s*0.2 + gamma.h*gamma.s*0.4 + gain.h*gain.s*0.2;
   const wheelS = (lift.s*0.25 + gamma.s*0.5 + gain.s*0.25) * 0.3;
   const lumAdj = lift.lum*0.002 + gamma.lum*0.005 + gain.lum*0.002;
-  // Curve: how far p1 (midpoint) deviates from diagonal
-  const curveMidX=(curve.p1.x-10)/130, curveMidY=1-(curve.p1.y-10)/110;
-  const curveBias = (curveMidY - curveMidX) * 0.4; // positive = lifted mids
+  // Curve: deviation of each control point from the identity diagonal
+  // SVG: input=(x-10)/130, output=1-(y-10)/110; identity: output=input
+  const toIn=x=>(x-10)/130, toOut=y=>1-(y-10)/110;
+  const shadowDev = toOut(curve.p1.y)  - toIn(curve.p1.x);   // negative = shadow crush
+  const midDev    = toOut(curve.mid.y) - toIn(curve.mid.x);  // positive = lift mids
+  const highDev   = toOut(curve.p2.y)  - toIn(curve.p2.x);   // positive = boost highlights
+  const curveBias = shadowDev*0.25 + midDev*0.5 + highDev*0.25;
+  // S-curve effect: highlight lift + shadow crush → more contrast
+  const curveContrast = (highDev - shadowDev) * 0.35;
   const brightness = Math.max(0.05, 1 + lumAdj + shadows*0.003 + highlights*0.002 + whites*0.003 + blacks*0.002 + curveBias);
-  const cont = Math.max(0.1, 1 + contrast*0.01);
+  const cont = Math.max(0.1, 1 + contrast*0.01 + curveContrast);
   const sat = Math.max(0, 1 + saturation*0.015 + wheelS);
   const hue = wheelH + (-temp*0.18) + (tint*0.08);
   const sepia = Math.min(temp>0?temp*0.002:0, 0.25);
@@ -5647,52 +5670,79 @@ function resetCG() {
     const sv=document.getElementById('cg-sv-'+k);
     if(sv) sv.textContent=0;
   });
-  CG_STATE.curve={p1:{x:42,y:103},p2:{x:108,y:27}};
+  CG_STATE.curve={p1:{x:42,y:103},mid:{x:75,y:65},p2:{x:108,y:27}};
   const cp1=document.getElementById('cg-cp1'); if(cp1){cp1.setAttribute('cx',75);cp1.setAttribute('cy',65);}
   const cp2=document.getElementById('cg-cp2'); if(cp2){cp2.setAttribute('cx',42);cp2.setAttribute('cy',103);}
   const cp3=document.getElementById('cg-cp3'); if(cp3){cp3.setAttribute('cx',108);cp3.setAttribute('cy',27);}
-  const path=document.getElementById('cg-curve-path');
-  if(path) path.setAttribute('d','M10,120 C10,120 42,120 75,65 C108,10 140,10 140,10');
+  updateCGCurvePath();
   document.querySelectorAll('#files-grid .file-thumb img').forEach(img=>{img.style.filter='';});
   drawCGHistogram();
 }
 
-function drawCGHistogram() {
+async function drawCGHistogram() {
   const canvas = document.getElementById('cg-histogram');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  const W=canvas.width, H=canvas.height;
+  const W = canvas.width, H = canvas.height;
   ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#0a0a0a';
-  ctx.fillRect(0,0,W,H);
-  // Grid
-  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=0.7;
-  [0.25,0.5,0.75].forEach(t=>{
+  ctx.fillStyle = '#0a0a0a'; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 0.7;
+  [0.25,0.5,0.75].forEach(t => {
     ctx.beginPath(); ctx.moveTo(t*W,0); ctx.lineTo(t*W,H); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(0,t*H); ctx.lineTo(W,t*H); ctx.stroke();
   });
-  // Simulate histogram shape based on current CG state
+
+  // Try to read actual pixel data from the selected (or first visible) image
+  const imgEl = document.querySelector('.file-card.selected .file-thumb img')
+              || document.querySelector('#files-grid .file-card .file-thumb img');
+  if (imgEl?.src) {
+    try {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      await new Promise((res, rej) => { img.onload=res; img.onerror=rej; img.src=imgEl.src; });
+      const iw = img.naturalWidth||img.width, ih = img.naturalHeight||img.height;
+      if (iw > 0 && ih > 0) {
+        const scale = Math.min(1, 200/Math.max(iw,ih));
+        const w = Math.max(1,Math.round(iw*scale)), h = Math.max(1,Math.round(ih*scale));
+        const tmp = document.createElement('canvas'); tmp.width=w; tmp.height=h;
+        const tc = tmp.getContext('2d'); tc.drawImage(img,0,0,w,h);
+        const { data } = tc.getImageData(0,0,w,h); // throws SecurityError if CORS blocked
+        const rH=new Uint32Array(256), gH=new Uint32Array(256), bH=new Uint32Array(256);
+        for (let i=0; i<data.length; i+=4) { rH[data[i]]++; gH[data[i+1]]++; bH[data[i+2]]++; }
+        let peak=1;
+        for (let i=1; i<255; i++) peak=Math.max(peak,rH[i],gH[i],bH[i]);
+        const drawCh=(hist,color)=>{
+          ctx.beginPath(); ctx.moveTo(0,H);
+          for (let x=0; x<W; x++) {
+            const bin=Math.round(x*255/(W-1));
+            ctx.lineTo(x, H - (hist[bin]/peak)*H*0.95);
+          }
+          ctx.lineTo(W,H); ctx.closePath(); ctx.fillStyle=color; ctx.fill();
+        };
+        drawCh(bH,'rgba(41,128,185,0.6)');
+        drawCh(gH,'rgba(39,174,96,0.55)');
+        drawCh(rH,'rgba(192,57,43,0.6)');
+        ctx.fillStyle='#333'; ctx.font='500 8px sans-serif';
+        ctx.fillText('0',2,H-2); ctx.fillText('255',W-16,H-2);
+        return;
+      }
+    } catch(e) { /* CORS blocked — fall through to simulation */ }
+  }
+
+  // Fallback: simulate shape from current adjustments
   const bright=(1+CG_STATE.lift.lum*0.002+CG_STATE.gamma.lum*0.005+CG_STATE.gain.lum*0.002);
   const cont=(1+CG_STATE.contrast*0.01);
   const shift=Math.min(Math.max((bright-1)*30+W/2,10),W-10);
   const spread=Math.max(0.3,Math.min(2.5,cont));
-  const channels=[
-    {color:'rgba(192,57,43,0.7)',off:-3},
-    {color:'rgba(39,174,96,0.7)',off:0},
-    {color:'rgba(41,128,185,0.7)',off:3},
-  ];
-  channels.forEach(({color,off})=>{
-    ctx.beginPath();
-    ctx.moveTo(0,H);
-    for(let x=0;x<W;x++){
-      const nx=(x-shift-off)/(W*0.18*spread);
-      const h=Math.exp(-nx*nx*0.5)*H*0.8;
-      ctx.lineTo(x,H-h);
-    }
-    ctx.lineTo(W,H); ctx.closePath();
-    ctx.fillStyle=color; ctx.fill();
-  });
-  // Labels
+  [{color:'rgba(192,57,43,0.7)',off:-3},{color:'rgba(39,174,96,0.7)',off:0},{color:'rgba(41,128,185,0.7)',off:3}]
+    .forEach(({color,off})=>{
+      ctx.beginPath(); ctx.moveTo(0,H);
+      for(let x=0;x<W;x++){
+        const nx=(x-shift-off)/(W*0.18*spread);
+        ctx.lineTo(x,H-Math.exp(-nx*nx*0.5)*H*0.8);
+      }
+      ctx.lineTo(W,H); ctx.closePath(); ctx.fillStyle=color; ctx.fill();
+    });
   ctx.fillStyle='#333'; ctx.font='500 8px sans-serif';
   ctx.fillText('0',2,H-2); ctx.fillText('255',W-16,H-2);
 }
