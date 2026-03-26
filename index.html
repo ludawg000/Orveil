@@ -5038,9 +5038,10 @@ function renderPresetChips() {
 function applyPresetByName(name) {
   const p = (EDIT_PRESETS[_activeEditGenre] || []).find(x => x.name === name);
   if (!p) return;
-  if (_activePresetName === name) {
+  const chip = Array.from(document.querySelectorAll('.edit-preset-chip')).find(c => c.textContent.trim() === name);
+  if (chip && chip.classList.contains('active')) {
     _activePresetName = null;
-    renderPresetChips();
+    chip.classList.remove('active');
     ['exposure','contrast','saturation','warmth','highlights','fade'].forEach(key => {
       const sl = document.getElementById('sl-' + key);
       const sv = document.getElementById('sv-' + key);
