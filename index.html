@@ -2152,6 +2152,7 @@
   .delivery-preview-box { background: var(--g100); padding: 0.8rem; border-radius: 1px; margin-bottom: 1rem; }
   .delivery-preview-label { font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--g400); margin-bottom: 0.4rem; }
   .delivery-preview-text { font-family: var(--serif); font-size: 0.8rem; color: var(--g600); line-height: 1.6; font-style: italic; }
+  .ai-design-row { margin: 0.5rem 0 0.75rem; }
   .ai-design-toggle {
     font-family: var(--sans); font-size: 0.62rem; font-weight: 500; letter-spacing: 0.1em;
     text-transform: uppercase; background: var(--black); color: var(--white);
@@ -3963,6 +3964,13 @@
       </div>
     </div>
     <textarea class="delivery-custom-input" id="delivery-custom-text" placeholder="Write your own delivery message..." style="display:none"></textarea>
+    <div class="ai-design-row">
+      <button class="ai-design-toggle" id="ai-design-toggle" onclick="toggleAIDesignPrompt()">✦ Style with AI</button>
+      <div class="ai-design-panel" id="ai-design-panel" style="display:none">
+        <textarea class="ai-design-input" id="ai-design-input" placeholder="Describe the aesthetic... e.g. 'moody destination wedding in Tuscany, warm golden tones' or 'clean modern real estate, bright and minimal'"></textarea>
+        <button class="ai-design-generate-btn" id="ai-design-generate-btn" onclick="generateGalleryDesign()">Generate Design</button>
+      </div>
+    </div>
     <div class="delivery-preview-box">
       <div class="delivery-preview-label">Message Preview</div>
       <div class="delivery-preview-text" id="delivery-preview-text"></div>
@@ -3975,13 +3983,6 @@
       <div class="customize-cols">
         <div class="customize-settings-col">
           <div class="delivery-customize" id="delivery-customize">
-            <div class="customize-section">
-              <button class="ai-design-toggle" id="ai-design-toggle" onclick="toggleAIDesignPrompt()">✦ Style with AI</button>
-              <div class="ai-design-panel" id="ai-design-panel" style="display:none">
-                <textarea class="ai-design-input" id="ai-design-input" placeholder="Describe the aesthetic... e.g. 'moody destination wedding in Tuscany, warm golden tones' or 'clean modern real estate, bright and minimal'"></textarea>
-                <button class="ai-design-generate-btn" id="ai-design-generate-btn" onclick="generateGalleryDesign()">Generate Design</button>
-              </div>
-            </div>
             <div class="customize-section">
               <label class="customize-label">Color Presets</label>
               <div class="color-presets">
