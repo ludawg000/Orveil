@@ -4776,9 +4776,12 @@ async function handleSignUp() {
 }
 
 async function handleGoogleSignIn() {
+  const redirectTo = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    ? window.location.origin
+    : 'https://orveil.vercel.app';
   const { error } = await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.origin }
+    options: { redirectTo }
   });
   if (error) {
     const errEl = document.getElementById('auth-error');
