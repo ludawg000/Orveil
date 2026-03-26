@@ -1728,12 +1728,21 @@
     border: 1px solid var(--g200); padding: 0.25rem 0.7rem;
   }
   #project-screen.edit-mode .edit-mode-badge { display: inline-block; }
+  .presets-btn {
+    display: none; font-family: var(--sans); font-size: 0.62rem; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    background: transparent; border: 1px solid var(--g200);
+    color: var(--black); padding: 0.45rem 1rem;
+    border-radius: 2px; cursor: pointer;
+  }
+  #project-screen.edit-mode .presets-btn { display: inline-block; }
+  #project-screen.edit-mode.presets-open .presets-btn { background: var(--black); color: var(--white); border-color: var(--black); }
   #project-screen .edit-toolbar {
     display: none; flex-direction: column; align-items: stretch;
     padding: 0.55rem 1.5rem; background: var(--g100);
     border-bottom: 1px solid var(--g200);
   }
-  #project-screen.edit-mode .edit-toolbar { display: flex; }
+  #project-screen.edit-mode.presets-open .edit-toolbar { display: flex; }
   .edit-tb-row {
     display: flex; align-items: center; gap: 1.2rem;
     overflow-x: auto; padding-bottom: 0.1rem;
@@ -3274,6 +3283,7 @@
     <div class="project-nav-title" id="project-nav-title"></div>
     <span class="edit-mode-badge">Edit Mode</span>
     <div class="project-nav-actions">
+      <button class="presets-btn" onclick="togglePresetsPanel()">Presets</button>
       <button class="invite-btn" onclick="openInviteFromProject(event)">+ Invite</button>
       <button class="select-btn" id="select-mode-btn" onclick="toggleSelectMode()">Select</button>
       <button class="deliver-btn" onclick="openDelivery()">Deliver to Client</button>
@@ -4988,8 +4998,13 @@ function openProjectEditMode(id, name, event) {
   loadFiles();
   _activeEditGenre = 'wedding';
   _activePresetName = null;
+  document.getElementById('project-screen').classList.remove('presets-open');
   document.querySelectorAll('.edit-genre-tab').forEach((t,i) => t.classList.toggle('active', i === 0));
   resetEdits();
+}
+
+function togglePresetsPanel() {
+  document.getElementById('project-screen').classList.toggle('presets-open');
 }
 
 // ── Photo Presets & Color Grading ──────────────────────────────
