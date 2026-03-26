@@ -87,6 +87,17 @@
     font-weight: 300; color: rgba(255,255,255,0.5);
     max-width: 680px; line-height: 1.75;
   }
+  .landing-features {
+    list-style: none; display: flex; flex-direction: column; gap: 0.6rem;
+    align-items: center; margin-top: -0.4rem;
+  }
+  .landing-features li {
+    font-family: var(--sans); font-size: 0.8rem; font-weight: 300;
+    color: rgba(255,255,255,0.45); letter-spacing: 0.06em;
+  }
+  .landing-features li::before {
+    content: '—'; margin-right: 0.6rem; color: rgba(255,255,255,0.2);
+  }
   .landing-divider {
     width: 1px; height: 60px;
     background: rgba(255,255,255,0.15);
@@ -2767,7 +2778,13 @@
       Don't just send photos.<br>
       <em>Deliver an experience.</em>
     </h1>
-    <p class="landing-sub">Orveil turns your client deliveries into immersive, branded moments — with a customizable virtual room, AI-powered messaging, and everything you need to run your creative business.</p>
+    <p class="landing-sub">Orveil turns your client deliveries into an immersive experience by allowing you to customize the entire experience your clients will see, and feel.</p>
+    <ul class="landing-features">
+      <li>Custom logos</li>
+      <li>Any colors you choose</li>
+      <li>Wallpapers</li>
+      <li>15GB free</li>
+    </ul>
   </div>
 
 </div>
