@@ -1719,6 +1719,9 @@
   /* PROJECT VIEW */
   #project-screen { flex-direction: column; height: 100vh; overflow: hidden; }
 
+  /* Screen body: photos + right panel */
+  .screen-body { display: flex; flex: 1; min-height: 0; overflow: hidden; }
+
   /* Edit mode state */
   #project-screen.edit-mode .project-nav { border-bottom: 1px solid var(--g200); }
   #project-screen.edit-mode .deliver-btn,
@@ -1730,32 +1733,6 @@
     border: 1px solid var(--g200); padding: 0.25rem 0.7rem;
   }
   #project-screen.edit-mode .edit-mode-badge { display: inline-block; }
-  .presets-btn {
-    display: none; font-family: var(--sans); font-size: 0.62rem; font-weight: 500;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    background: transparent; border: 1px solid var(--g200);
-    color: var(--black); padding: 0.45rem 1rem;
-    border-radius: 2px; cursor: pointer;
-  }
-  #project-screen.edit-mode .presets-btn { display: inline-block; }
-  #project-screen.edit-mode.presets-open .presets-btn { background: var(--black); color: var(--white); border-color: var(--black); }
-  .colorgrade-btn {
-    display: none; font-family: var(--sans); font-size: 0.62rem; font-weight: 500;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    background: transparent; border: 1px solid var(--g200);
-    color: var(--black); padding: 0.45rem 1rem;
-    border-radius: 2px; cursor: pointer;
-  }
-  #project-screen.edit-mode .colorgrade-btn { display: inline-block; }
-  #project-screen.edit-mode.cg-open .colorgrade-btn { background: var(--black); color: var(--white); border-color: var(--black); }
-  /* Color Grade Toolbar */
-  .colorgrade-toolbar {
-    display: none; align-items: stretch;
-    padding: 0.7rem 1.5rem; background: #0f0f0f;
-    border-bottom: 1px solid #1e1e1e; overflow-x: auto;
-  }
-  #project-screen.edit-mode.cg-open .colorgrade-toolbar { display: flex; }
-  .cg-row { display: flex; align-items: center; gap: 1.4rem; min-width: max-content; }
   .cg-section {
     display: flex; flex-direction: column; gap: 0.4rem; flex-shrink: 0;
   }
@@ -1845,18 +1822,7 @@
     border-radius: 2px; cursor: pointer; white-space: nowrap;
   }
   .cg-reset-btn:hover { border-color: #555; color: #aaa; }
-  #project-screen .edit-toolbar {
-    display: none; flex-direction: column; align-items: stretch;
-    padding: 0.55rem 1.5rem; background: var(--g100);
-    border-bottom: 1px solid var(--g200);
-  }
-  #project-screen.edit-mode.presets-open .edit-toolbar { display: flex; }
-  .edit-tb-row {
-    display: flex; align-items: center; gap: 1.2rem;
-    overflow-x: auto; padding-bottom: 0.1rem;
-  }
-  .edit-tb-section { display: flex; flex-direction: column; gap: 0.35rem; flex-shrink: 0; }
-  .edit-tb-divider { width: 1px; height: 56px; background: var(--g200); flex-shrink: 0; }
+  .edit-tb-actions { display: flex; gap: 0.5rem; margin-top: 0.8rem; }
   .edit-genre-tabs { display: flex; gap: 0.25rem; }
   .edit-genre-tab {
     font-family: var(--sans); font-size: 0.58rem; font-weight: 500;
@@ -1876,16 +1842,16 @@
   }
   .edit-preset-chip.active, .edit-preset-chip:hover { background: var(--black); color: var(--white); border-color: var(--black); }
   .edit-sliders-grid {
-    display: grid; grid-template-columns: repeat(3,1fr); gap: 0.25rem 1.1rem;
+    display: flex; flex-direction: column; gap: 0.45rem;
   }
-  .edit-slider-row { display: flex; align-items: center; gap: 0.35rem; }
+  .edit-slider-row { display: flex; align-items: center; gap: 0.5rem; }
   .edit-slider-label {
     font-family: var(--sans); font-size: 0.53rem; font-weight: 500;
     letter-spacing: 0.05em; text-transform: uppercase;
-    color: var(--g400); width: 54px; flex-shrink: 0;
+    color: var(--g400); width: 62px; flex-shrink: 0;
   }
   .edit-slider {
-    width: 86px; -webkit-appearance: none; appearance: none;
+    flex: 1; min-width: 0; -webkit-appearance: none; appearance: none;
     height: 2px; background: var(--g200); border-radius: 2px;
     outline: none; cursor: pointer;
   }
@@ -1897,7 +1863,6 @@
     font-family: var(--sans); font-size: 0.53rem; color: var(--g400);
     width: 24px; text-align: right; font-variant-numeric: tabular-nums;
   }
-  .edit-tb-actions { display: flex; flex-direction: column; gap: 0.35rem; flex-shrink: 0; }
   .edit-apply-btn {
     font-family: var(--sans); font-size: 0.58rem; font-weight: 500;
     letter-spacing: 0.07em; text-transform: uppercase;
@@ -1966,7 +1931,55 @@
     .desktop-only-setting { display: none !important; }
   }
 
-  .project-main { flex: 1; min-height: 0; overflow-y: auto; padding: 2.5rem; max-width: 1200px; margin: 0 auto; width: 100%; }
+  .project-main { flex: 1; min-width: 0; min-height: 0; overflow-y: auto; padding: 2.5rem; max-width: unset; margin: 0; width: 0; }
+
+  /* Right editing panel */
+  .edit-side-panel {
+    display: none; width: 300px; flex-shrink: 0;
+    flex-direction: column; overflow-y: auto;
+    background: #0d0d0d; border-left: 1px solid #1a1a1a;
+  }
+  #project-screen.edit-mode .edit-side-panel { display: flex; }
+
+  /* Collapsible section header */
+  .esp-header {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 100%; padding: 0.7rem 1rem;
+    font-family: var(--sans); font-size: 0.55rem; font-weight: 700;
+    letter-spacing: 0.15em; text-transform: uppercase;
+    color: #555; background: #111; border: none;
+    border-bottom: 1px solid #1a1a1a; cursor: pointer;
+    transition: color 0.15s;
+  }
+  .esp-header:hover { color: #aaa; }
+  .esp-chevron { font-size: 0.65rem; transition: transform 0.2s; }
+  .esp-section.open .esp-chevron { transform: rotate(180deg); }
+  .esp-body { display: none; padding: 1rem; }
+  .esp-section.open .esp-body { display: block; }
+
+  /* Presets inside panel */
+  .esp-body .edit-genre-tabs { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-bottom: 0.6rem; }
+  .esp-body .edit-preset-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.8rem; }
+  .esp-body .edit-sliders-grid { display: flex; flex-direction: column; gap: 0.5rem; }
+  .esp-body .edit-slider-row { display: flex; align-items: center; gap: 0.5rem; }
+  .esp-body .edit-slider { flex: 1; min-width: 0; }
+  .esp-body .edit-tb-actions { display: flex; gap: 0.5rem; margin-top: 0.8rem; }
+
+  /* Color grade inside panel */
+  .esp-body .cg-wheels-row { display: flex; gap: 0.4rem; margin-bottom: 0.5rem; }
+  .esp-body .cg-wheel-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.2rem; }
+  .esp-body .cg-wheel { width: 100% !important; height: auto !important; aspect-ratio: 1; }
+  .esp-body .cg-wheel-container { position: relative; width: 100%; aspect-ratio: 1; }
+  .esp-body .cg-lum-slider { width: 100%; }
+  .esp-body .cg-section-label { font-family: var(--sans); font-size: 0.5rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #555; margin-bottom: 0.4rem; }
+  .esp-body .cg-curve-wrap { display: flex; flex-direction: column; gap: 0.4rem; }
+  .esp-body .cg-curve-channels { display: flex; gap: 0.3rem; }
+  .esp-body #cg-curve-svg { width: 100%; max-width: 260px; height: auto; }
+  .esp-body .cg-primary-grid { display: flex; flex-direction: column; gap: 0.4rem; }
+  .esp-body .cg-sl-row { display: flex; align-items: center; gap: 0.4rem; }
+  .esp-body .cg-sl { flex: 1; min-width: 0; }
+  .esp-body .cg-sl-track-wrap { flex: 1; min-width: 0; }
+  .cg-panel-actions { display: flex; gap: 0.5rem; margin-top: 0.8rem; }
 
   /* FILES GRID */
   .files-grid {
@@ -3466,223 +3479,194 @@
       </button>
     </div>
     <div class="project-nav-actions">
-      <button class="presets-btn" onclick="togglePresetsPanel()">Presets</button>
-      <button class="colorgrade-btn" onclick="toggleCGPanel()">Color Grade</button>
       <button class="invite-btn" onclick="openInviteFromProject(event)">+ Invite</button>
       <button class="select-btn" id="select-mode-btn" onclick="toggleSelectMode()">Select</button>
       <button class="deliver-btn" onclick="openDelivery()">Deliver to Client</button>
       <button class="upload-btn" onclick="document.getElementById('file-input').click()">+ Upload</button>
     </div>
   </nav>
-  <div class="edit-toolbar">
-    <div class="edit-tb-row">
-      <div class="edit-tb-section">
-        <div class="edit-genre-tabs">
-          <button class="edit-genre-tab active" onclick="setEditGenre('wedding',this)">Wedding</button>
-          <button class="edit-genre-tab" onclick="setEditGenre('engagement',this)">Engagement</button>
-          <button class="edit-genre-tab" onclick="setEditGenre('realestate',this)">Real Estate</button>
-          <button class="edit-genre-tab" onclick="setEditGenre('landscape',this)">Landscape</button>
-        </div>
-        <div class="edit-preset-chips" id="edit-preset-chips"></div>
-      </div>
-      <div class="edit-tb-divider"></div>
-      <div class="edit-tb-section">
-        <div class="edit-sliders-grid">
-          <div class="edit-slider-row">
-            <label class="edit-slider-label">Exposure</label>
-            <input type="range" class="edit-slider" id="sl-exposure" min="-100" max="100" value="0" oninput="onSliderInput('exposure',this.value)">
-            <span class="edit-slider-val" id="sv-exposure">0</span>
-          </div>
-          <div class="edit-slider-row">
-            <label class="edit-slider-label">Warmth</label>
-            <input type="range" class="edit-slider" id="sl-warmth" min="-100" max="100" value="0" oninput="onSliderInput('warmth',this.value)">
-            <span class="edit-slider-val" id="sv-warmth">0</span>
-          </div>
-          <div class="edit-slider-row">
-            <label class="edit-slider-label">Contrast</label>
-            <input type="range" class="edit-slider" id="sl-contrast" min="-100" max="100" value="0" oninput="onSliderInput('contrast',this.value)">
-            <span class="edit-slider-val" id="sv-contrast">0</span>
-          </div>
-          <div class="edit-slider-row">
-            <label class="edit-slider-label">Highlights</label>
-            <input type="range" class="edit-slider" id="sl-highlights" min="-100" max="100" value="0" oninput="onSliderInput('highlights',this.value)">
-            <span class="edit-slider-val" id="sv-highlights">0</span>
-          </div>
-          <div class="edit-slider-row">
-            <label class="edit-slider-label">Saturation</label>
-            <input type="range" class="edit-slider" id="sl-saturation" min="-100" max="100" value="0" oninput="onSliderInput('saturation',this.value)">
-            <span class="edit-slider-val" id="sv-saturation">0</span>
-          </div>
-          <div class="edit-slider-row">
-            <label class="edit-slider-label">Fade</label>
-            <input type="range" class="edit-slider" id="sl-fade" min="0" max="100" value="0" oninput="onSliderInput('fade',this.value)">
-            <span class="edit-slider-val" id="sv-fade">0</span>
-          </div>
-        </div>
-      </div>
-      <div class="edit-tb-divider"></div>
-      <div class="edit-tb-actions">
-        <button class="edit-apply-btn" onclick="applyEditsToAll()">Apply to All</button>
-        <button class="edit-reset-btn" onclick="resetEdits()">Reset All</button>
-      </div>
-    </div>
-  </div>
-  <!-- COLOR GRADE PANEL -->
-  <div class="colorgrade-toolbar" id="colorgrade-toolbar">
-    <div class="cg-row">
-
-      <!-- Color Wheels -->
-      <div class="cg-section">
-        <div class="cg-section-label">Color Wheels</div>
-        <div class="cg-wheels-row">
-          <div class="cg-wheel-wrap">
-            <div class="cg-wheel-name">Lift</div>
-            <div class="cg-wheel-container" id="cg-wc-lift">
-              <canvas class="cg-wheel" id="cg-wheel-lift" width="90" height="90"></canvas>
-              <div class="cg-wheel-dot" id="cg-dot-lift"></div>
-            </div>
-            <input type="range" class="cg-lum-slider" id="cg-lum-lift" min="-100" max="100" value="0" oninput="onCGLumChange('lift',this.value)">
-            <span class="cg-lum-val" id="cg-lv-lift">0</span>
-          </div>
-          <div class="cg-wheel-wrap">
-            <div class="cg-wheel-name">Gamma</div>
-            <div class="cg-wheel-container" id="cg-wc-gamma">
-              <canvas class="cg-wheel" id="cg-wheel-gamma" width="90" height="90"></canvas>
-              <div class="cg-wheel-dot" id="cg-dot-gamma"></div>
-            </div>
-            <input type="range" class="cg-lum-slider" id="cg-lum-gamma" min="-100" max="100" value="0" oninput="onCGLumChange('gamma',this.value)">
-            <span class="cg-lum-val" id="cg-lv-gamma">0</span>
-          </div>
-          <div class="cg-wheel-wrap">
-            <div class="cg-wheel-name">Gain</div>
-            <div class="cg-wheel-container" id="cg-wc-gain">
-              <canvas class="cg-wheel" id="cg-wheel-gain" width="90" height="90"></canvas>
-              <div class="cg-wheel-dot" id="cg-dot-gain"></div>
-            </div>
-            <input type="range" class="cg-lum-slider" id="cg-lum-gain" min="-100" max="100" value="0" oninput="onCGLumChange('gain',this.value)">
-            <span class="cg-lum-val" id="cg-lv-gain">0</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="cg-divider"></div>
-
-      <!-- Tone Curve -->
-      <div class="cg-section">
-        <div class="cg-section-label">Tone Curve</div>
-        <div class="cg-curve-wrap">
-          <div class="cg-curve-channels">
-            <button class="cg-ch-btn active" onclick="setCGChannel(this,'#0a0a0a')">L</button>
-            <button class="cg-ch-btn" onclick="setCGChannel(this,'#c0392b')" style="color:#c0392b">R</button>
-            <button class="cg-ch-btn" onclick="setCGChannel(this,'#27ae60')" style="color:#27ae60">G</button>
-            <button class="cg-ch-btn" onclick="setCGChannel(this,'#2980b9')" style="color:#2980b9">B</button>
-          </div>
-          <svg id="cg-curve-svg" width="150" height="130" viewBox="0 0 150 130" style="display:block;">
-            <rect x="10" y="10" width="130" height="110" fill="#f8f8f6" rx="1"/>
-            <line x1="42" y1="10" x2="42" y2="120" stroke="#e4e4e0" stroke-width="0.7"/>
-            <line x1="75" y1="10" x2="75" y2="120" stroke="#e4e4e0" stroke-width="0.7"/>
-            <line x1="108" y1="10" x2="108" y2="120" stroke="#e4e4e0" stroke-width="0.7"/>
-            <line x1="10" y1="47" x2="140" y2="47" stroke="#e4e4e0" stroke-width="0.7"/>
-            <line x1="10" y1="75" x2="140" y2="75" stroke="#e4e4e0" stroke-width="0.7"/>
-            <line x1="10" y1="103" x2="140" y2="103" stroke="#e4e4e0" stroke-width="0.7"/>
-            <line x1="10" y1="120" x2="140" y2="10" stroke="#ccc" stroke-width="0.7" stroke-dasharray="3,2"/>
-            <path id="cg-curve-path" fill="none" stroke="#0a0a0a" stroke-width="1.8"
-              d="M10,120 C10,120 42,120 75,65 C108,10 140,10 140,10"/>
-            <circle id="cg-cp1" cx="75" cy="65" r="5" fill="#0a0a0a" style="cursor:move"/>
-            <circle id="cg-cp2" cx="42" cy="103" r="4" fill="white" stroke="#0a0a0a" stroke-width="1.5" style="cursor:move"/>
-            <circle id="cg-cp3" cx="108" cy="27" r="4" fill="white" stroke="#0a0a0a" stroke-width="1.5" style="cursor:move"/>
-          </svg>
-        </div>
-      </div>
-
-      <div class="cg-divider"></div>
-
-      <!-- Primary Controls -->
-      <div class="cg-section">
-        <div class="cg-section-label">Primary</div>
-        <div class="cg-primary-grid">
-          <div class="cg-sl-row">
-            <label class="cg-sl-label">Temp</label>
-            <div class="cg-sl-track-wrap" style="--track-bg:linear-gradient(to right,#4fc3f7,#fff5e0,#ff8f00)">
-              <input type="range" class="cg-sl cg-sl-color" id="cg-temp" min="-100" max="100" value="0" oninput="onCGSl('temp',this.value)">
-            </div>
-            <span class="cg-sl-val" id="cg-sv-temp">0</span>
-          </div>
-          <div class="cg-sl-row">
-            <label class="cg-sl-label">Tint</label>
-            <div class="cg-sl-track-wrap" style="--track-bg:linear-gradient(to right,#27ae60,#ddd,#c0392b)">
-              <input type="range" class="cg-sl cg-sl-color" id="cg-tint" min="-100" max="100" value="0" oninput="onCGSl('tint',this.value)">
-            </div>
-            <span class="cg-sl-val" id="cg-sv-tint">0</span>
-          </div>
-          <div class="cg-sl-row">
-            <label class="cg-sl-label">Contrast</label>
-            <input type="range" class="cg-sl" id="cg-contrast" min="-100" max="100" value="0" oninput="onCGSl('contrast',this.value)">
-            <span class="cg-sl-val" id="cg-sv-contrast">0</span>
-          </div>
-          <div class="cg-sl-row">
-            <label class="cg-sl-label">Saturation</label>
-            <input type="range" class="cg-sl" id="cg-saturation" min="-100" max="100" value="0" oninput="onCGSl('saturation',this.value)">
-            <span class="cg-sl-val" id="cg-sv-saturation">0</span>
-          </div>
-          <div class="cg-sl-row">
-            <label class="cg-sl-label">Shadows</label>
-            <input type="range" class="cg-sl" id="cg-shadows" min="-100" max="100" value="0" oninput="onCGSl('shadows',this.value)">
-            <span class="cg-sl-val" id="cg-sv-shadows">0</span>
-          </div>
-          <div class="cg-sl-row">
-            <label class="cg-sl-label">Highlights</label>
-            <input type="range" class="cg-sl" id="cg-highlights" min="-100" max="100" value="0" oninput="onCGSl('highlights',this.value)">
-            <span class="cg-sl-val" id="cg-sv-highlights">0</span>
-          </div>
-          <div class="cg-sl-row">
-            <label class="cg-sl-label">Blacks</label>
-            <input type="range" class="cg-sl" id="cg-blacks" min="-100" max="100" value="0" oninput="onCGSl('blacks',this.value)">
-            <span class="cg-sl-val" id="cg-sv-blacks">0</span>
-          </div>
-          <div class="cg-sl-row">
-            <label class="cg-sl-label">Whites</label>
-            <input type="range" class="cg-sl" id="cg-whites" min="-100" max="100" value="0" oninput="onCGSl('whites',this.value)">
-            <span class="cg-sl-val" id="cg-sv-whites">0</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="cg-divider"></div>
-
-      <!-- Histogram Scope -->
-      <div class="cg-section">
-        <div class="cg-section-label">Histogram</div>
-        <canvas id="cg-histogram" width="120" height="90" style="display:block;border-radius:2px;background:#0a0a0a;"></canvas>
-      </div>
-
-      <div class="cg-divider"></div>
-
-      <!-- Actions -->
-      <div class="cg-section" style="justify-content:center;">
-        <button class="cg-apply-btn" onclick="applyCGToAll()">Apply to All</button>
-        <button class="cg-reset-btn" onclick="resetCG()">Reset</button>
-      </div>
-
-    </div>
-  </div>
-
   <div class="select-toolbar">
     <span class="select-count" id="select-count">0 selected</span>
     <button class="select-all-btn" onclick="selectAllFiles()">Select All</button>
     <button class="select-delete-btn" id="select-delete-btn" onclick="deleteSelectedFiles()" disabled>Delete Selected</button>
     <button class="select-cancel-btn" onclick="toggleSelectMode()">Cancel</button>
   </div>
-  <div class="project-main">
-    <input type="file" id="file-input" multiple accept="image/*,video/*" onchange="handleFileSelect(this.files)">
-    <div class="upload-progress" id="upload-progress">
-      <div class="progress-label" id="progress-label">Uploading...</div>
-      <div class="upload-file-list" id="upload-file-list"></div>
-      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  <div class="screen-body">
+    <div class="project-main">
+      <input type="file" id="file-input" multiple accept="image/*,video/*" onchange="handleFileSelect(this.files)">
+      <div class="upload-progress" id="upload-progress">
+        <div class="progress-label" id="progress-label">Uploading...</div>
+        <div class="upload-file-list" id="upload-file-list"></div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      </div>
+      <div class="files-grid" id="files-grid">
+        <div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
+      </div>
     </div>
-    <div class="files-grid" id="files-grid">
-      <div class="loader"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
-    </div>
+    <aside class="edit-side-panel">
+      <!-- Presets Section -->
+      <div class="esp-section open" id="esp-presets">
+        <button class="esp-header" onclick="toggleEspSection(this)">Presets <span class="esp-chevron">▾</span></button>
+        <div class="esp-body">
+          <div class="edit-genre-tabs">
+            <button class="edit-genre-tab active" onclick="setEditGenre('wedding',this)">Wedding</button>
+            <button class="edit-genre-tab" onclick="setEditGenre('engagement',this)">Engagement</button>
+            <button class="edit-genre-tab" onclick="setEditGenre('realestate',this)">Real Estate</button>
+            <button class="edit-genre-tab" onclick="setEditGenre('landscape',this)">Landscape</button>
+          </div>
+          <div class="edit-preset-chips" id="edit-preset-chips"></div>
+          <div class="edit-sliders-grid">
+            <div class="edit-slider-row">
+              <label class="edit-slider-label">Exposure</label>
+              <input type="range" class="edit-slider" id="sl-exposure" min="-100" max="100" value="0" oninput="onSliderInput('exposure',this.value)">
+              <span class="edit-slider-val" id="sv-exposure">0</span>
+            </div>
+            <div class="edit-slider-row">
+              <label class="edit-slider-label">Warmth</label>
+              <input type="range" class="edit-slider" id="sl-warmth" min="-100" max="100" value="0" oninput="onSliderInput('warmth',this.value)">
+              <span class="edit-slider-val" id="sv-warmth">0</span>
+            </div>
+            <div class="edit-slider-row">
+              <label class="edit-slider-label">Contrast</label>
+              <input type="range" class="edit-slider" id="sl-contrast" min="-100" max="100" value="0" oninput="onSliderInput('contrast',this.value)">
+              <span class="edit-slider-val" id="sv-contrast">0</span>
+            </div>
+            <div class="edit-slider-row">
+              <label class="edit-slider-label">Highlights</label>
+              <input type="range" class="edit-slider" id="sl-highlights" min="-100" max="100" value="0" oninput="onSliderInput('highlights',this.value)">
+              <span class="edit-slider-val" id="sv-highlights">0</span>
+            </div>
+            <div class="edit-slider-row">
+              <label class="edit-slider-label">Saturation</label>
+              <input type="range" class="edit-slider" id="sl-saturation" min="-100" max="100" value="0" oninput="onSliderInput('saturation',this.value)">
+              <span class="edit-slider-val" id="sv-saturation">0</span>
+            </div>
+            <div class="edit-slider-row">
+              <label class="edit-slider-label">Fade</label>
+              <input type="range" class="edit-slider" id="sl-fade" min="0" max="100" value="0" oninput="onSliderInput('fade',this.value)">
+              <span class="edit-slider-val" id="sv-fade">0</span>
+            </div>
+          </div>
+          <div class="edit-tb-actions">
+            <button class="edit-apply-btn" onclick="applyEditsToAll()">Apply to All</button>
+            <button class="edit-reset-btn" onclick="resetEdits()">Reset All</button>
+          </div>
+        </div>
+      </div>
+      <!-- Color Grade Section -->
+      <div class="esp-section open" id="esp-cg">
+        <button class="esp-header" onclick="toggleEspSection(this)">Color Grade <span class="esp-chevron">▾</span></button>
+        <div class="esp-body" id="colorgrade-toolbar">
+          <div class="cg-section-label">Color Wheels</div>
+          <div class="cg-wheels-row">
+            <div class="cg-wheel-wrap">
+              <div class="cg-wheel-name">Lift</div>
+              <div class="cg-wheel-container" id="cg-wc-lift">
+                <canvas class="cg-wheel" id="cg-wheel-lift" width="90" height="90"></canvas>
+                <div class="cg-wheel-dot" id="cg-dot-lift"></div>
+              </div>
+              <input type="range" class="cg-lum-slider" id="cg-lum-lift" min="-100" max="100" value="0" oninput="onCGLumChange('lift',this.value)">
+              <span class="cg-lum-val" id="cg-lv-lift">0</span>
+            </div>
+            <div class="cg-wheel-wrap">
+              <div class="cg-wheel-name">Gamma</div>
+              <div class="cg-wheel-container" id="cg-wc-gamma">
+                <canvas class="cg-wheel" id="cg-wheel-gamma" width="90" height="90"></canvas>
+                <div class="cg-wheel-dot" id="cg-dot-gamma"></div>
+              </div>
+              <input type="range" class="cg-lum-slider" id="cg-lum-gamma" min="-100" max="100" value="0" oninput="onCGLumChange('gamma',this.value)">
+              <span class="cg-lum-val" id="cg-lv-gamma">0</span>
+            </div>
+            <div class="cg-wheel-wrap">
+              <div class="cg-wheel-name">Gain</div>
+              <div class="cg-wheel-container" id="cg-wc-gain">
+                <canvas class="cg-wheel" id="cg-wheel-gain" width="90" height="90"></canvas>
+                <div class="cg-wheel-dot" id="cg-dot-gain"></div>
+              </div>
+              <input type="range" class="cg-lum-slider" id="cg-lum-gain" min="-100" max="100" value="0" oninput="onCGLumChange('gain',this.value)">
+              <span class="cg-lum-val" id="cg-lv-gain">0</span>
+            </div>
+          </div>
+          <div class="cg-section-label" style="margin-top:1rem">Tone Curve</div>
+          <div class="cg-curve-wrap">
+            <div class="cg-curve-channels">
+              <button class="cg-ch-btn active" onclick="setCGChannel(this,'#0a0a0a')">L</button>
+              <button class="cg-ch-btn" onclick="setCGChannel(this,'#c0392b')" style="color:#c0392b">R</button>
+              <button class="cg-ch-btn" onclick="setCGChannel(this,'#27ae60')" style="color:#27ae60">G</button>
+              <button class="cg-ch-btn" onclick="setCGChannel(this,'#2980b9')" style="color:#2980b9">B</button>
+            </div>
+            <svg id="cg-curve-svg" width="150" height="130" viewBox="0 0 150 130" style="display:block;width:100%;max-width:260px;">
+              <rect x="10" y="10" width="130" height="110" fill="#f8f8f6" rx="1"/>
+              <line x1="42" y1="10" x2="42" y2="120" stroke="#e4e4e0" stroke-width="0.7"/>
+              <line x1="75" y1="10" x2="75" y2="120" stroke="#e4e4e0" stroke-width="0.7"/>
+              <line x1="108" y1="10" x2="108" y2="120" stroke="#e4e4e0" stroke-width="0.7"/>
+              <line x1="10" y1="47" x2="140" y2="47" stroke="#e4e4e0" stroke-width="0.7"/>
+              <line x1="10" y1="75" x2="140" y2="75" stroke="#e4e4e0" stroke-width="0.7"/>
+              <line x1="10" y1="103" x2="140" y2="103" stroke="#e4e4e0" stroke-width="0.7"/>
+              <line x1="10" y1="120" x2="140" y2="10" stroke="#ccc" stroke-width="0.7" stroke-dasharray="3,2"/>
+              <path id="cg-curve-path" fill="none" stroke="#0a0a0a" stroke-width="1.8"
+                d="M10,120 C10,120 42,120 75,65 C108,10 140,10 140,10"/>
+              <circle id="cg-cp1" cx="75" cy="65" r="5" fill="#0a0a0a" style="cursor:move"/>
+              <circle id="cg-cp2" cx="42" cy="103" r="4" fill="white" stroke="#0a0a0a" stroke-width="1.5" style="cursor:move"/>
+              <circle id="cg-cp3" cx="108" cy="27" r="4" fill="white" stroke="#0a0a0a" stroke-width="1.5" style="cursor:move"/>
+            </svg>
+          </div>
+          <div class="cg-section-label" style="margin-top:1rem">Primary</div>
+          <div class="cg-primary-grid">
+            <div class="cg-sl-row">
+              <label class="cg-sl-label">Temp</label>
+              <div class="cg-sl-track-wrap" style="--track-bg:linear-gradient(to right,#4fc3f7,#fff5e0,#ff8f00)">
+                <input type="range" class="cg-sl cg-sl-color" id="cg-temp" min="-100" max="100" value="0" oninput="onCGSl('temp',this.value)">
+              </div>
+              <span class="cg-sl-val" id="cg-sv-temp">0</span>
+            </div>
+            <div class="cg-sl-row">
+              <label class="cg-sl-label">Tint</label>
+              <div class="cg-sl-track-wrap" style="--track-bg:linear-gradient(to right,#27ae60,#ddd,#c0392b)">
+                <input type="range" class="cg-sl cg-sl-color" id="cg-tint" min="-100" max="100" value="0" oninput="onCGSl('tint',this.value)">
+              </div>
+              <span class="cg-sl-val" id="cg-sv-tint">0</span>
+            </div>
+            <div class="cg-sl-row">
+              <label class="cg-sl-label">Contrast</label>
+              <input type="range" class="cg-sl" id="cg-contrast" min="-100" max="100" value="0" oninput="onCGSl('contrast',this.value)">
+              <span class="cg-sl-val" id="cg-sv-contrast">0</span>
+            </div>
+            <div class="cg-sl-row">
+              <label class="cg-sl-label">Saturation</label>
+              <input type="range" class="cg-sl" id="cg-saturation" min="-100" max="100" value="0" oninput="onCGSl('saturation',this.value)">
+              <span class="cg-sl-val" id="cg-sv-saturation">0</span>
+            </div>
+            <div class="cg-sl-row">
+              <label class="cg-sl-label">Shadows</label>
+              <input type="range" class="cg-sl" id="cg-shadows" min="-100" max="100" value="0" oninput="onCGSl('shadows',this.value)">
+              <span class="cg-sl-val" id="cg-sv-shadows">0</span>
+            </div>
+            <div class="cg-sl-row">
+              <label class="cg-sl-label">Highlights</label>
+              <input type="range" class="cg-sl" id="cg-highlights" min="-100" max="100" value="0" oninput="onCGSl('highlights',this.value)">
+              <span class="cg-sl-val" id="cg-sv-highlights">0</span>
+            </div>
+            <div class="cg-sl-row">
+              <label class="cg-sl-label">Blacks</label>
+              <input type="range" class="cg-sl" id="cg-blacks" min="-100" max="100" value="0" oninput="onCGSl('blacks',this.value)">
+              <span class="cg-sl-val" id="cg-sv-blacks">0</span>
+            </div>
+            <div class="cg-sl-row">
+              <label class="cg-sl-label">Whites</label>
+              <input type="range" class="cg-sl" id="cg-whites" min="-100" max="100" value="0" oninput="onCGSl('whites',this.value)">
+              <span class="cg-sl-val" id="cg-sv-whites">0</span>
+            </div>
+          </div>
+          <div class="cg-section-label" style="margin-top:1rem">Histogram</div>
+          <canvas id="cg-histogram" width="240" height="80" style="display:block;border-radius:2px;background:#0a0a0a;width:100%;"></canvas>
+          <div class="cg-panel-actions">
+            <button class="cg-apply-btn" onclick="applyCGToAll()">Apply to All</button>
+            <button class="cg-reset-btn" onclick="resetCG()">Reset</button>
+          </div>
+        </div>
+      </div>
+    </aside>
   </div>
 </div>
 
@@ -5353,13 +5337,19 @@ function openProjectEditMode(id, name, event) {
   loadFiles();
   _activeEditGenre = 'wedding';
   _activePresetName = null;
-  document.getElementById('project-screen').classList.remove('presets-open','cg-open');
   document.querySelectorAll('.edit-genre-tab').forEach((t,i) => t.classList.toggle('active', i === 0));
   resetEdits();
+  // Init CG panel on first open
+  if (!_cgInited) { initCG(); _cgInited = true; }
+  drawCGHistogram();
+  // Open both side panel sections
+  document.querySelectorAll('.esp-section').forEach(s => s.classList.add('open'));
 }
 
-function togglePresetsPanel() {
-  document.getElementById('project-screen').classList.toggle('presets-open');
+function togglePresetsPanel() { /* no-op: panel always visible in edit mode */ }
+
+function toggleEspSection(btn) {
+  btn.closest('.esp-section').classList.toggle('open');
 }
 
 // ── Photo Presets & Color Grading ──────────────────────────────
@@ -5524,13 +5514,7 @@ function setFilesView(mode, btn) {
   if (btn) btn.classList.add('active');
 }
 
-function toggleCGPanel() {
-  const screen = document.getElementById('project-screen');
-  const opening = !screen.classList.contains('cg-open');
-  screen.classList.toggle('cg-open');
-  if (opening && !_cgInited) { initCG(); _cgInited = true; }
-  if (opening) drawCGHistogram();
-}
+function toggleCGPanel() { /* no-op: panel always visible in edit mode */ }
 
 function initCG() {
   ['lift','gamma','gain'].forEach(w => drawCGWheel(w));
