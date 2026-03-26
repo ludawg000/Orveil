@@ -5679,57 +5679,75 @@ function resetCG() {
   drawCGHistogram();
 }
 
+let _cgHistImg = null; // cached { src, img } — avoids reload on every slider/wheel/curve change
+
 async function drawCGHistogram() {
   const canvas = document.getElementById('cg-histogram');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
-  ctx.clearRect(0,0,W,H);
-  ctx.fillStyle = '#0a0a0a'; ctx.fillRect(0,0,W,H);
-  ctx.strokeStyle = '#1a1a1a'; ctx.lineWidth = 0.7;
-  [0.25,0.5,0.75].forEach(t => {
-    ctx.beginPath(); ctx.moveTo(t*W,0); ctx.lineTo(t*W,H); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0,t*H); ctx.lineTo(W,t*H); ctx.stroke();
-  });
 
-  // Try to read actual pixel data from the selected (or first visible) image
   const imgEl = document.querySelector('.file-card.selected .file-thumb img')
               || document.querySelector('#files-grid .file-card .file-thumb img');
+
   if (imgEl?.src) {
     try {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      await new Promise((res, rej) => { img.onload=res; img.onerror=rej; img.src=imgEl.src; });
+      // Load once; cache for all subsequent filter-change redraws (no async stall = no flicker)
+      if (_cgHistImg?.src !== imgEl.src) {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        await new Promise((res, rej) => { img.onload=res; img.onerror=rej; img.src=imgEl.src; });
+        _cgHistImg = { src: imgEl.src, img };
+      }
+      const img = _cgHistImg.img;
       const iw = img.naturalWidth||img.width, ih = img.naturalHeight||img.height;
       if (iw > 0 && ih > 0) {
         const scale = Math.min(1, 200/Math.max(iw,ih));
         const w = Math.max(1,Math.round(iw*scale)), h = Math.max(1,Math.round(ih*scale));
         const tmp = document.createElement('canvas'); tmp.width=w; tmp.height=h;
-        const tc = tmp.getContext('2d'); tc.drawImage(img,0,0,w,h);
-        const { data } = tc.getImageData(0,0,w,h); // throws SecurityError if CORS blocked
+        const tc = tmp.getContext('2d');
+        // Apply current color grade so wheels/sliders/curve all show in the histogram
+        tc.filter = buildCGFilter();
+        tc.drawImage(img, 0, 0, w, h);
+        const { data } = tc.getImageData(0, 0, w, h); // throws SecurityError if CORS blocked
         const rH=new Uint32Array(256), gH=new Uint32Array(256), bH=new Uint32Array(256);
         for (let i=0; i<data.length; i+=4) { rH[data[i]]++; gH[data[i+1]]++; bH[data[i+2]]++; }
         let peak=1;
         for (let i=1; i<255; i++) peak=Math.max(peak,rH[i],gH[i],bH[i]);
+
+        ctx.clearRect(0,0,W,H);
+        ctx.fillStyle='#0a0a0a'; ctx.fillRect(0,0,W,H);
+        ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=0.7;
+        [0.25,0.5,0.75].forEach(t=>{
+          ctx.beginPath(); ctx.moveTo(t*W,0); ctx.lineTo(t*W,H); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(0,t*H); ctx.lineTo(W,t*H); ctx.stroke();
+        });
         const drawCh=(hist,color)=>{
           ctx.beginPath(); ctx.moveTo(0,H);
           for (let x=0; x<W; x++) {
             const bin=Math.round(x*255/(W-1));
-            ctx.lineTo(x, H - (hist[bin]/peak)*H*0.95);
+            ctx.lineTo(x, H-(hist[bin]/peak)*H*0.95);
           }
           ctx.lineTo(W,H); ctx.closePath(); ctx.fillStyle=color; ctx.fill();
         };
         drawCh(bH,'rgba(41,128,185,0.6)');
         drawCh(gH,'rgba(39,174,96,0.55)');
         drawCh(rH,'rgba(192,57,43,0.6)');
-        ctx.fillStyle='#333'; ctx.font='500 8px sans-serif';
+        ctx.fillStyle='#444'; ctx.font='500 8px sans-serif';
         ctx.fillText('0',2,H-2); ctx.fillText('255',W-16,H-2);
         return;
       }
     } catch(e) { /* CORS blocked — fall through to simulation */ }
   }
 
-  // Fallback: simulate shape from current adjustments
+  // Fallback simulation
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#0a0a0a'; ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=0.7;
+  [0.25,0.5,0.75].forEach(t=>{
+    ctx.beginPath(); ctx.moveTo(t*W,0); ctx.lineTo(t*W,H); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,t*H); ctx.lineTo(W,t*H); ctx.stroke();
+  });
   const bright=(1+CG_STATE.lift.lum*0.002+CG_STATE.gamma.lum*0.005+CG_STATE.gain.lum*0.002);
   const cont=(1+CG_STATE.contrast*0.01);
   const shift=Math.min(Math.max((bright-1)*30+W/2,10),W-10);
@@ -5743,7 +5761,7 @@ async function drawCGHistogram() {
       }
       ctx.lineTo(W,H); ctx.closePath(); ctx.fillStyle=color; ctx.fill();
     });
-  ctx.fillStyle='#333'; ctx.font='500 8px sans-serif';
+  ctx.fillStyle='#444'; ctx.font='500 8px sans-serif';
   ctx.fillText('0',2,H-2); ctx.fillText('255',W-16,H-2);
 }
 
