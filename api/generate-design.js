@@ -55,7 +55,7 @@ Return ONLY valid JSON, no explanation.`;
           { role: 'system', content: system },
           { role: 'user', content: `Project: "${projectName || 'Untitled'}". Aesthetic description: ${prompt}${excludeFonts?.length ? `\n\nDo NOT use these fonts (already used recently): ${excludeFonts.join(', ')}. Pick something different.` : ''}` },
         ],
-        max_tokens: 350,
+        max_tokens: 500,
         temperature: 0.9,
       }),
     });
