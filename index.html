@@ -2151,7 +2151,24 @@
   .delivery-opt.selected .delivery-check { background: var(--black); border-color: var(--black); }
   .delivery-preview-box { background: var(--g100); padding: 0.8rem; border-radius: 1px; margin-bottom: 1rem; }
   .delivery-preview-label { font-size: 0.58rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--g400); margin-bottom: 0.4rem; }
-  .delivery-preview-text { font-family: var(--serif); font-size: 0.8rem; color: var(--g600); line-height: 1.6; font-style: italic; }
+  .delivery-preview-text { font-family: var(--serif); font-size: 0.8rem; color: var(--g600); line-height: 1.6; font-style: italic; min-height: 2.5rem; }
+  .delivery-preview-text.loading { color: var(--g300); font-style: normal; font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.06em; }
+  .delivery-preview-label-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+  .delivery-preview-label-row .delivery-preview-label { margin-bottom: 0; }
+  .delivery-regen-btn {
+    font-family: var(--sans); font-size: 0.6rem; font-weight: 500; letter-spacing: 0.06em;
+    background: transparent; border: 1px solid var(--g200); color: var(--g400);
+    padding: 0.2rem 0.55rem; border-radius: 2px; cursor: pointer;
+  }
+  .delivery-regen-btn:hover { border-color: var(--black); color: var(--black); }
+  .delivery-generate-btn {
+    font-family: var(--sans); font-size: 0.62rem; font-weight: 500; letter-spacing: 0.08em;
+    text-transform: uppercase; background: var(--black); color: var(--white);
+    border: none; padding: 0.5rem 1.2rem; border-radius: 2px; cursor: pointer;
+    width: 100%; margin-top: 0.5rem;
+  }
+  .delivery-generate-btn:hover { background: #222; }
+  .delivery-generate-btn:disabled { opacity: 0.5; cursor: default; }
   /* Color Presets */
   .color-presets { display: flex; gap: 0.5rem; margin-bottom: 0.8rem; flex-wrap: wrap; }
   .color-preset {
@@ -3938,9 +3955,15 @@
         <div class="delivery-check"></div>
       </div>
     </div>
-    <textarea class="delivery-custom-input" id="delivery-custom-text" placeholder="Write your own delivery message..." style="display:none"></textarea>
+    <div id="delivery-custom-wrap" style="display:none">
+      <textarea class="delivery-custom-input" id="delivery-custom-text" placeholder="Describe the tone, style, or any details to include... e.g. 'luxury brand, one paragraph, mention golden hour'"></textarea>
+      <button class="delivery-generate-btn" onclick="generateAIMessage()">Generate</button>
+    </div>
     <div class="delivery-preview-box">
-      <div class="delivery-preview-label">Message Preview</div>
+      <div class="delivery-preview-label-row">
+        <div class="delivery-preview-label">Message Preview</div>
+        <button class="delivery-regen-btn" id="delivery-regen-btn" onclick="generateAIMessage()" style="display:none">↻ Regenerate</button>
+      </div>
       <div class="delivery-preview-text" id="delivery-preview-text"></div>
     </div>
     <div class="delivery-customize-toggle" onclick="toggleCustomize()">
@@ -6004,11 +6027,16 @@ const FONT_LIST = [
 ];
 
 async function openDelivery() {
-  updateDeliveryPreview('standard');
+  _aiDeliveryMessage = '';
+  document.getElementById('delivery-preview-text').textContent = '';
+  document.getElementById('delivery-regen-btn').style.display = 'none';
+  document.getElementById('delivery-custom-wrap').style.display = 'none';
+  document.querySelectorAll('.delivery-opt').forEach((o,i) => o.classList.toggle('selected', i===0));
   loadShareLink();
   await loadGallerySettings();
   window._previewProjectName = currentProject?.name || 'Your Project';
   document.getElementById('delivery-modal').classList.add('active');
+  generateAIMessage();
 }
 
 async function loadShareLink() {
@@ -6555,27 +6583,63 @@ function closeDelivery() {
   document.querySelector('#delivery-modal .modal')?.classList.remove('customize-open');
 }
 
+let _aiDeliveryMessage = '';
+let _aiDeliveryStyle = '';
+
 function selectDelivery(el) {
   document.querySelectorAll('.delivery-opt').forEach(o => o.classList.remove('selected'));
   el.classList.add('selected');
-  const customInput = document.getElementById('delivery-custom-text');
+  const customWrap = document.getElementById('delivery-custom-wrap');
   if (el.dataset.style === 'custom') {
-    customInput.style.display = 'block';
-    customInput.oninput = () => {
-      document.getElementById('delivery-preview-text').textContent = customInput.value ? `"${customInput.value}"` : '"Type your message above..."';
-      updateEmailPreview();
-    };
-    document.getElementById('delivery-preview-text').textContent = customInput.value ? `"${customInput.value}"` : '"Type your message above..."';
+    customWrap.style.display = 'block';
+    document.getElementById('delivery-preview-text').textContent = '';
+    document.getElementById('delivery-regen-btn').style.display = 'none';
+    _aiDeliveryMessage = '';
   } else {
-    customInput.style.display = 'none';
-    updateDeliveryPreview(el.dataset.style);
+    customWrap.style.display = 'none';
+    generateAIMessage();
   }
   updateEmailPreview();
 }
 
+async function generateAIMessage() {
+  const style = document.querySelector('.delivery-opt.selected')?.dataset.style || 'standard';
+  const customPrompt = document.getElementById('delivery-custom-text')?.value?.trim();
+  if (style === 'custom' && !customPrompt) { showToast('Enter instructions first.'); return; }
+
+  const previewEl = document.getElementById('delivery-preview-text');
+  const regenBtn = document.getElementById('delivery-regen-btn');
+  const genBtn = document.getElementById('delivery-generate-btn') || document.querySelector('.delivery-generate-btn');
+
+  previewEl.textContent = 'Generating...';
+  previewEl.classList.add('loading');
+  if (genBtn) { genBtn.disabled = true; genBtn.textContent = 'Generating...'; }
+  regenBtn.style.display = 'none';
+
+  try {
+    const resp = await fetch('/api/generate-delivery', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ style, projectName: currentProject?.name || 'Your Project', customPrompt })
+    });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Generation failed');
+    _aiDeliveryMessage = data.message;
+    _aiDeliveryStyle = style;
+    previewEl.textContent = `"${data.message}"`;
+    previewEl.classList.remove('loading');
+    regenBtn.style.display = 'inline-block';
+  } catch (err) {
+    _aiDeliveryMessage = deliveryMessages[style]?.(currentProject?.name) || '';
+    previewEl.textContent = _aiDeliveryMessage ? `"${_aiDeliveryMessage}"` : 'Could not generate — check connection.';
+    previewEl.classList.remove('loading');
+  }
+  if (genBtn) { genBtn.disabled = false; genBtn.textContent = 'Generate'; }
+  updateEmailPreview();
+}
+
 function updateDeliveryPreview(style) {
-  const msg = deliveryMessages[style]?.(currentProject?.name) || '';
-  document.getElementById('delivery-preview-text').textContent = `"${msg}"`;
+  generateAIMessage();
 }
 
 async function sendDelivery() {
@@ -6637,9 +6701,7 @@ async function sendDelivery() {
   // Send email via API
   btn.textContent = 'Sending...';
   const style = document.querySelector('.delivery-opt.selected')?.dataset.style || 'standard';
-  const message = style === 'custom'
-    ? (document.getElementById('delivery-custom-text').value || 'Your gallery is ready!')
-    : (deliveryMessages[style]?.(currentProject?.name) || '');
+  const message = _aiDeliveryMessage || deliveryMessages[style]?.(currentProject?.name) || 'Your gallery is ready!';
   const logoUrl = currentGallerySettings.logo_path
     ? `${SUPABASE_URL}/storage/v1/object/public/logos/${currentGallerySettings.logo_path}` : null;
 
