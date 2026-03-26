@@ -144,16 +144,14 @@
 
   /* MANAGE MODE BTN */
   .manage-btn {
-    font-family: var(--serif); font-size: 0.72rem; font-weight: 400;
-    letter-spacing: 0.06em; font-style: italic;
-    background: none; color: var(--g400);
-    border: 1px solid var(--g200); padding: 0.55rem 1rem; cursor: pointer;
-    transition: all 0.3s;
+    font-family: var(--sans); font-size: 0.68rem; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    background: var(--white); color: var(--black);
+    border: 1px solid var(--black); padding: 0.65rem 1.2rem; cursor: pointer;
+    transition: all 0.2s;
   }
-  .manage-btn:hover { border-color: var(--black); color: var(--black); }
-  .manage-btn.active {
-    background: #3d2b1a; color: #f5e6d0; border-color: #6b4c30;
-  }
+  .manage-btn:hover { background: var(--black); color: var(--white); }
+  .manage-btn.active { background: var(--black); color: var(--white); }
 
   /* RETRO TV MODE — realistic vintage set */
   .retro-tv .projects-grid { display: none; }
