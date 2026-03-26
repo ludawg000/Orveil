@@ -6468,21 +6468,23 @@ function updateGalleryPreview() {
   screen.style.backgroundRepeat = 'repeat';
 
   const content = document.getElementById('gal-preview-content');
-  content.style.backgroundColor = bg;
+  content.style.backgroundColor = 'transparent';
 
-  // Hero image
-  let heroEl = document.getElementById('gal-preview-hero');
+  // Hero mood image — full bleed behind the screen content
   if (s.hero_image_url) {
-    if (!heroEl) {
-      heroEl = document.createElement('div');
-      heroEl.id = 'gal-preview-hero';
-      heroEl.style.cssText = 'width:100%;height:80px;overflow:hidden;margin-bottom:0;';
-      content.insertBefore(heroEl, content.firstChild);
-    }
-    heroEl.innerHTML = `<img src="${s.hero_image_url}" style="width:100%;height:80px;object-fit:cover;display:block;">`;
-  } else if (heroEl) {
-    heroEl.remove();
+    screen.style.backgroundImage = `linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, ${bg}cc 60%, ${bg} 100%), url('${s.hero_image_url}')${grad ? `, ${grad}` : ''}${patternImg ? `, ${patternImg}` : ''}`;
+    screen.style.backgroundSize = `cover, cover${grad ? ', auto' : ''}${patternImg ? `, ${sizes[wp]}` : ''}`;
+    screen.style.backgroundRepeat = `no-repeat, no-repeat${grad ? ', no-repeat' : ''}${patternImg ? ', repeat' : ''}`;
+    screen.style.backgroundPosition = 'top, top';
+  } else {
+    screen.style.backgroundImage = grad && patternImg ? `${patternImg}, ${grad}` : (patternImg || grad || '');
+    screen.style.backgroundSize = sizes[wp] || 'auto';
+    screen.style.backgroundRepeat = 'repeat';
+    screen.style.backgroundPosition = '';
   }
+  // Remove any stale hero element
+  const staleHero = document.getElementById('gal-preview-hero');
+  if (staleHero) staleHero.remove();
 
   const title = document.getElementById('gal-preview-title');
   title.style.color = accent;

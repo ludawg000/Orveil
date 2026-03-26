@@ -10,28 +10,28 @@ export default async function handler(req, res) {
   if (!GROQ_API_KEY) return res.status(500).json({ error: 'Groq API key not configured' });
   if (!prompt) return res.status(400).json({ error: 'Prompt required' });
 
-  const system = `You are a world-class photography gallery art director. Create a bold, intentional, visually distinctive gallery design based on the photographer's description. Every design should feel like it was crafted by a creative director — not generic.
+  const system = `You are a photography gallery art director. Your ONLY job is to translate the photographer's exact words into a matching visual design. Read the description carefully and extract specific signals:
 
-Return ONLY a JSON object with these fields:
+- Warm words (golden, sunset, tuscany, sunflower, autumn, terracotta, blush) → warm palette: deep ambers, burnt siennas, warm creams
+- Cool/moody words (rainy, storm, editorial, dark, shadow, blue, ocean, arctic) → cool palette: charcoals, steel blues, slate
+- Romantic/soft words (wedding, floral, dreamy, ethereal, film) → soft palette: dusty rose, ivory, blush, mauve
+- Nature/organic words (forest, green, earthy, botanical) → earthy palette: forest greens, warm browns, sage
+- Luxury/fashion words (black, minimal, sleek, high fashion, editorial) → high contrast: near-black with bright white or gold
+- Bright/airy words (beach, white, bright, summer, fresh) → light palette: warm whites, sand, soft coral
 
-- bg_color: hex color for background. Be bold — deep charcoals, rich creams, dusty mauves, forest greens, navy, terracotta, etc. Never plain white or black.
-- accent_color: hex color for text/buttons. Must strongly contrast bg_color. Often a warm gold, ivory, blush, sage, or off-white on dark, or a deep moody tone on light.
-- bg_gradient: optional CSS linear-gradient string for background (adds depth). Example: "linear-gradient(135deg, #1a0e08 0%, #2d1a0e 100%)". Use for most designs.
-- wallpaper: "none" | "linen" | "lace" | "geometric" | "dots" | "marble"
+Return ONLY a JSON object:
+- bg_color: hex — MUST match the mood described. Warm description = warm background. Dark description = dark background.
+- accent_color: hex — must strongly contrast bg_color
+- bg_gradient: CSS linear-gradient that deepens the bg_color (same hue, slightly lighter/darker). Always include.
+- wallpaper: "none" | "linen" | "lace" | "geometric" | "dots" | "marble" — match the mood
 - layout: "masonry" | "grid" | "slideshow"
-- font: Google Fonts name matching the aesthetic. Examples: "Cormorant Garamond" (romantic/luxury), "Josefin Sans" (modern/clean), "DM Serif Display" (editorial), "Italiana" (fashion), "Libre Baskerville" (classic), "Raleway" (minimal modern), "Bodoni Moda" (high fashion), "Crimson Pro" (warm editorial)
-- design_name: a 2-3 word name for this design theme (e.g. "Tuscan Warmth", "Arctic Editorial", "Midnight Romance")
-- image_prompt: a detailed, cinematic prompt for an AI image generator to create a stunning hero/mood image that matches the aesthetic. Should describe lighting, colors, mood, setting. No people. Examples: "golden tuscany hills at sunset, warm haze, sunflower fields, cinematic photography, film grain", "dramatic arctic ice cliffs, blue hour, minimalist, editorial photography"
+- font: Google Fonts name. Match aesthetics: wedding→"Cormorant Garamond", editorial→"Josefin Sans", fashion→"Bodoni Moda", romantic→"Italiana", minimal→"Raleway", warm→"Crimson Pro"
+- design_name: 2-3 words describing this specific design (not generic)
+- image_prompt: cinematic AI image prompt matching the exact described mood — specific location, lighting, colors, no people
 
-Rules:
-- bg_color and accent_color must have STRONG contrast
-- bg_gradient should complement bg_color (slightly lighter or darker variation, same hue family)
-- Match every element to the described mood — a sunflower wedding should feel golden and warm, not grey
-- Be specific and committed to a palette — no generic beige on white
-- Return ONLY valid JSON, no explanation
+CRITICAL: Your output must directly reflect the photographer's words. If they say "golden tuscany wedding" the bg must be warm amber/terracotta, NOT grey or cool-toned. If they say "dark moody editorial" it must be dark, NOT beige.
 
-Example for "moody rainy day editorial":
-{"bg_color":"#1c1f2b","accent_color":"#c8cdd8","bg_gradient":"linear-gradient(160deg,#1c1f2b 0%,#252836 100%)","wallpaper":"geometric","layout":"masonry","font":"Josefin Sans","design_name":"Storm Editorial","image_prompt":"dramatic stormy coastline, dark brooding clouds, cinematic photography, desaturated blues and greys, moody atmosphere, film grain, editorial"}`;
+Return ONLY valid JSON, no explanation.`;
 
   try {
     const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
