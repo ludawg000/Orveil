@@ -8025,62 +8025,78 @@ document.addEventListener('keydown', e => {
     const btn  = document.querySelector('.landing-get-started');
     if (!logo || !btn) return;
 
-    const VW = window.innerWidth;
-    const VH = window.innerHeight;
+    // Use clientWidth/clientHeight — reliable across browsers, no scrollbar ambiguity
+    const VW = document.documentElement.clientWidth;
+    const VH = document.documentElement.clientHeight;
     const logoRect = logo.getBoundingClientRect();
     const btnRect  = btn.getBoundingClientRect();
 
-    // Start: base of the "O" in Orveil
-    const fontH = logoRect.height;
-    const sx = logoRect.left + fontH * 0.28;
-    const sy = logoRect.top  + fontH * 0.82;
+    const pad = 12;
+    const amp = 3.2;
+    const SEGS = 22;
 
-    // End: left edge of Get Started button, vertical center
-    const ex = btnRect.left - 2;
-    const ey = btnRect.top  + btnRect.height * 0.5;
+    // Start: bottom of the "O" in Orveil (first character)
+    const charW = logoRect.height * 0.62; // approximate width of 'O'
+    const sx = logoRect.left + charW * 0.5;
+    const sy = logoRect.bottom - 1;
 
-    const pad  = 14;
-    const amp  = 3.5;
-    const SEGS = 18;
-
+    // Wavy segment helper — appends points from (x1,y1)→(x2,y2)
+    // axis='x': horizontal travel, wave in y
+    // axis='y': vertical travel, wave in x
     function seg(pts, x1, y1, x2, y2, axis) {
-      const start = pts.length ? 1 : 0;
-      for (let i = start; i <= SEGS; i++) {
+      for (let i = 1; i <= SEGS; i++) {
         const t = i / SEGS;
-        const w = Math.sin(t * Math.PI * 3.8 + 0.6) * amp;
+        const w = Math.sin(t * Math.PI * 4 + 0.5) * amp;
         pts.push(axis === 'x'
           ? [x1 + t*(x2-x1), y1 + t*(y2-y1) + w]
           : [x1 + t*(x2-x1) + w, y1 + t*(y2-y1)]);
       }
     }
 
-    // Path: O → (arc left-down to left edge) → down left side → across bottom → up right side → Get Started
-    const pts = [[sx, sy]];
-    pts.push([sx - (sx - pad) * 0.45, sy + fontH * 0.55]);
-    pts.push([pad, sy + fontH * 1.1]);
+    const pts = [];
 
-    seg(pts, pad, sy + fontH * 1.1, pad, VH - pad, 'y');
+    // ① Start AT the O — arc left+down to reach the left page edge
+    pts.push([sx, sy]);
+    pts.push([sx * 0.6, sy + 6]);
+    pts.push([pad, logoRect.bottom + 10]);
+
+    // ② Down the left side
+    seg(pts, pad, logoRect.bottom + 10, pad, VH - pad, 'y');
+
+    // ③ Across the bottom
     seg(pts, pad, VH - pad, VW - pad, VH - pad, 'x');
-    seg(pts, VW - pad, VH - pad, VW - pad, ey, 'y');
-    pts.push([ex + 12, ey]);
-    pts.push([ex, ey]);
 
-    // Smooth quadratic bezier through all waypoints
+    // ④ Up the right side to below the Get Started button
+    const btnMidY = btnRect.top + btnRect.height * 0.5;
+    seg(pts, VW - pad, VH - pad, VW - pad, btnRect.bottom + 10, 'y');
+
+    // ⑤ Wrap around Get Started button: approach from right → top → left side
+    const bPad = 7;
+    pts.push([btnRect.right + bPad, btnRect.bottom + 6]);   // below-right of btn
+    pts.push([btnRect.right + bPad, btnMidY]);               // right side
+    pts.push([btnRect.right + bPad, btnRect.top - bPad]);   // top-right corner
+    pts.push([btnRect.left + btnRect.width * 0.6, btnRect.top - bPad]); // across top
+    pts.push([btnRect.left + btnRect.width * 0.2, btnRect.top - bPad]); // continue top
+    pts.push([btnRect.left - bPad, btnRect.top - bPad]);    // top-left corner
+    pts.push([btnRect.left - bPad, btnMidY]);                // down left side
+    pts.push([btnRect.left - bPad, btnRect.bottom + 4]);    // bottom-left — end here
+
+    // Build smooth quadratic bezier through all waypoints
     let d = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
     for (let i = 1; i < pts.length - 1; i++) {
       const [px, py] = pts[i], [nx, ny] = pts[i+1];
       d += ` Q${px.toFixed(1)},${py.toFixed(1)} ${((px+nx)/2).toFixed(1)},${((py+ny)/2).toFixed(1)}`;
     }
-    d += ` L${pts[pts.length-1][0].toFixed(1)},${pts[pts.length-1][1].toFixed(1)}`;
+    const [lx, ly] = pts[pts.length-1];
+    d += ` L${lx.toFixed(1)},${ly.toFixed(1)}`;
 
-    // Curl around the Get Started button
-    const bL = btnRect.left, bT = btnRect.top, bR = btnRect.right;
-    d += ` Q${(bL-4).toFixed(1)},${(bT-11).toFixed(1)} ${(bL + btnRect.width*0.35).toFixed(1)},${(bT-7).toFixed(1)}`;
-    d += ` Q${(bL + btnRect.width*0.7).toFixed(1)},${(bT-3).toFixed(1)} ${(bR+6).toFixed(1)},${ey.toFixed(1)}`;
-
+    // Explicit pixel dimensions on SVG so coordinate space = viewport pixels exactly
     const svg = document.createElementNS(ns, 'svg');
     svg.setAttribute('class', 'landing-vine-svg');
-    svg.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:5;';
+    svg.setAttribute('width', VW);
+    svg.setAttribute('height', VH);
+    svg.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
+    svg.style.cssText = `position:fixed;top:0;left:0;width:${VW}px;height:${VH}px;pointer-events:none;overflow:visible;z-index:5;`;
 
     const stem = document.createElementNS(ns, 'path');
     stem.setAttribute('d', d);
@@ -8093,7 +8109,7 @@ document.addEventListener('keydown', e => {
     document.body.appendChild(svg);
 
     const totalLen = stem.getTotalLength();
-    const DRAW_MS  = 4600;
+    const DRAW_MS  = 5000;
 
     function spt(t) {
       const l = t * totalLen;
@@ -8102,7 +8118,7 @@ document.addEventListener('keydown', e => {
       return { x: a.x, y: a.y, angle: Math.atan2(b.y-a.y, b.x-a.x)*180/Math.PI };
     }
 
-    // Thorns — every ~5%
+    // Thorns every ~5%
     for (let i = 2; i <= 97; i += 5) {
       const t = i / 100;
       const { x, y, angle } = spt(t);
@@ -8113,7 +8129,7 @@ document.addEventListener('keydown', e => {
       window._landingVineTimers.push(setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS + 60));
     }
 
-    // Leaves — every ~7%
+    // Leaves every ~7%
     const lSz = [8,7,9,7,8,9,7,8,9,7,8,7,9,8,7];
     let li = 0;
     for (let i = 4; i <= 96; i += 7) {
@@ -8139,7 +8155,7 @@ document.addEventListener('keydown', e => {
   window.triggerLandingVine = buildLandingVine;
 
   // Auto-play on page load (login-screen starts active)
-  setTimeout(buildLandingVine, 350);
+  setTimeout(buildLandingVine, 400);
 })();
 </script>
 </body>
