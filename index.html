@@ -8089,32 +8089,59 @@ document.addEventListener('keydown', e => {
     // Pre-build all thorns and leaves (hidden), collect {t, el} for synced reveal
     const reveals = [];
 
-    // Thorns every 1% (~100 total)
+    // Deterministic pseudo-random (no Math.random so layout is stable on replay)
+    function pr(seed) {
+      const s = Math.sin(seed * 9301.23 + 49297.9) * 43758.54;
+      return s - Math.floor(s);
+    }
+
+    // Thorns every 1% (~100 total) — vary size slightly
     for (let i = 1; i <= 99; i += 1) {
       const t = i / 100;
       const { x, y, angle } = spt(t);
-      const el = makeThorn(x, y, angle, 5);
+      const sz = 4 + pr(i * 3.7) * 2.5;  // 4–6.5px, not all identical
+      const el = makeThorn(x, y, angle, sz);
       el.style.opacity = '0';
       svg.appendChild(el);
       reveals.push({ t, el });
     }
 
-    // Leaves: two passes, both sides, every 2% each (~100 leaves total)
-    const lSzA = [11,9,12,10,11,9,12,10,11,9,12,10,11,9,12];
-    const lSzB = [8,10,8,9,8,10,9,8,10,8,9,10,8,9,10];
-    let li = 0;
-    for (let i = 1; i <= 99; i += 2) {
+    // Leaves: one per 1% step, alternating sides with full angle/size/offset variation
+    for (let i = 1; i <= 99; i += 1) {
       const t = i / 100;
       const { x, y, angle } = spt(t);
-      const elA = makeLeaf(x, y, lSzA[li % lSzA.length], angle - 55, li);
-      elA.style.opacity = '0';
-      svg.appendChild(elA);
-      reveals.push({ t, el: elA });
-      const elB = makeLeaf(x, y, lSzB[li % lSzB.length], angle + 42, li + 50);
-      elB.style.opacity = '0';
-      svg.appendChild(elB);
-      reveals.push({ t, el: elB });
-      li++;
+
+      // Which side — alternate but with occasional doubles on the same side
+      const side = pr(i * 7.13) > 0.15 ? (i % 2 === 0 ? 1 : -1) : (pr(i * 2.9) > 0.5 ? 1 : -1);
+
+      // Angle offset: 30–90° off stem direction, varied per leaf
+      const offset = 30 + pr(i * 5.31) * 60;
+      const leafAngle = angle + side * offset;
+
+      // Size: 7–14px
+      const sz = 7 + pr(i * 11.17) * 7;
+
+      // Slight positional jitter perpendicular to stem so leaves don't all touch the centerline
+      const jitterAmt = pr(i * 4.77) * 3 - 1.5;
+      const perpAngle = (angle + 90) * Math.PI / 180;
+      const lx = x + Math.cos(perpAngle) * jitterAmt;
+      const ly = y + Math.sin(perpAngle) * jitterAmt;
+
+      const el = makeLeaf(lx, ly, sz, leafAngle, i);
+      el.style.opacity = '0';
+      svg.appendChild(el);
+      reveals.push({ t, el });
+
+      // ~30% chance of a second smaller leaf nearby (natural leaf cluster)
+      if (pr(i * 13.47) > 0.7) {
+        const offset2 = offset + 15 + pr(i * 6.23) * 25;
+        const leafAngle2 = angle + side * offset2;
+        const sz2 = 6 + pr(i * 8.91) * 4;
+        const el2 = makeLeaf(lx, ly, sz2, leafAngle2, i + 33);
+        el2.style.opacity = '0';
+        svg.appendChild(el2);
+        reveals.push({ t, el: el2 });
+      }
     }
 
     // Draw clockwise — linear so t maps exactly to elapsed/DRAW_MS
