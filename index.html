@@ -6614,6 +6614,7 @@ async function showDashboard() {
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+  if (id === 'auth-screen') setTimeout(triggerLogoVine, 150);
 }
 
 // ─── SETTINGS ───
@@ -6940,6 +6941,7 @@ document.addEventListener('keydown', e => {
     if (!logoWrap || !logoEl) return;
 
     const W = logoEl.offsetWidth, H = logoEl.offsetHeight;
+    if (W === 0 || H === 0) { setTimeout(triggerLogoVineInternal, 100); return; }
     const pad = 18;
     // SVG coords: element top-left = (pad, pad), element bottom = pad+H
     // Underline sits just below visual text bottom (~78% of element height, not the full box)
@@ -7026,16 +7028,7 @@ document.addEventListener('keydown', e => {
     }));
   }
 
-  // Watch for auth-screen becoming active and trigger vine each time
-  const authScreenEl = document.getElementById('auth-screen');
-  if (authScreenEl) {
-    new MutationObserver(() => {
-      if (authScreenEl.classList.contains('active')) {
-        // Wait two rAFs so display:flex has been painted and offsetWidth is valid
-        requestAnimationFrame(() => requestAnimationFrame(triggerLogoVineInternal));
-      }
-    }).observe(authScreenEl, { attributes: true, attributeFilter: ['class'] });
-  }
+  window.triggerLogoVine = triggerLogoVineInternal;
 })();
 </script>
 </body>
