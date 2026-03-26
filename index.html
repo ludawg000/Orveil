@@ -6931,16 +6931,15 @@ document.addEventListener('keydown', e => {
   }
 
   // ── LOGO VINE (auto-play, organic underline) ──────────────────────────────
-  const logoWrap = document.querySelector('.vine-logo-wrap');
-  const logoEl   = logoWrap && logoWrap.querySelector('.vine-logo-inner');
-  let logoVineSvg = null;
   let logoVineTimers = [];
 
   function triggerLogoVineInternal() {
     logoVineTimers.forEach(id => clearTimeout(id));
     logoVineTimers = [];
     document.querySelectorAll('.logo-vine-layer').forEach(el => el.remove());
-    logoVineSvg = null;
+
+    const logoWrap = document.querySelector('.vine-logo-wrap');
+    const logoEl   = logoWrap && logoWrap.querySelector('.vine-logo-inner');
     if (!logoWrap || !logoEl) return;
 
     const W = logoEl.offsetWidth, H = logoEl.offsetHeight;
@@ -6987,7 +6986,6 @@ document.addEventListener('keydown', e => {
     stem.setAttribute('stroke-linejoin', 'round');
     svg.appendChild(stem);
     logoWrap.appendChild(svg);
-    logoVineSvg = svg;
 
     const totalLen = stem.getTotalLength();
     function sample(t) {
