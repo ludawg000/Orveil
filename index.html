@@ -8227,6 +8227,14 @@ document.addEventListener('keydown', e => {
 
   // Auto-play on page load (login-screen starts active)
   setTimeout(buildLandingVine, 400);
+
+  // Rebuild if window is resized while on landing page
+  let _vineResizeTimer = null;
+  window.addEventListener('resize', () => {
+    if (!document.getElementById('login-screen')?.classList.contains('active')) return;
+    clearTimeout(_vineResizeTimer);
+    _vineResizeTimer = setTimeout(buildLandingVine, 250);
+  });
 })();
 </script>
 </body>
