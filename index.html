@@ -3946,17 +3946,17 @@
   <div class="modal" style="max-width:500px">
     <div class="modal-title">Deliver to Client</div>
 
+    <div class="delivery-email-row">
+      <input class="delivery-email-input" id="client-email" type="email" placeholder="Client email address">
+      <button class="delivery-get-link-btn" id="get-link-btn" onclick="generateGalleryLink()">Get Link</button>
+    </div>
+
     <div class="delivery-link-box" id="delivery-link-box">
       <div class="delivery-link-label">Gallery Link</div>
       <div class="delivery-link-row">
         <input class="delivery-link-input" id="delivery-link-input" readonly>
         <button class="copy-link-btn" onclick="copyGalleryLink()">Copy</button>
       </div>
-    </div>
-
-    <div class="delivery-email-row">
-      <input class="delivery-email-input" id="client-email" type="email" placeholder="Client email address">
-      <button class="delivery-get-link-btn" id="get-link-btn" onclick="generateGalleryLink()">Get Link</button>
     </div>
     <div class="delivery-options" id="delivery-options">
       <div class="delivery-opt selected" data-style="standard" onclick="selectDelivery(this)">
@@ -6063,10 +6063,10 @@ const FONT_LIST = [
 
 async function openDelivery() {
   updateDeliveryPreview('standard');
-  loadShareLink();
-  await loadGallerySettings();
   window._previewProjectName = currentProject?.name || 'Your Project';
-  document.getElementById('delivery-modal').classList.add('active');
+  document.getElementById('delivery-modal').classList.add('active'); // show immediately
+  loadShareLink();        // load in background — no await
+  loadGallerySettings();  // load in background — no await
 }
 
 async function loadShareLink() {
@@ -6086,14 +6086,22 @@ async function loadShareLink() {
 async function loadGallerySettings() {
   const defaults = { logo_path: null, bg_color: '#0a0a0a', accent_color: '#fafafa', font_family: 'Playfair Display', layout: 'masonry', wallpaper: 'none' };
 
-  const { data: profile } = await dbSelect('profiles', 'gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout', `id=eq.${currentUser.id}`, { single: true });
-  const { data: proj } = await dbSelect('projects', 'gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout', `id=eq.${currentProject.id}`, { single: true });
-  // Try optional columns separately (may not exist yet)
-  let projWp = null, profileWp = null, projGrad = null, profileGrad = null;
-  try { const r = await dbSelect('projects', 'gallery_wallpaper', `id=eq.${currentProject.id}`, { single: true }); projWp = r.data?.gallery_wallpaper; } catch {}
-  try { const r = await dbSelect('profiles', 'gallery_wallpaper', `id=eq.${currentUser.id}`, { single: true }); profileWp = r.data?.gallery_wallpaper; } catch {}
-  try { const r = await dbSelect('projects', 'gallery_bg_gradient', `id=eq.${currentProject.id}`, { single: true }); projGrad = r.data?.gallery_bg_gradient; } catch {}
-  try { const r = await dbSelect('profiles', 'gallery_bg_gradient', `id=eq.${currentUser.id}`, { single: true }); profileGrad = r.data?.gallery_bg_gradient; } catch {}
+  const [
+    { data: profile },
+    { data: proj },
+    wpProjR, wpProfR, gradProjR, gradProfR
+  ] = await Promise.all([
+    dbSelect('profiles', 'gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout', `id=eq.${currentUser.id}`, { single: true }),
+    dbSelect('projects', 'gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout', `id=eq.${currentProject.id}`, { single: true }),
+    dbSelect('projects', 'gallery_wallpaper', `id=eq.${currentProject.id}`, { single: true }).catch(() => ({})),
+    dbSelect('profiles', 'gallery_wallpaper', `id=eq.${currentUser.id}`, { single: true }).catch(() => ({})),
+    dbSelect('projects', 'gallery_bg_gradient', `id=eq.${currentProject.id}`, { single: true }).catch(() => ({})),
+    dbSelect('profiles', 'gallery_bg_gradient', `id=eq.${currentUser.id}`, { single: true }).catch(() => ({})),
+  ]);
+  const projWp = wpProjR?.data?.gallery_wallpaper ?? null;
+  const profileWp = wpProfR?.data?.gallery_wallpaper ?? null;
+  const projGrad = gradProjR?.data?.gallery_bg_gradient ?? null;
+  const profileGrad = gradProfR?.data?.gallery_bg_gradient ?? null;
 
   const p = profile || {};
   currentGallerySettings = {
