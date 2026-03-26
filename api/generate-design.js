@@ -25,6 +25,7 @@ Return ONLY a JSON object:
 - bg_gradient: CSS linear-gradient that deepens the bg_color (same hue, slightly lighter/darker). Always include.
 - wallpaper: "none" | "linen" | "lace" | "geometric" | "dots" | "marble" — match the mood
 - font: A Google Fonts font name chosen specifically for this mood. Pick from this curated list based on the described aesthetic:
+  Fancy/classy/elegant/luxury/sophisticated/high-end/upscale/refined/professional/prestigious → "Great Vibes" or "Pinyon Script" or "Parisienne" or "Allura" or "Corinthia" or "Alex Brush" or "Petit Formal Script" (USE THESE for any fancy/classy/upscale words)
   Romantic/luxury wedding → "Cormorant Garamond" or "Playfair Display" or "IM Fell English" or "Gilda Display"
   Soft/dreamy/film → "Italiana" or "Jost" or "Lora" or "Marcellus"
   Dark/editorial/moody → "Josefin Sans" or "DM Serif Display" or "Bebas Neue" or "Unbounded"
