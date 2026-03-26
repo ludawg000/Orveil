@@ -134,6 +134,13 @@
   .project-thumb-placeholder { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--g400); }
   .project-name { font-size: 0.95rem; font-weight: 500; }
   .project-meta { font-size: 0.72rem; color: var(--g400); }
+  .card-upload-progress { margin-top: -0.2rem; }
+  .cup-label {
+    font-family: var(--sans); font-size: 0.58rem; color: var(--g400);
+    letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.4rem;
+  }
+  .cup-bar { height: 2px; background: var(--g200); overflow: hidden; border-radius: 1px; }
+  .cup-fill { height: 100%; background: var(--black); transition: width 0.3s ease; }
 
   /* MANAGE MODE BTN */
   .manage-btn {
@@ -4483,7 +4490,7 @@ async function loadProjects() {
         ${!p._collab ? `<button class="manage-action-btn manage-delete-btn" onclick="event.stopPropagation();openDeleteModal('${p.id}','${escHtml(p.name)}',event)">Delete</button>` : ''}
       </div>` : '';
       const inviteBtn = (!manageMode && !p._collab) ? `<button class="card-invite-btn" onclick="event.stopPropagation();openInviteModal('${p.id}','${escHtml(p.name)}',event)" title="Invite collaborator">+ Invite</button>` : '';
-      return `<div class="project-card" onclick="${manageMode ? 'selectManageCard(this)' : `openProject('${p.id}','${escHtml(p.name)}')`}" style="${manageMode ? 'cursor:pointer;position:relative' : 'position:relative'}">
+      return `<div class="project-card" data-pid="${p.id}" onclick="${manageMode ? 'selectManageCard(this)' : `openProject('${p.id}','${escHtml(p.name)}')`}" style="${manageMode ? 'cursor:pointer;position:relative' : 'position:relative'}">
         ${inviteBtn}
         ${manageOverlay}<div class="project-thumb" id="pthumb-${p.id}"><div class="project-thumb-placeholder">${p.file_count ? p.file_count + ' files' : (() => { const q = randomQuip(); return q.emoji + '<br><span style="font-size:0.55rem;letter-spacing:0.05em;opacity:0.7">' + q.text + '</span>'; })()}</div></div>
         <div class="project-name">${escHtml(p.name)}${p._collab ? '<span style="font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--g400);margin-left:0.5rem;font-weight:400">Shared</span>' : ''}</div>
@@ -4707,6 +4714,7 @@ async function handleFileSelect(fileList) {
 
   progress.classList.add('active');
   label.textContent = `Uploading ${files.length} file${files.length !== 1 ? 's' : ''}...`;
+  activeUpload = { projectId: currentProject.id, total: files.length, done: 0, pct: 0 };
 
   // Per-file progress tracking — all writes go to arrays, DOM flushed via RAF
   const fileProgress = new Array(files.length).fill(0);
@@ -4735,6 +4743,11 @@ async function handleFileSelect(fileList) {
       if (largeBatch) {
         const el = document.getElementById('upload-count-label');
         if (el) el.firstElementChild.textContent = `${doneCount} / ${files.length} files`;
+      }
+      if (activeUpload) {
+        activeUpload.pct = Math.round((loaded / totalBytes) * 100);
+        activeUpload.done = doneCount;
+        syncCardUploadBar();
       }
     });
   }
@@ -4809,15 +4822,46 @@ async function handleFileSelect(fileList) {
   }
 
   label.textContent = `${successful.length} file${successful.length !== 1 ? 's' : ''} uploaded.`;
+  const _uploadedProjectId = currentProject.id;
   setTimeout(() => {
     progress.classList.remove('active');
     fill.style.width = '0%';
     fileListEl.innerHTML = '';
+    clearCardUploadBar(_uploadedProjectId);
+    activeUpload = null;
   }, 2000);
 
   document.getElementById('file-input').value = '';
   await loadFiles();
   await updateStorage();
+}
+
+// ─── UPLOAD PROGRESS CARD SYNC ───
+let activeUpload = null; // { projectId, total, done, pct }
+
+function syncCardUploadBar() {
+  if (!activeUpload) return;
+  const { projectId, total, done, pct } = activeUpload;
+  const card = document.querySelector(`[data-pid="${projectId}"]`);
+  if (!card) return;
+  let bar = document.getElementById(`cup-${projectId}`);
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.className = 'card-upload-progress';
+    bar.id = `cup-${projectId}`;
+    bar.innerHTML = `<div class="cup-label">Uploading <span id="cup-done-${projectId}">${done}</span> / ${total}</div><div class="cup-bar"><div class="cup-fill" id="cup-fill-${projectId}" style="width:${pct}%"></div></div>`;
+    card.appendChild(bar);
+  } else {
+    const fillEl = document.getElementById(`cup-fill-${projectId}`);
+    const doneEl = document.getElementById(`cup-done-${projectId}`);
+    if (fillEl) fillEl.style.width = pct + '%';
+    if (doneEl) doneEl.textContent = done;
+  }
+}
+
+function clearCardUploadBar(projectId) {
+  const bar = document.getElementById(`cup-${projectId}`);
+  if (bar) bar.remove();
 }
 
 // ─── SELECT MODE ───
@@ -6210,11 +6254,12 @@ async function sendInvite() {
 }
 
 // ─── NAVIGATION ───
-function showDashboard() {
+async function showDashboard() {
   document.getElementById('project-screen').classList.remove('edit-mode');
   if (selectMode) toggleSelectMode();
   showScreen('app-screen');
-  loadProjects();
+  await loadProjects();
+  syncCardUploadBar();
 }
 
 function showScreen(id) {
