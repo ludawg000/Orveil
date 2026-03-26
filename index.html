@@ -8021,26 +8021,17 @@ document.addEventListener('keydown', e => {
     window._landingVineTimers.forEach(clearTimeout);
     window._landingVineTimers = [];
 
-    const logo = document.querySelector('.landing-logo');
-    const btn  = document.querySelector('.landing-get-started');
-    if (!logo || !btn) return;
+    const nav = document.querySelector('.landing-nav');
+    if (!nav) return;
 
-    const VW = document.documentElement.clientWidth;
-    const VH = document.documentElement.clientHeight;
-    const btnRect = btn.getBoundingClientRect();
-
-    // Exact "O" character bounds via Range API
-    const range = document.createRange();
-    range.setStart(logo.firstChild, 0);
-    range.setEnd(logo.firstChild, 1);
-    const oRect = range.getBoundingClientRect();
-    const sx = oRect.left + oRect.width / 2;   // O center-x
-    const sy = oRect.top  + oRect.height / 2;  // O center-y
+    const VW    = document.documentElement.clientWidth;
+    const VH    = document.documentElement.clientHeight;
+    const navH  = nav.getBoundingClientRect().bottom;  // bottom of nav = top of border
 
     const pad  = 12;
-    const bPad = 8;
     const amp  = 3.2;
     const SEGS = 22;
+    const topY = navH + 4;  // just below the header
 
     function seg(pts, x1, y1, x2, y2, axis) {
       for (let i = 1; i <= SEGS; i++) {
@@ -8052,42 +8043,21 @@ document.addEventListener('keydown', e => {
       }
     }
 
-    const btnMidY = btnRect.top + btnRect.height * 0.5;
-    const pts = [];
+    const pts = [[pad, topY]];           // top-left start
 
-    // ① Visible stem from O center — grows down then arcs left to page edge
-    pts.push([sx, sy]);
-    pts.push([sx + 3,    sy + oRect.height * 0.6]);
-    pts.push([sx - 4,    oRect.bottom + 12]);
-    pts.push([sx - 20,   oRect.bottom + 28]);
-    pts.push([sx * 0.4,  oRect.bottom + 40]);
-    pts.push([pad,       oRect.bottom + 52]);
+    seg(pts, pad,       topY,       VW-pad, topY,       'x');  // → top edge
+    seg(pts, VW-pad,    topY,       VW-pad, VH-pad,     'y');  // ↓ right side
+    seg(pts, VW-pad,    VH-pad,     pad,    VH-pad,     'x');  // ← bottom
+    seg(pts, pad,       VH-pad,     pad,    topY,        'y'); // ↑ left side back
+    pts.push([pad, topY]);                                      // close the loop
 
-    // ② Down the left side
-    seg(pts, pad, oRect.bottom + 52, pad, VH - pad, 'y');
-
-    // ③ Across the bottom
-    seg(pts, pad, VH - pad, VW - pad, VH - pad, 'x');
-
-    // ④ Up the right side — stop exactly at button mid-height
-    seg(pts, VW - pad, VH - pad, VW - pad, btnMidY, 'y');
-
-    // ⑤ Turn left and wrap around Get Started button
-    pts.push([btnRect.right + bPad, btnMidY]);
-    pts.push([btnRect.right + bPad, btnRect.top - bPad]);
-    pts.push([btnRect.left + btnRect.width * 0.5, btnRect.top - bPad]);
-    pts.push([btnRect.left - bPad, btnRect.top - bPad]);
-    pts.push([btnRect.left - bPad, btnMidY]);
-    pts.push([btnRect.left - bPad, btnRect.bottom + bPad]);
-
-    // Build smooth quadratic bezier
+    // Smooth quadratic bezier
     let d = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
     for (let i = 1; i < pts.length - 1; i++) {
       const [px, py] = pts[i], [nx, ny] = pts[i+1];
       d += ` Q${px.toFixed(1)},${py.toFixed(1)} ${((px+nx)/2).toFixed(1)},${((py+ny)/2).toFixed(1)}`;
     }
-    const [lx, ly] = pts[pts.length-1];
-    d += ` L${lx.toFixed(1)},${ly.toFixed(1)}`;
+    d += ` Z`;
 
     const svg = document.createElementNS(ns, 'svg');
     svg.setAttribute('class', 'landing-vine-svg');
@@ -8100,14 +8070,14 @@ document.addEventListener('keydown', e => {
     stem.setAttribute('d', d);
     stem.setAttribute('fill', 'none');
     stem.setAttribute('stroke', '#2d5a1b');
-    stem.setAttribute('stroke-width', '2.4');
+    stem.setAttribute('stroke-width', '2.6');
     stem.setAttribute('stroke-linecap', 'round');
     stem.setAttribute('stroke-linejoin', 'round');
     svg.appendChild(stem);
     document.body.appendChild(svg);
 
     const totalLen = stem.getTotalLength();
-    const DRAW_MS  = 5200;
+    const DRAW_MS  = 5500;
 
     function spt(t) {
       const l = t * totalLen;
@@ -8116,8 +8086,8 @@ document.addEventListener('keydown', e => {
       return { x: a.x, y: a.y, angle: Math.atan2(b.y-a.y, b.x-a.x)*180/Math.PI };
     }
 
-    // Thorns every ~3% (~33 total)
-    for (let i = 2; i <= 98; i += 3) {
+    // Thorns every 2% (~50 total)
+    for (let i = 1; i <= 99; i += 2) {
       const t = i / 100;
       const { x, y, angle } = spt(t);
       const el = makeThorn(x, y, angle, 4.5);
@@ -8127,21 +8097,21 @@ document.addEventListener('keydown', e => {
       window._landingVineTimers.push(setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS + 60));
     }
 
-    // Leaves every ~4% (~24 total)
+    // Leaves every 3% (~33 total)
     const lSz = [8,7,9,7,8,9,7,8,9,7,8,7,9,8,7];
     let li = 0;
-    for (let i = 3; i <= 97; i += 4) {
+    for (let i = 2; i <= 98; i += 3) {
       const t = i / 100;
       const { x, y, angle } = spt(t);
       const el = makeLeaf(x, y, lSz[li % lSz.length], angle + (li%2===0 ? -52 : 38), li);
       el.style.opacity = '0';
-      el.style.transition = 'opacity 0.25s ease';
+      el.style.transition = 'opacity 0.22s ease';
       svg.appendChild(el);
       window._landingVineTimers.push(setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS + 60));
       li++;
     }
 
-    // Draw
+    // Draw clockwise from top-left
     stem.style.strokeDasharray = totalLen;
     stem.style.strokeDashoffset = totalLen;
     requestAnimationFrame(() => requestAnimationFrame(() => {
