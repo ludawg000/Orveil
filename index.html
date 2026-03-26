@@ -2014,6 +2014,36 @@
   #project-screen.edit-mode .file-card { cursor: pointer; }
   #project-screen.edit-mode .file-card:hover { transform: none; box-shadow: none; }
   #project-screen.edit-mode .file-card .select-check { display: flex; }
+
+  /* ── Edit view layout toggle ── */
+  .edit-view-toggle { display: none; align-items: center; gap: 3px; }
+  #project-screen.edit-mode .edit-view-toggle { display: flex; }
+  .evt-btn {
+    width: 30px; height: 28px; border: 1px solid var(--g200); background: transparent;
+    cursor: pointer; border-radius: 2px; display: flex; align-items: center; justify-content: center;
+    color: var(--g400); transition: all 0.15s;
+  }
+  .evt-btn:hover { border-color: var(--g400); color: var(--g600); }
+  .evt-btn.active { border-color: var(--black); background: var(--black); color: var(--white); }
+  .evt-btn svg { width: 14px; height: 14px; display: block; }
+
+  /* Large 2-col grid */
+  .files-grid.view-large {
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  }
+  /* Full single-column — shows full photo uncropped */
+  .files-grid.view-full {
+    grid-template-columns: 1fr;
+    max-width: 960px; margin-left: auto; margin-right: auto;
+  }
+  .files-grid.view-full .file-thumb {
+    aspect-ratio: unset;
+  }
+  .files-grid.view-full .file-thumb img {
+    object-fit: contain;
+    height: auto; max-height: 82vh;
+    background: var(--g100);
+  }
   .select-toolbar {
     display: none; align-items: center; gap: 1rem;
     padding: 0.75rem 2.5rem; background: var(--g100);
@@ -3424,6 +3454,17 @@
     <button class="back-btn" id="project-back-btn" onclick="showDashboard()">&#8592; Home</button>
     <div class="project-nav-title" id="project-nav-title"></div>
     <span class="edit-mode-badge">Edit Mode</span>
+    <div class="edit-view-toggle">
+      <button class="evt-btn active" id="evt-grid" title="Grid" onclick="setFilesView('grid',this)">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="5" height="5"/><rect x="8" y="1" width="5" height="5"/><rect x="1" y="8" width="5" height="5"/><rect x="8" y="8" width="5" height="5"/></svg>
+      </button>
+      <button class="evt-btn" id="evt-large" title="Large" onclick="setFilesView('large',this)">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="5.5" height="12"/><rect x="7.5" y="1" width="5.5" height="12"/></svg>
+      </button>
+      <button class="evt-btn" id="evt-full" title="Full size" onclick="setFilesView('full',this)">
+        <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="1" width="12" height="12"/></svg>
+      </button>
+    </div>
     <div class="project-nav-actions">
       <button class="presets-btn" onclick="togglePresetsPanel()">Presets</button>
       <button class="colorgrade-btn" onclick="toggleCGPanel()">Color Grade</button>
@@ -5271,6 +5312,7 @@ async function openProject(id, name) {
   currentProject = { id, name, isOwner: true, allowCollabInvite: false };
   document.getElementById('project-nav-title').textContent = name;
   document.getElementById('project-screen').classList.remove('edit-mode');
+  setFilesView('grid', document.getElementById('evt-grid'));
   document.getElementById('project-back-btn').innerHTML = '&#8592; Home';
   // Show screen + start loading files immediately
   showScreen('project-screen');
@@ -5471,6 +5513,16 @@ const CG_STATE = {
 let _cgInited = false;
 let _cgDragging = null;
 let _cgCurveDragging = null;
+
+function setFilesView(mode, btn) {
+  const grid = document.getElementById('files-grid');
+  if (!grid) return;
+  grid.classList.remove('view-large', 'view-full');
+  if (mode === 'large') grid.classList.add('view-large');
+  if (mode === 'full')  grid.classList.add('view-full');
+  document.querySelectorAll('.evt-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+}
 
 function toggleCGPanel() {
   const screen = document.getElementById('project-screen');
