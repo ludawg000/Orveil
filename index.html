@@ -7583,10 +7583,20 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
   if (id === 'auth-screen') {
     setTimeout(window.triggerLogoVine, 150);
-  } else {
-    // Leaving auth screen — tear down vine so next visit starts fresh
+    // Clean up landing vine
+    document.querySelectorAll('.landing-vine-svg').forEach(el => el.remove());
+    if (window._landingVineTimers) { window._landingVineTimers.forEach(clearTimeout); window._landingVineTimers = []; }
+  } else if (id === 'login-screen') {
+    // Returning to landing — replay vine, tear down auth vine
     document.querySelectorAll('.logo-vine-layer').forEach(el => el.remove());
     if (window._logoVineTimers) { window._logoVineTimers.forEach(clearTimeout); window._logoVineTimers = []; }
+    setTimeout(() => window.triggerLandingVine && window.triggerLandingVine(), 250);
+  } else {
+    // Leaving both landing & auth — tear down all vines
+    document.querySelectorAll('.logo-vine-layer').forEach(el => el.remove());
+    if (window._logoVineTimers) { window._logoVineTimers.forEach(clearTimeout); window._logoVineTimers = []; }
+    document.querySelectorAll('.landing-vine-svg').forEach(el => el.remove());
+    if (window._landingVineTimers) { window._landingVineTimers.forEach(clearTimeout); window._landingVineTimers = []; }
   }
 }
 
@@ -8002,6 +8012,134 @@ document.addEventListener('keydown', e => {
   }
 
   window.triggerLogoVine = triggerLogoVineInternal;
+
+  // ── LANDING PAGE VINE (auto-play, full-border) ────────────────────────────
+  window._landingVineTimers = [];
+
+  function buildLandingVine() {
+    document.querySelectorAll('.landing-vine-svg').forEach(el => el.remove());
+    window._landingVineTimers.forEach(clearTimeout);
+    window._landingVineTimers = [];
+
+    const logo = document.querySelector('.landing-logo');
+    const btn  = document.querySelector('.landing-get-started');
+    if (!logo || !btn) return;
+
+    const VW = window.innerWidth;
+    const VH = window.innerHeight;
+    const logoRect = logo.getBoundingClientRect();
+    const btnRect  = btn.getBoundingClientRect();
+
+    // Start: base of the "O" in Orveil
+    const fontH = logoRect.height;
+    const sx = logoRect.left + fontH * 0.28;
+    const sy = logoRect.top  + fontH * 0.82;
+
+    // End: left edge of Get Started button, vertical center
+    const ex = btnRect.left - 2;
+    const ey = btnRect.top  + btnRect.height * 0.5;
+
+    const pad  = 14;
+    const amp  = 3.5;
+    const SEGS = 18;
+
+    function seg(pts, x1, y1, x2, y2, axis) {
+      const start = pts.length ? 1 : 0;
+      for (let i = start; i <= SEGS; i++) {
+        const t = i / SEGS;
+        const w = Math.sin(t * Math.PI * 3.8 + 0.6) * amp;
+        pts.push(axis === 'x'
+          ? [x1 + t*(x2-x1), y1 + t*(y2-y1) + w]
+          : [x1 + t*(x2-x1) + w, y1 + t*(y2-y1)]);
+      }
+    }
+
+    // Path: O → (arc left-down to left edge) → down left side → across bottom → up right side → Get Started
+    const pts = [[sx, sy]];
+    pts.push([sx - (sx - pad) * 0.45, sy + fontH * 0.55]);
+    pts.push([pad, sy + fontH * 1.1]);
+
+    seg(pts, pad, sy + fontH * 1.1, pad, VH - pad, 'y');
+    seg(pts, pad, VH - pad, VW - pad, VH - pad, 'x');
+    seg(pts, VW - pad, VH - pad, VW - pad, ey, 'y');
+    pts.push([ex + 12, ey]);
+    pts.push([ex, ey]);
+
+    // Smooth quadratic bezier through all waypoints
+    let d = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
+    for (let i = 1; i < pts.length - 1; i++) {
+      const [px, py] = pts[i], [nx, ny] = pts[i+1];
+      d += ` Q${px.toFixed(1)},${py.toFixed(1)} ${((px+nx)/2).toFixed(1)},${((py+ny)/2).toFixed(1)}`;
+    }
+    d += ` L${pts[pts.length-1][0].toFixed(1)},${pts[pts.length-1][1].toFixed(1)}`;
+
+    // Curl around the Get Started button
+    const bL = btnRect.left, bT = btnRect.top, bR = btnRect.right;
+    d += ` Q${(bL-4).toFixed(1)},${(bT-11).toFixed(1)} ${(bL + btnRect.width*0.35).toFixed(1)},${(bT-7).toFixed(1)}`;
+    d += ` Q${(bL + btnRect.width*0.7).toFixed(1)},${(bT-3).toFixed(1)} ${(bR+6).toFixed(1)},${ey.toFixed(1)}`;
+
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('class', 'landing-vine-svg');
+    svg.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:5;';
+
+    const stem = document.createElementNS(ns, 'path');
+    stem.setAttribute('d', d);
+    stem.setAttribute('fill', 'none');
+    stem.setAttribute('stroke', '#2d5a1b');
+    stem.setAttribute('stroke-width', '2.4');
+    stem.setAttribute('stroke-linecap', 'round');
+    stem.setAttribute('stroke-linejoin', 'round');
+    svg.appendChild(stem);
+    document.body.appendChild(svg);
+
+    const totalLen = stem.getTotalLength();
+    const DRAW_MS  = 4600;
+
+    function spt(t) {
+      const l = t * totalLen;
+      const a = stem.getPointAtLength(l);
+      const b = stem.getPointAtLength(Math.min(l + 2, totalLen));
+      return { x: a.x, y: a.y, angle: Math.atan2(b.y-a.y, b.x-a.x)*180/Math.PI };
+    }
+
+    // Thorns — every ~5%
+    for (let i = 2; i <= 97; i += 5) {
+      const t = i / 100;
+      const { x, y, angle } = spt(t);
+      const el = makeThorn(x, y, angle, 4.5);
+      el.style.opacity = '0';
+      el.style.transition = 'opacity 0.18s ease';
+      svg.appendChild(el);
+      window._landingVineTimers.push(setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS + 60));
+    }
+
+    // Leaves — every ~7%
+    const lSz = [8,7,9,7,8,9,7,8,9,7,8,7,9,8,7];
+    let li = 0;
+    for (let i = 4; i <= 96; i += 7) {
+      const t = i / 100;
+      const { x, y, angle } = spt(t);
+      const el = makeLeaf(x, y, lSz[li % lSz.length], angle + (li%2===0 ? -52 : 38), li);
+      el.style.opacity = '0';
+      el.style.transition = 'opacity 0.28s ease';
+      svg.appendChild(el);
+      window._landingVineTimers.push(setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS + 60));
+      li++;
+    }
+
+    // Draw
+    stem.style.strokeDasharray = totalLen;
+    stem.style.strokeDashoffset = totalLen;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      stem.style.transition = `stroke-dashoffset ${DRAW_MS/1000}s cubic-bezier(0.25,0,0.2,1)`;
+      stem.style.strokeDashoffset = '0';
+    }));
+  }
+
+  window.triggerLandingVine = buildLandingVine;
+
+  // Auto-play on page load (login-screen starts active)
+  setTimeout(buildLandingVine, 350);
 })();
 </script>
 </body>
