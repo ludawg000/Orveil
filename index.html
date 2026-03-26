@@ -2177,14 +2177,6 @@
   }
   .ai-design-generate-btn:hover { border-color: var(--black); }
   .ai-design-generate-btn:disabled { opacity: 0.5; cursor: default; }
-  .ai-design-save-btn {
-    font-family: var(--sans); font-size: 0.62rem; font-weight: 500;
-    letter-spacing: 0.08em; text-transform: uppercase;
-    background: none; border: 1px solid var(--g300); color: var(--g500);
-    padding: 0.4rem 0.8rem; cursor: pointer; white-space: nowrap;
-    transition: border-color 0.15s, color 0.15s;
-  }
-  .ai-design-save-btn:hover { border-color: var(--black); color: var(--black); }
   /* Color Presets */
   .color-presets { display: flex; gap: 0.5rem; margin-bottom: 0.8rem; flex-wrap: wrap; }
   .color-preset {
@@ -3986,10 +3978,7 @@
           <div class="delivery-customize" id="delivery-customize">
             <div class="customize-section">
               <div class="ai-design-row">
-                <div style="display:flex;gap:0.5rem;align-items:center;">
-                  <button class="ai-design-toggle" id="ai-design-toggle" onclick="toggleAIDesignPrompt()">✦ Style with AI</button>
-                  <button class="ai-design-save-btn" id="ai-design-save-btn" onclick="saveAIDesignAsDefault()" style="display:none">Save as Default</button>
-                </div>
+                <button class="ai-design-toggle" id="ai-design-toggle" onclick="toggleAIDesignPrompt()">✦ Style with AI</button>
                 <div class="ai-design-panel" id="ai-design-panel" style="display:none">
                   <textarea class="ai-design-input" id="ai-design-input" placeholder="Describe the aesthetic... e.g. 'moody destination wedding in Tuscany, warm golden tones'"></textarea>
                   <button class="ai-design-generate-btn" id="ai-design-generate-btn" onclick="generateGalleryDesign()">Generate Design</button>
@@ -6661,29 +6650,6 @@ function updateDeliveryPreview(style) {
   document.getElementById('delivery-preview-text').textContent = `"${msg}"`;
 }
 
-async function saveAIDesignAsDefault() {
-  const btn = document.getElementById('ai-design-save-btn');
-  btn.textContent = 'Saving...';
-  btn.disabled = true;
-  try {
-    const s = currentGallerySettings;
-    await dbUpdate('profiles', {
-      gallery_bg_color: s.bg_color,
-      gallery_accent_color: s.accent_color,
-      gallery_font_family: s.font_family,
-      gallery_layout: s.layout,
-      gallery_logo_path: s.logo_path
-    }, `id=eq.${currentUser.id}`);
-    await dbUpdate('profiles', { gallery_wallpaper: s.wallpaper }, `id=eq.${currentUser.id}`);
-    btn.textContent = '✓ Saved';
-    setTimeout(() => { btn.textContent = 'Save as Default'; btn.disabled = false; }, 2000);
-  } catch (err) {
-    showToast('Could not save: ' + err.message);
-    btn.textContent = 'Save as Default';
-    btn.disabled = false;
-  }
-}
-
 function toggleAIDesignPrompt() {
   const panel = document.getElementById('ai-design-panel');
   const btn = document.getElementById('ai-design-toggle');
@@ -6728,7 +6694,6 @@ async function generateGalleryDesign() {
       });
     }
     if (d.design_name) { document.getElementById('ai-design-toggle').textContent = `✦ ${d.design_name}`; }
-    document.getElementById('ai-design-save-btn').style.display = 'block';
     document.querySelectorAll('.color-preset').forEach(p => {
       const preset = COLOR_PRESETS[p.dataset.preset];
       p.classList.toggle('active', preset && preset.bg === d.bg_color && preset.accent === d.accent_color);
