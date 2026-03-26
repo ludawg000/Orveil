@@ -5,7 +5,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { prompt, projectName } = req.body || {};
+  const { prompt, projectName, excludeFonts } = req.body || {};
   const GROQ_API_KEY = process.env.GROQ_API_KEY;
   if (!GROQ_API_KEY) return res.status(500).json({ error: 'Groq API key not configured' });
   if (!prompt) return res.status(400).json({ error: 'Prompt required' });
@@ -53,7 +53,7 @@ Return ONLY valid JSON, no explanation.`;
         model: 'llama-3.3-70b-versatile',
         messages: [
           { role: 'system', content: system },
-          { role: 'user', content: `Project: "${projectName || 'Untitled'}". Aesthetic description: ${prompt}` },
+          { role: 'user', content: `Project: "${projectName || 'Untitled'}". Aesthetic description: ${prompt}${excludeFonts?.length ? `\n\nDo NOT use these fonts (already used recently): ${excludeFonts.join(', ')}. Pick something different.` : ''}` },
         ],
         max_tokens: 350,
         temperature: 0.9,

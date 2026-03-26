@@ -6659,6 +6659,8 @@ function toggleAIDesignPrompt() {
   if (open) document.getElementById('ai-design-input').focus();
 }
 
+const _recentFonts = [];
+
 async function generateGalleryDesign() {
   const prompt = document.getElementById('ai-design-input')?.value?.trim();
   if (!prompt) { showToast('Describe the aesthetic first.'); return; }
@@ -6668,7 +6670,7 @@ async function generateGalleryDesign() {
     const resp = await fetch('/api/generate-design', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt, projectName: currentProject?.name || 'Your Project' })
+      body: JSON.stringify({ prompt, projectName: currentProject?.name || 'Your Project', excludeFonts: _recentFonts.slice(-2) })
     });
     const data = await resp.json();
     if (!resp.ok) throw new Error(data.error || 'Failed');
@@ -6683,8 +6685,10 @@ async function generateGalleryDesign() {
       document.getElementById('font-selected').style.display = 'block';
       document.getElementById('font-selected-name').textContent = d.font;
       document.getElementById('font-preview-sample').style.fontFamily = `'${d.font}', serif`;
+      // Track recently used fonts — keep last 4 so exclusion list stays fresh
+      if (_recentFonts[_recentFonts.length - 1] !== d.font) _recentFonts.push(d.font);
+      if (_recentFonts.length > 4) _recentFonts.shift();
       loadGoogleFont(d.font).then(() => {
-        // Always re-render after font loads, even if font name didn't change
         document.getElementById('gal-preview-title').style.fontFamily = `'${d.font}', serif`;
         updateGalleryPreview();
       });
