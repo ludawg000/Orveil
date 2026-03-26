@@ -8073,6 +8073,9 @@ document.addEventListener('keydown', e => {
   window._landingVineTimers = [];
 
   function buildLandingVine() {
+    // Only ever draw on the landing page — bail if it's not the active screen
+    if (!document.getElementById('login-screen')?.classList.contains('active')) return;
+
     document.querySelectorAll('.landing-vine-svg').forEach(el => el.remove());
     window._landingVineTimers.forEach(clearTimeout);
     window._landingVineTimers = [];
