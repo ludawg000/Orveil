@@ -6492,27 +6492,31 @@ function updateGalleryPreview() {
   const subtitle = document.getElementById('gal-preview-subtitle');
   subtitle.style.color = accent;
 
-  // Placeholder photo tiles
+  // Use real project photos if available, otherwise placeholder tiles
   const grid = document.getElementById('gal-preview-grid');
   const tileColor = `rgba(${pr},${pg},${pb},0.15)`;
-  const tileAccent = `rgba(${pr},${pg},${pb},0.08)`;
+  const photos = (projectFiles || []).filter(f => f.type?.startsWith('image/')).slice(0, 6);
+  const imgUrl = i => photos[i] ? `${SUPABASE_URL}/storage/v1/object/public/projects/${photos[i].path}` : null;
+  const tile = (h, i) => {
+    const url = imgUrl(i);
+    return url
+      ? `<div style="height:${h}px;overflow:hidden;"><img src="${url}" style="width:100%;height:100%;object-fit:cover;display:block;" loading="lazy"></div>`
+      : `<div style="height:${h}px;background:${tileColor};"></div>`;
+  };
   if (layout === 'masonry') {
     grid.style.cssText = `display:grid;grid-template-columns:repeat(2,1fr);gap:4px;`;
     const heights = [60, 90, 80, 60, 70, 80];
-    grid.innerHTML = heights.map((h,i) =>
-      `<div style="height:${h}px;background:${i%2===0?tileColor:tileAccent};"></div>`
-    ).join('');
+    grid.innerHTML = heights.map((h, i) => tile(h, i)).join('');
   } else if (layout === 'grid') {
     grid.style.cssText = `display:grid;grid-template-columns:repeat(3,1fr);gap:4px;`;
-    grid.innerHTML = Array(6).fill(0).map((_,i) =>
-      `<div style="height:56px;background:${i%2===0?tileColor:tileAccent};"></div>`
-    ).join('');
+    grid.innerHTML = Array(6).fill(0).map((_, i) => tile(56, i)).join('');
   } else {
     // slideshow
+    const url = imgUrl(0);
     grid.style.cssText = `display:block;`;
-    grid.innerHTML = `<div style="height:130px;background:${tileColor};display:flex;align-items:center;justify-content:center;">
-      <div style="width:20px;height:20px;border:1px solid rgba(${pr},${pg},${pb},0.4);border-radius:50%;"></div>
-    </div>`;
+    grid.innerHTML = url
+      ? `<div style="height:130px;overflow:hidden;"><img src="${url}" style="width:100%;height:130px;object-fit:cover;display:block;"></div>`
+      : `<div style="height:130px;background:${tileColor};display:flex;align-items:center;justify-content:center;"><div style="width:20px;height:20px;border:1px solid rgba(${pr},${pg},${pb},0.4);border-radius:50%;"></div></div>`;
   }
 }
 
