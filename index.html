@@ -7646,6 +7646,7 @@ function showScreen(id) {
     // Returning to landing — replay vine, tear down auth vine
     document.querySelectorAll('.logo-vine-layer').forEach(el => el.remove());
     if (window._logoVineTimers) { window._logoVineTimers.forEach(clearTimeout); window._logoVineTimers = []; }
+    window._vineAnimationDone = false;
     setTimeout(() => window.triggerLandingVine && window.triggerLandingVine(), 250);
   } else {
     // Leaving both landing & auth — tear down all vines
@@ -8071,8 +8072,9 @@ document.addEventListener('keydown', e => {
 
   // ── LANDING PAGE VINE (auto-play, full-border) ────────────────────────────
   window._landingVineTimers = [];
+  window._vineAnimationDone = false;
 
-  function buildLandingVine() {
+  function buildLandingVine(instant) {
     // Only ever draw on the landing page — bail if it's not the active screen
     if (!document.getElementById('login-screen')?.classList.contains('active')) return;
 
@@ -8092,9 +8094,10 @@ document.addEventListener('keydown', e => {
     _probe.remove();
     const navH  = nav.getBoundingClientRect().bottom;  // bottom of nav = top of border
 
-    const pad  = 12;
-    const amp  = 3.2;
-    const SEGS = 22;
+    const mobile = VW < 600;
+    const pad  = mobile ? 6 : 12;
+    const amp  = mobile ? 2.2 : 3.2;
+    const SEGS = mobile ? 14 : 22;
     const topY = navH + 4;  // just below the header
 
     function seg(pts, x1, y1, x2, y2, axis) {
@@ -8134,7 +8137,7 @@ document.addEventListener('keydown', e => {
     stem.setAttribute('d', d);
     stem.setAttribute('fill', 'none');
     stem.setAttribute('stroke', '#2d5a1b');
-    stem.setAttribute('stroke-width', '2.6');
+    stem.setAttribute('stroke-width', mobile ? '1.8' : '2.6');
     stem.setAttribute('stroke-linecap', 'round');
     stem.setAttribute('stroke-linejoin', 'round');
     svg.appendChild(stem);
@@ -8163,7 +8166,7 @@ document.addEventListener('keydown', e => {
     for (let i = 1; i <= 99; i += 1) {
       const t = i / 100;
       const { x, y, angle } = spt(t);
-      const sz = 4 + pr(i * 3.7) * 2.5;  // 4–6.5px, not all identical
+      const sz = (mobile ? 2.5 : 4) + pr(i * 3.7) * (mobile ? 1.5 : 2.5);
       const el = makeThorn(x, y, angle, sz);
       el.style.opacity = '0';
       svg.appendChild(el);
@@ -8182,8 +8185,8 @@ document.addEventListener('keydown', e => {
       const offset = 30 + pr(i * 5.31) * 60;
       const leafAngle = angle + side * offset;
 
-      // Size: 7–14px
-      const sz = 7 + pr(i * 11.17) * 7;
+      // Size: 7–14px (smaller on mobile)
+      const sz = (mobile ? 4 : 7) + pr(i * 11.17) * (mobile ? 4 : 7);
 
       // Slight positional jitter perpendicular to stem so leaves don't all touch the centerline
       const jitterAmt = pr(i * 4.77) * 3 - 1.5;
@@ -8208,19 +8211,28 @@ document.addEventListener('keydown', e => {
       }
     }
 
-    // Draw clockwise — linear so t maps exactly to elapsed/DRAW_MS
+    // Draw clockwise
     stem.style.strokeDasharray = totalLen;
-    stem.style.strokeDashoffset = totalLen;
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      // Start stroke with LINEAR easing so t=0.5 → exactly DRAW_MS*0.5 elapsed
-      stem.style.transition = `stroke-dashoffset ${DRAW_MS/1000}s linear`;
+    if (instant) {
+      // Animation already played — snap to full size immediately, no re-animation
+      stem.style.transition = 'none';
       stem.style.strokeDashoffset = '0';
-      // Schedule reveals from this exact moment so they're in sync with the stroke
-      reveals.forEach(({ t, el }) => {
-        const tid = setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS);
-        window._landingVineTimers.push(tid);
-      });
-    }));
+      reveals.forEach(({ el }) => { el.style.opacity = '1'; });
+      window._vineAnimationDone = true;
+    } else {
+      stem.style.strokeDashoffset = totalLen;
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        stem.style.transition = `stroke-dashoffset ${DRAW_MS/1000}s linear`;
+        stem.style.strokeDashoffset = '0';
+        reveals.forEach(({ t, el }) => {
+          const tid = setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS);
+          window._landingVineTimers.push(tid);
+        });
+        // Mark animation complete after it finishes
+        const doneTid = setTimeout(() => { window._vineAnimationDone = true; }, DRAW_MS + 100);
+        window._landingVineTimers.push(doneTid);
+      }));
+    }
   }
 
   window.triggerLandingVine = buildLandingVine;
@@ -8228,12 +8240,12 @@ document.addEventListener('keydown', e => {
   // Auto-play on page load (login-screen starts active)
   setTimeout(buildLandingVine, 400);
 
-  // Rebuild if window is resized while on landing page
+  // Rebuild on resize — instant if animation already played, animated if still in progress
   let _vineResizeTimer = null;
   window.addEventListener('resize', () => {
     if (!document.getElementById('login-screen')?.classList.contains('active')) return;
     clearTimeout(_vineResizeTimer);
-    _vineResizeTimer = setTimeout(buildLandingVine, 250);
+    _vineResizeTimer = setTimeout(() => buildLandingVine(window._vineAnimationDone), 250);
   });
 })();
 </script>
