@@ -6399,13 +6399,17 @@ function selectFont(fontName) {
 }
 
 function loadGoogleFont(fontName) {
-  const id = 'gfont-' + fontName.replace(/\s+/g, '-').toLowerCase();
-  if (document.getElementById(id)) return;
-  const link = document.createElement('link');
-  link.id = id;
-  link.rel = 'stylesheet';
-  link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName)}:wght@300;400;500;700&display=swap`;
-  document.head.appendChild(link);
+  return new Promise(resolve => {
+    const id = 'gfont-' + fontName.replace(/\s+/g, '-').toLowerCase();
+    if (document.getElementById(id)) { resolve(); return; }
+    const link = document.createElement('link');
+    link.id = id;
+    link.rel = 'stylesheet';
+    link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(fontName)}:wght@300;400;500;700&display=swap`;
+    link.onload = resolve;
+    link.onerror = resolve;
+    document.head.appendChild(link);
+  });
 }
 
 // Layout
@@ -6675,13 +6679,12 @@ async function generateGalleryDesign() {
     if (d.wallpaper) { currentGallerySettings.wallpaper = d.wallpaper; document.querySelectorAll('.wallpaper-opt').forEach(o => o.classList.toggle('active', o.dataset.wp === d.wallpaper)); }
     // Layout is intentionally NOT set by AI — user controls this manually
     if (d.font) {
-      loadGoogleFont(d.font);
       currentGallerySettings.font_family = d.font;
       document.getElementById('font-selected').style.display = 'block';
       document.getElementById('font-selected-name').textContent = d.font;
       document.getElementById('font-preview-sample').style.fontFamily = `'${d.font}', serif`;
-      // Wait for font to load before refreshing preview so it actually renders
-      document.fonts.load(`1em "${d.font}"`).catch(() => {}).finally(() => updateGalleryPreview());
+      // Load font then re-render preview so the font is actually available
+      loadGoogleFont(d.font).then(() => updateGalleryPreview());
     }
     if (d.design_name) { document.getElementById('ai-design-toggle').textContent = `✦ ${d.design_name}`; }
     document.querySelectorAll('.color-preset').forEach(p => {
