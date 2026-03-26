@@ -8240,12 +8240,16 @@ document.addEventListener('keydown', e => {
   // Auto-play on page load (login-screen starts active)
   setTimeout(buildLandingVine, 400);
 
-  // Rebuild on resize — instant if animation already played, animated if still in progress
+  // On resize: tear down immediately, snap-rebuild 150ms after resize stops
   let _vineResizeTimer = null;
   window.addEventListener('resize', () => {
     if (!document.getElementById('login-screen')?.classList.contains('active')) return;
+    // Remove vine instantly so wrong-sized vine doesn't linger
+    document.querySelectorAll('.landing-vine-svg').forEach(el => el.remove());
+    window._landingVineTimers.forEach(clearTimeout);
+    window._landingVineTimers = [];
     clearTimeout(_vineResizeTimer);
-    _vineResizeTimer = setTimeout(() => buildLandingVine(window._vineAnimationDone), 250);
+    _vineResizeTimer = setTimeout(() => buildLandingVine(true), 150);
   });
 })();
 </script>
