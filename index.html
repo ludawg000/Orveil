@@ -2757,7 +2757,7 @@
   <!-- Nav -->
   <nav class="landing-nav">
     <div class="landing-logo">Orveil</div>
-    <button class="landing-get-started" onclick="document.getElementById('landing-auth-section').scrollIntoView({behavior:'smooth'})">Get Started</button>
+    <button class="landing-get-started" onclick="showScreen('auth-screen')">Get Started</button>
   </nav>
 
   <!-- Hero -->
@@ -2770,14 +2770,18 @@
     <p class="landing-sub">Orveil turns your client deliveries into immersive, branded moments — with a customizable virtual room, AI-powered messaging, and everything you need to run your creative business.</p>
   </div>
 
-  <!-- Auth -->
-  <div class="landing-divider"></div>
-  <div id="landing-auth-section" class="landing-auth">
-    <div class="landing-auth-label">Create your account or sign in</div>
-    <input id="auth-email" class="landing-input" type="email" placeholder="Email" />
-    <input id="auth-password" class="landing-input" type="password" placeholder="Password" />
-    <button class="landing-btn-primary" onclick="handleSignIn()">Sign In</button>
-    <button class="landing-btn-secondary" onclick="handleSignUp()">Create Account</button>
+</div>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen" class="screen" style="align-items:center;justify-content:center;flex-direction:column;background:#000;gap:2rem;">
+  <button onclick="showScreen('login-screen')" style="position:absolute;top:1.8rem;left:2.5rem;background:none;border:none;color:rgba(255,255,255,0.4);font-family:var(--sans);font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer;padding:0;">← Back</button>
+  <div style="font-family:var(--serif);font-size:2rem;color:var(--white);font-weight:400;letter-spacing:0.02em;">Orveil</div>
+  <div style="font-size:0.72rem;color:rgba(255,255,255,0.35);letter-spacing:0.16em;text-transform:uppercase;margin-top:-1rem;">For photographers &amp; videographers</div>
+  <div style="display:flex;flex-direction:column;gap:0.85rem;width:100%;max-width:320px;">
+    <input id="auth-email" type="email" placeholder="Email" class="landing-input" />
+    <input id="auth-password" type="password" placeholder="Password" class="landing-input" />
+    <button onclick="handleSignIn()" class="landing-btn-primary">Sign In</button>
+    <button onclick="handleSignUp()" class="landing-btn-secondary">Create Account</button>
     <div id="auth-error" class="landing-auth-error"></div>
   </div>
 </div>
