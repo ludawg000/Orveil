@@ -4867,14 +4867,16 @@ async function deleteSelectedFiles() {
   if (!confirm(`Delete ${n} file${n !== 1 ? 's' : ''}? This cannot be undone.`)) return;
 
   const toDelete = projectFiles.filter(f => selectedFileIds.has(f.id));
-  let totalSize = 0;
+  const totalSize = toDelete.reduce((sum, f) => sum + (f.size || 0), 0);
   showToast(`Deleting ${n} file${n !== 1 ? 's' : ''}...`);
 
-  for (const f of toDelete) {
-    await storageRemove('projects', [f.path]);
-    await dbDelete('files', `id=eq.${f.id}`);
-    totalSize += f.size || 0;
-  }
+  // One storage request for all paths, one DB request for all IDs
+  const paths = toDelete.map(f => f.path);
+  const ids = toDelete.map(f => f.id).join(',');
+  await Promise.all([
+    storageRemove('projects', paths),
+    dbDelete('files', `id=in.(${ids})`)
+  ]);
 
   const { data: profile } = await dbSelect('profiles', 'storage_used', `id=eq.${currentUser.id}`, { single: true });
   if (profile) {
