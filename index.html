@@ -6075,10 +6075,12 @@ async function loadGallerySettings() {
 
   const { data: profile } = await dbSelect('profiles', 'gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout', `id=eq.${currentUser.id}`, { single: true });
   const { data: proj } = await dbSelect('projects', 'gallery_logo_path,gallery_bg_color,gallery_accent_color,gallery_font_family,gallery_layout', `id=eq.${currentProject.id}`, { single: true });
-  // Try wallpaper column separately (may not exist yet)
-  let projWp = null, profileWp = null;
+  // Try optional columns separately (may not exist yet)
+  let projWp = null, profileWp = null, projGrad = null, profileGrad = null;
   try { const r = await dbSelect('projects', 'gallery_wallpaper', `id=eq.${currentProject.id}`, { single: true }); projWp = r.data?.gallery_wallpaper; } catch {}
   try { const r = await dbSelect('profiles', 'gallery_wallpaper', `id=eq.${currentUser.id}`, { single: true }); profileWp = r.data?.gallery_wallpaper; } catch {}
+  try { const r = await dbSelect('projects', 'gallery_bg_gradient', `id=eq.${currentProject.id}`, { single: true }); projGrad = r.data?.gallery_bg_gradient; } catch {}
+  try { const r = await dbSelect('profiles', 'gallery_bg_gradient', `id=eq.${currentUser.id}`, { single: true }); profileGrad = r.data?.gallery_bg_gradient; } catch {}
 
   const p = profile || {};
   currentGallerySettings = {
@@ -6087,10 +6089,13 @@ async function loadGallerySettings() {
     accent_color: proj?.gallery_accent_color ?? p.gallery_accent_color ?? defaults.accent_color,
     font_family: proj?.gallery_font_family ?? p.gallery_font_family ?? defaults.font_family,
     layout: proj?.gallery_layout ?? p.gallery_layout ?? defaults.layout,
-    wallpaper: projWp ?? profileWp ?? defaults.wallpaper
+    wallpaper: projWp ?? profileWp ?? defaults.wallpaper,
+    bg_gradient: projGrad ?? profileGrad ?? null
   };
 
   populateCustomizeUI();
+  // Pre-load the saved font so it's ready when customize panel opens
+  if (currentGallerySettings.font_family) loadGoogleFont(currentGallerySettings.font_family);
 }
 
 function populateCustomizeUI() {
@@ -6136,7 +6141,13 @@ function toggleCustomize() {
   layout.style.display = isOpen ? 'none' : 'block';
   arrow.classList.toggle('open', !isOpen);
   modal.classList.toggle('customize-open', !isOpen);
-  if (!isOpen) updateGalleryPreview();
+  if (!isOpen) {
+    updateGalleryPreview();
+    // Re-render once font is confirmed loaded
+    if (currentGallerySettings.font_family) {
+      loadGoogleFont(currentGallerySettings.font_family).then(() => updateGalleryPreview());
+    }
+  }
 }
 
 // Logo
@@ -6768,6 +6779,7 @@ async function sendDelivery() {
   };
   await dbUpdate('projects', galUpdate, `id=eq.${currentProject.id}`);
   await dbUpdate('projects', { gallery_wallpaper: currentGallerySettings.wallpaper }, `id=eq.${currentProject.id}`);
+  try { if (currentGallerySettings.bg_gradient) await dbUpdate('projects', { gallery_bg_gradient: currentGallerySettings.bg_gradient }, `id=eq.${currentProject.id}`); } catch {}
 
   // Save as default if checked
   if (document.getElementById('save-as-default').checked) {
@@ -6779,6 +6791,7 @@ async function sendDelivery() {
       gallery_layout: currentGallerySettings.layout
     }, `id=eq.${currentUser.id}`);
     await dbUpdate('profiles', { gallery_wallpaper: currentGallerySettings.wallpaper }, `id=eq.${currentUser.id}`);
+    try { if (currentGallerySettings.bg_gradient) await dbUpdate('profiles', { gallery_bg_gradient: currentGallerySettings.bg_gradient }, `id=eq.${currentUser.id}`); } catch {}
   }
 
   const galleryUrl = `${window.location.origin}${window.location.pathname}?gallery=${token}`;
