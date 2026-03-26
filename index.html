@@ -6683,8 +6683,11 @@ async function generateGalleryDesign() {
       document.getElementById('font-selected').style.display = 'block';
       document.getElementById('font-selected-name').textContent = d.font;
       document.getElementById('font-preview-sample').style.fontFamily = `'${d.font}', serif`;
-      // Load font then re-render preview so the font is actually available
-      loadGoogleFont(d.font).then(() => updateGalleryPreview());
+      loadGoogleFont(d.font).then(() => {
+        // Always re-render after font loads, even if font name didn't change
+        document.getElementById('gal-preview-title').style.fontFamily = `'${d.font}', serif`;
+        updateGalleryPreview();
+      });
     }
     if (d.design_name) { document.getElementById('ai-design-toggle').textContent = `✦ ${d.design_name}`; }
     document.querySelectorAll('.color-preset').forEach(p => {

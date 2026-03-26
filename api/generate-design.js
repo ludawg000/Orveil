@@ -24,7 +24,16 @@ Return ONLY a JSON object:
 - accent_color: hex — must strongly contrast bg_color
 - bg_gradient: CSS linear-gradient that deepens the bg_color (same hue, slightly lighter/darker). Always include.
 - wallpaper: "none" | "linen" | "lace" | "geometric" | "dots" | "marble" — match the mood
-- font: Google Fonts name. Match aesthetics: wedding→"Cormorant Garamond", editorial→"Josefin Sans", fashion→"Bodoni Moda", romantic→"Italiana", minimal→"Raleway", warm→"Crimson Pro"
+- font: A Google Fonts font name chosen specifically for this mood. Pick from this curated list based on the described aesthetic:
+  Romantic/luxury wedding → "Cormorant Garamond" or "Playfair Display" or "IM Fell English" or "Gilda Display"
+  Soft/dreamy/film → "Italiana" or "Jost" or "Lora" or "Marcellus"
+  Dark/editorial/moody → "Josefin Sans" or "DM Serif Display" or "Bebas Neue" or "Unbounded"
+  High fashion/minimal → "Bodoni Moda" or "Didact Gothic" or "Tenor Sans" or "Secular One"
+  Nature/earthy/warm → "Crimson Pro" or "Libre Baskerville" or "Bitter" or "Zilla Slab"
+  Modern/clean/airy → "Raleway" or "Nunito" or "DM Sans" or "Outfit"
+  Vintage/nostalgic → "Playfair Display" or "Abril Fatface" or "Spectral" or "Arvo"
+  Adventure/bold → "Oswald" or "Barlow Condensed" or "Exo 2" or "Michroma"
+  Choose the one that best fits — never repeat the same font for different moods
 - design_name: 2-3 words describing this specific design (not generic)
 - image_prompt: cinematic AI image prompt matching the exact described mood — specific location, lighting, colors, no people
 
