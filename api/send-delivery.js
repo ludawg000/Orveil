@@ -6,7 +6,7 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { email, projectName, message, galleryUrl, branding } = req.body;
+  const { email, projectName, message, galleryUrl, branding, heroImageUrl } = req.body;
 
   if (!email || !galleryUrl || !message) {
     return res.status(400).json({ error: 'Missing required fields' });
@@ -65,6 +65,7 @@ export default async function handler(req, res) {
             <tr>
               <td width="${dotFrame}" style="${borderCell}">&nbsp;</td>
               <td bgcolor="${bgColor}" style="background-color: ${bgColor}; font-family: '${fontFamily}', 'Helvetica Neue', Helvetica, Arial, sans-serif; color: ${accentColor}; padding: 48px 32px;">
+                ${heroImageUrl ? `<div style="margin: -48px -32px 32px; overflow: hidden; height: 220px;"><img src="${heroImageUrl}" alt="" style="width:100%;height:220px;object-fit:cover;display:block;"></div>` : ''}
                 <div style="text-align: center; margin-bottom: 40px;">
                   ${headerContent}
                 </div>

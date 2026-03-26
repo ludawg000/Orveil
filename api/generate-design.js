@@ -21,6 +21,7 @@ Return ONLY a JSON object with these fields:
 - layout: "masonry" | "grid" | "slideshow"
 - font: Google Fonts name matching the aesthetic. Examples: "Cormorant Garamond" (romantic/luxury), "Josefin Sans" (modern/clean), "DM Serif Display" (editorial), "Italiana" (fashion), "Libre Baskerville" (classic), "Raleway" (minimal modern), "Bodoni Moda" (high fashion), "Crimson Pro" (warm editorial)
 - design_name: a 2-3 word name for this design theme (e.g. "Tuscan Warmth", "Arctic Editorial", "Midnight Romance")
+- image_prompt: a detailed, cinematic prompt for an AI image generator to create a stunning hero/mood image that matches the aesthetic. Should describe lighting, colors, mood, setting. No people. Examples: "golden tuscany hills at sunset, warm haze, sunflower fields, cinematic photography, film grain", "dramatic arctic ice cliffs, blue hour, minimalist, editorial photography"
 
 Rules:
 - bg_color and accent_color must have STRONG contrast
@@ -30,7 +31,7 @@ Rules:
 - Return ONLY valid JSON, no explanation
 
 Example for "moody rainy day editorial":
-{"bg_color":"#1c1f2b","accent_color":"#c8cdd8","bg_gradient":"linear-gradient(160deg,#1c1f2b 0%,#252836 100%)","wallpaper":"geometric","layout":"masonry","font":"Josefin Sans","design_name":"Storm Editorial"}`;
+{"bg_color":"#1c1f2b","accent_color":"#c8cdd8","bg_gradient":"linear-gradient(160deg,#1c1f2b 0%,#252836 100%)","wallpaper":"geometric","layout":"masonry","font":"Josefin Sans","design_name":"Storm Editorial","image_prompt":"dramatic stormy coastline, dark brooding clouds, cinematic photography, desaturated blues and greys, moody atmosphere, film grain, editorial"}`;
 
   try {
     const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -45,7 +46,7 @@ Example for "moody rainy day editorial":
           { role: 'system', content: system },
           { role: 'user', content: `Project: "${projectName || 'Untitled'}". Aesthetic description: ${prompt}` },
         ],
-        max_tokens: 200,
+        max_tokens: 350,
         temperature: 0.9,
       }),
     });

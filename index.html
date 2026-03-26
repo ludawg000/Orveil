@@ -6459,6 +6459,20 @@ function updateGalleryPreview() {
   const content = document.getElementById('gal-preview-content');
   content.style.backgroundColor = bg;
 
+  // Hero image
+  let heroEl = document.getElementById('gal-preview-hero');
+  if (s.hero_image_url) {
+    if (!heroEl) {
+      heroEl = document.createElement('div');
+      heroEl.id = 'gal-preview-hero';
+      heroEl.style.cssText = 'width:100%;height:80px;overflow:hidden;margin-bottom:0;';
+      content.insertBefore(heroEl, content.firstChild);
+    }
+    heroEl.innerHTML = `<img src="${s.hero_image_url}" style="width:100%;height:80px;object-fit:cover;display:block;">`;
+  } else if (heroEl) {
+    heroEl.remove();
+  }
+
   const title = document.getElementById('gal-preview-title');
   title.style.color = accent;
   title.style.fontFamily = `'${font}', serif`;
@@ -6550,6 +6564,7 @@ function buildEmailPreviewHtml() {
             <tr>
               <td width="${dotFrame}" style="${borderCell}">&nbsp;</td>
               <td bgcolor="${bg}" style="background-color:${bg};font-family:'${font}',Georgia,serif;color:${accent};padding:28px 20px;">
+                ${s.hero_image_url ? `<div style="margin:-28px -20px 20px;overflow:hidden;height:140px;"><img src="${s.hero_image_url}" alt="" style="width:100%;height:140px;object-fit:cover;display:block;"></div>` : ''}
                 <div style="text-align:center;margin-bottom:20px;">${headerContent}</div>
                 <div style="border-top:1px solid ${accent}20;padding-top:18px;margin-bottom:18px;text-align:center;">
                   <h2 style="font-family:'${font}',Georgia,serif;font-size:1.2rem;font-weight:400;margin:0 0 5px;color:${accent};text-align:center;">Your gallery is ready</h2>
@@ -6644,13 +6659,11 @@ async function generateGalleryDesign() {
     if (d.layout) { currentGallerySettings.layout = d.layout; document.querySelectorAll('.layout-opt').forEach(o => o.classList.toggle('selected', o.dataset.layout === d.layout)); }
     if (d.font) { loadGoogleFont(d.font); currentGallerySettings.font_family = d.font; document.getElementById('font-selected').style.display = 'block'; document.getElementById('font-selected-name').textContent = d.font; document.getElementById('font-preview-sample').style.fontFamily = `'${d.font}', serif`; }
     if (d.design_name) { document.getElementById('ai-design-toggle').textContent = `✦ ${d.design_name}`; }
-    // Sync color preset UI
     document.querySelectorAll('.color-preset').forEach(p => {
       const preset = COLOR_PRESETS[p.dataset.preset];
       p.classList.toggle('active', preset && preset.bg === d.bg_color && preset.accent === d.accent_color);
     });
     checkContrast();
-    // Open customize panel if not already open
     const customizeLayout = document.getElementById('customize-layout');
     if (customizeLayout.style.display === 'none') {
       customizeLayout.style.display = 'block';
@@ -6659,7 +6672,24 @@ async function generateGalleryDesign() {
     }
     updateGalleryPreview();
     updateEmailPreview();
-    showToast('Design applied ✦');
+    // Generate hero image if prompt provided
+    if (d.image_prompt) {
+      btn.textContent = 'Generating image...';
+      try {
+        const imgResp = await fetch('/api/generate-image', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: d.image_prompt })
+        });
+        const imgData = await imgResp.json();
+        if (imgData.url) {
+          currentGallerySettings.hero_image_url = imgData.url;
+          updateGalleryPreview();
+          updateEmailPreview();
+        }
+      } catch (e) { /* image generation failed, continue without */ }
+    }
+    showToast(`✦ ${d.design_name || 'Design'} applied`);
   } catch (err) {
     showToast('Could not generate design: ' + err.message);
   }
@@ -6737,6 +6767,7 @@ async function sendDelivery() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         email, projectName: currentProject.name, message, galleryUrl,
+        heroImageUrl: currentGallerySettings.hero_image_url || null,
         branding: {
           bgColor: currentGallerySettings.bg_color,
           accentColor: currentGallerySettings.accent_color,
