@@ -2047,14 +2047,14 @@
   /* Full single-column — shows full photo uncropped */
   .files-grid.view-full {
     grid-template-columns: 1fr;
-    max-width: 480px; margin-left: auto; margin-right: auto;
+    max-width: unset;
   }
   .files-grid.view-full .file-thumb {
     aspect-ratio: unset;
   }
   .files-grid.view-full .file-thumb img {
     object-fit: contain;
-    height: auto; max-height: 42vh;
+    height: auto; max-height: 75vh;
     background: var(--g100);
   }
   .select-toolbar {
@@ -4390,6 +4390,7 @@ const deliveryMessages = {
 
 // ─── GALLERY ───
 let galleryFiles = [];
+let galleryEditFilter = '';
 let projectFiles = [];
 let lightboxIndex = 0;
 
@@ -4429,6 +4430,8 @@ async function loadGallery(token) {
     document.getElementById('gallery-meta').textContent = '';
     return;
   }
+
+  galleryEditFilter = project.edit_settings || '';
 
   galleryFiles = files.map(f => {
     const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/projects/${f.path}`;
@@ -4560,8 +4563,9 @@ function renderGalleryGrid(layout) {
         </div>
       </div>`;
     }
+    const filterAttr = galleryEditFilter ? ` style="filter:${galleryEditFilter}"` : '';
     return `<div class="gallery-item" onclick="openLightbox(${i})">
-      <img src="${f.publicUrl}" alt="${escHtml(f.name)}" loading="lazy">
+      <img src="${f.publicUrl}" alt="${escHtml(f.name)}" loading="lazy"${filterAttr}>
       <div class="gallery-item-overlay">
         <div class="gallery-item-name">${escHtml(f.name)}</div>
         <button class="gallery-dl-btn" onclick="event.stopPropagation();downloadFile('${f.publicUrl}','${escHtml(f.name)}')">&#8595;</button>
@@ -4629,7 +4633,8 @@ function updateSlideshow() {
     if (f.type?.startsWith('video/')) {
       media.innerHTML = `<video class="slideshow-video" src="${f.publicUrl}" controls></video>`;
     } else {
-      media.innerHTML = `<img class="slideshow-img" src="${f.publicUrl}" alt="${escHtml(f.name)}" onclick="openLightbox(${slideshowIndex})">`;
+      const ssFilter = galleryEditFilter ? ` style="filter:${galleryEditFilter}"` : '';
+      media.innerHTML = `<img class="slideshow-img" src="${f.publicUrl}" alt="${escHtml(f.name)}" onclick="openLightbox(${slideshowIndex})"${ssFilter}>`;
     }
     media.style.opacity = '1';
   }, 200);
@@ -4741,7 +4746,8 @@ function renderLightbox() {
   if (f.type?.startsWith('video/')) {
     media.innerHTML = `<video class="lightbox-video" src="${f.publicUrl}" controls autoplay></video>`;
   } else {
-    media.innerHTML = `<img class="lightbox-img" src="${f.publicUrl}" alt="${escHtml(f.name)}">`;
+    const lbFilter = galleryEditFilter ? ` style="filter:${galleryEditFilter}"` : '';
+    media.innerHTML = `<img class="lightbox-img" src="${f.publicUrl}" alt="${escHtml(f.name)}"${lbFilter}>`;
   }
   document.getElementById('lightbox-counter').textContent = `${lightboxIndex + 1} / ${galleryFiles.length}`;
   document.getElementById('lightbox-filename').textContent = f.name;
@@ -4761,16 +4767,38 @@ function lightboxDownload() {
 
 async function downloadFile(url, filename) {
   try {
-    const resp = await fetch(url);
-    const blob = await resp.blob();
-    const blobUrl = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = blobUrl;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    URL.revokeObjectURL(blobUrl);
-    a.remove();
+    if (galleryEditFilter) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = url + (url.includes('?') ? '&' : '?') + '_dl=' + Date.now(); });
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.filter = galleryEditFilter;
+      ctx.drawImage(img, 0, 0);
+      canvas.toBlob(blob => {
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        URL.revokeObjectURL(blobUrl);
+        a.remove();
+      }, 'image/jpeg', 0.95);
+    } else {
+      const resp = await fetch(url);
+      const blob = await resp.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      URL.revokeObjectURL(blobUrl);
+      a.remove();
+    }
   } catch {
     window.open(url, '_blank');
   }
@@ -5472,10 +5500,22 @@ function applyEditsToSelected() {
   });
 }
 
+function getProjectEditFilter() {
+  const { e, c, s, w, h, f } = getSliderValues();
+  return buildEditorFilter(e, c, s, w, h, f) + ' ' + buildCGFilter();
+}
+
+async function saveEditsToProject() {
+  if (!currentProject?.id) return;
+  const filter = getProjectEditFilter();
+  await dbUpdate('projects', { edit_settings: filter }, `id=eq.${currentProject.id}`);
+}
+
 function applyEditsToAll() {
   const { e, c, s, w, h, f } = getSliderValues();
   const filterStr = buildEditorFilter(e, c, s, w, h, f);
   document.querySelectorAll('#files-grid .file-thumb img').forEach(img => { img.style.filter = filterStr; });
+  saveEditsToProject();
 }
 
 function resetEdits() {
@@ -5687,6 +5727,7 @@ function onCGChange() {
 function applyCGToAll() {
   const filter = buildCGFilter();
   document.querySelectorAll('#files-grid .file-thumb img').forEach(img => { img.style.filter = filter; });
+  saveEditsToProject();
 }
 
 function resetCG() {
