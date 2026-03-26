@@ -4566,12 +4566,13 @@ function renderGalleryGrid(layout) {
         </div>
       </div>`;
     }
-    const filterAttr = galleryEditFilter ? ` style="filter:${galleryEditFilter}"` : '';
+    const ef = f.edit_settings || galleryEditFilter;
+    const filterAttr = ef ? ` style="filter:${ef}"` : '';
     return `<div class="gallery-item" onclick="openLightbox(${i})">
       <img src="${f.publicUrl}" alt="${escHtml(f.name)}" loading="lazy"${filterAttr}>
       <div class="gallery-item-overlay">
         <div class="gallery-item-name">${escHtml(f.name)}</div>
-        <button class="gallery-dl-btn" onclick="event.stopPropagation();downloadFile('${f.publicUrl}','${escHtml(f.name)}')">&#8595;</button>
+        <button class="gallery-dl-btn" onclick="event.stopPropagation();downloadFile('${f.publicUrl}','${escHtml(f.name)}',${i})">&#8595;</button>
       </div>
     </div>`;
   }).join('');
@@ -4636,7 +4637,8 @@ function updateSlideshow() {
     if (f.type?.startsWith('video/')) {
       media.innerHTML = `<video class="slideshow-video" src="${f.publicUrl}" controls></video>`;
     } else {
-      const ssFilter = galleryEditFilter ? ` style="filter:${galleryEditFilter}"` : '';
+      const ssEf = f.edit_settings || galleryEditFilter;
+      const ssFilter = ssEf ? ` style="filter:${ssEf}"` : '';
       media.innerHTML = `<img class="slideshow-img" src="${f.publicUrl}" alt="${escHtml(f.name)}" onclick="openLightbox(${slideshowIndex})"${ssFilter}>`;
     }
     media.style.opacity = '1';
@@ -4645,8 +4647,7 @@ function updateSlideshow() {
 }
 
 function slideshowDownload() {
-  const f = galleryFiles[slideshowIndex];
-  if (f) downloadFile(f.publicUrl, f.name);
+  if (galleryFiles[slideshowIndex]) downloadFile(galleryFiles[slideshowIndex].publicUrl, galleryFiles[slideshowIndex].name, slideshowIndex);
 }
 
 function generateUploadThumb(file) {
@@ -4749,7 +4750,8 @@ function renderLightbox() {
   if (f.type?.startsWith('video/')) {
     media.innerHTML = `<video class="lightbox-video" src="${f.publicUrl}" controls autoplay></video>`;
   } else {
-    const lbFilter = galleryEditFilter ? ` style="filter:${galleryEditFilter}"` : '';
+    const lbEf = f.edit_settings || galleryEditFilter;
+    const lbFilter = lbEf ? ` style="filter:${lbEf}"` : '';
     media.innerHTML = `<img class="lightbox-img" src="${f.publicUrl}" alt="${escHtml(f.name)}"${lbFilter}>`;
   }
   document.getElementById('lightbox-counter').textContent = `${lightboxIndex + 1} / ${galleryFiles.length}`;
@@ -4765,12 +4767,21 @@ function lightboxNav(dir) {
 
 function lightboxDownload() {
   const f = galleryFiles[lightboxIndex];
-  downloadFile(f.publicUrl, f.name);
+  downloadFile(f.publicUrl, f.name, lightboxIndex);
 }
 
-async function downloadFile(url, filename) {
+async function downloadFile(url, filename, fileIndexOrFilter) {
+  // Resolve the edit filter for this specific file
+  let editFilter = '';
+  if (typeof fileIndexOrFilter === 'number') {
+    const gf = galleryFiles[fileIndexOrFilter];
+    editFilter = (gf && gf.edit_settings) || galleryEditFilter || '';
+  } else if (typeof fileIndexOrFilter === 'string') {
+    editFilter = fileIndexOrFilter;
+  }
+
   try {
-    if (galleryEditFilter) {
+    if (editFilter) {
       const img = new Image();
       img.crossOrigin = 'anonymous';
       await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = url + (url.includes('?') ? '&' : '?') + '_dl=' + Date.now(); });
@@ -4778,7 +4789,7 @@ async function downloadFile(url, filename) {
       canvas.width = img.naturalWidth;
       canvas.height = img.naturalHeight;
       const ctx = canvas.getContext('2d');
-      ctx.filter = galleryEditFilter;
+      ctx.filter = editFilter;
       ctx.drawImage(img, 0, 0);
       canvas.toBlob(blob => {
         const blobUrl = URL.createObjectURL(blob);
@@ -4813,7 +4824,7 @@ async function downloadAllFiles() {
   btn.disabled = true;
   for (let i = 0; i < galleryFiles.length; i++) {
     btn.textContent = `Downloading ${i + 1}/${galleryFiles.length}...`;
-    await downloadFile(galleryFiles[i].publicUrl, galleryFiles[i].name);
+    await downloadFile(galleryFiles[i].publicUrl, galleryFiles[i].name, i);
     await new Promise(r => setTimeout(r, 300));
   }
   btn.textContent = 'Download All';
@@ -5456,7 +5467,7 @@ function applyPresetByName(name) {
 let _editSaveTimer = null;
 function debouncedSaveEdits() {
   clearTimeout(_editSaveTimer);
-  _editSaveTimer = setTimeout(saveEditsToProject, 800);
+  _editSaveTimer = setTimeout(() => saveEditsToFiles(), 800);
 }
 
 function onSliderInput(key, val) {
@@ -5538,17 +5549,25 @@ function getProjectEditFilter() {
   return buildEditorFilter(e, c, s, w, h, f) + ' ' + buildCGFilter();
 }
 
-async function saveEditsToProject() {
+async function saveEditsToFiles(allFiles) {
   if (!currentProject?.id) return;
   const filter = getProjectEditFilter();
-  await dbUpdate('projects', { edit_settings: filter }, `id=eq.${currentProject.id}`);
+  if (allFiles) {
+    await dbUpdate('files', { edit_settings: filter }, `project_id=eq.${currentProject.id}`);
+    projectFiles.forEach(f => { f.edit_settings = filter; });
+    return;
+  }
+  const ids = getEditTargets().map(c => c.dataset.fileId).filter(Boolean);
+  if (!ids.length) return;
+  await dbUpdate('files', { edit_settings: filter }, `id=in.(${ids.join(',')})`);
+  ids.forEach(id => { const f = projectFiles.find(f => f.id === id); if (f) f.edit_settings = filter; });
 }
 
 function applyEditsToAll() {
   const { e, c, s, w, h, f } = getSliderValues();
   const filterStr = buildEditorFilter(e, c, s, w, h, f);
   document.querySelectorAll('#files-grid .file-thumb img').forEach(img => { img.style.filter = filterStr; });
-  saveEditsToProject();
+  saveEditsToFiles(true);
 }
 
 function resetEdits() {
@@ -5765,7 +5784,7 @@ function onCGChange() {
 function applyCGToAll() {
   const filter = buildCGFilter();
   document.querySelectorAll('#files-grid .file-thumb img').forEach(img => { img.style.filter = filter; });
-  saveEditsToProject();
+  saveEditsToFiles(true);
 }
 
 function resetCG() {
@@ -5972,6 +5991,14 @@ async function loadFiles() {
       ${currentProject.isOwner ? `<button class="file-delete" onclick="deleteFile('${f.id}','${f.path}',${f.size},event)" title="Delete">&#10005;</button>` : ''}
     </div>`;
   }).join('');
+
+  // Restore any saved per-photo edit filters
+  projectFiles.forEach(f => {
+    if (!f.edit_settings) return;
+    const card = document.querySelector(`.file-card[data-file-id="${f.id}"]`);
+    const img = card?.querySelector('.file-thumb img');
+    if (img) img.style.filter = f.edit_settings;
+  });
 
   // Generate thumbnails for videos without thumb_path
   files.forEach((f, i) => {
