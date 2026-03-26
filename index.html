@@ -3216,6 +3216,12 @@
           <div></div>
           <button onclick="loadAdminStats()" style="font-family:var(--sans);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;background:none;border:1px solid var(--g200);padding:0.5rem 1rem;cursor:pointer;color:var(--g400);transition:all 0.2s;" onmouseover="this.style.borderColor='var(--black)';this.style.color='var(--black)'" onmouseout="this.style.borderColor='var(--g200)';this.style.color='var(--g400)'">Refresh</button>
         </div>
+        <div style="border-top:1px solid var(--g200);padding:1rem 0 0.5rem;">
+          <div style="font-size:0.6rem;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--g400);padding:0 0 0.8rem;">All Users</div>
+          <div id="admin-users-list" style="font-size:0.78rem;line-height:1.8;">
+            <span style="color:var(--g300);font-size:0.72rem;">Loading...</span>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -6334,6 +6340,32 @@ async function loadAdminStats() {
     if (totalEl) totalEl.textContent = 'Error';
     if (activeEl) activeEl.textContent = 'Error';
     if (sessionEl) sessionEl.textContent = 'Error';
+  }
+  loadAdminUsers();
+}
+
+async function loadAdminUsers() {
+  if (!currentUser || currentUser.email !== 'lucianegil04@gmail.com') return;
+  const listEl = document.getElementById('admin-users-list');
+  if (!listEl) return;
+  listEl.innerHTML = '<span style="color:var(--g300);font-size:0.72rem;">Loading...</span>';
+  try {
+    const resp = await fetch('/api/admin-users', {
+      headers: { 'x-admin-email': currentUser.email }
+    });
+    if (!resp.ok) throw new Error('Failed');
+    const { users } = await resp.json();
+    if (!users.length) { listEl.innerHTML = '<span style="color:var(--g300);font-size:0.72rem;">No users yet.</span>'; return; }
+    listEl.innerHTML = users.map((u, i) => {
+      const joined = new Date(u.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const lastSeen = u.last_sign_in_at ? timeAgo(u.last_sign_in_at) : 'never';
+      return `<div style="display:flex;justify-content:space-between;align-items:baseline;padding:0.45rem 0;${i > 0 ? 'border-top:1px solid var(--g100);' : ''}">
+        <span style="font-weight:400;">${u.email}</span>
+        <span style="font-size:0.62rem;color:var(--g400);white-space:nowrap;margin-left:1rem;">Joined ${joined} · ${lastSeen}</span>
+      </div>`;
+    }).join('');
+  } catch (e) {
+    listEl.innerHTML = '<span style="color:var(--g300);font-size:0.72rem;">Error loading users.</span>';
   }
 }
 
