@@ -8086,51 +8086,49 @@ document.addEventListener('keydown', e => {
       return { x: a.x, y: a.y, angle: Math.atan2(b.y-a.y, b.x-a.x)*180/Math.PI };
     }
 
+    // Pre-build all thorns and leaves (hidden), collect {t, el} for synced reveal
+    const reveals = [];
+
     // Thorns every 1% (~100 total)
     for (let i = 1; i <= 99; i += 1) {
       const t = i / 100;
       const { x, y, angle } = spt(t);
       const el = makeThorn(x, y, angle, 5);
       el.style.opacity = '0';
-      el.style.transition = 'opacity 0.12s ease';
       svg.appendChild(el);
-      window._landingVineTimers.push(setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS + 40));
+      reveals.push({ t, el });
     }
 
-    // Leaves: two passes — every 1.5% on each side (~130 leaves total)
+    // Leaves: two passes, both sides, every 2% each (~100 leaves total)
     const lSzA = [11,9,12,10,11,9,12,10,11,9,12,10,11,9,12];
     const lSzB = [8,10,8,9,8,10,9,8,10,8,9,10,8,9,10];
     let li = 0;
-    // Pass A: left-side leaves every 1.5% (using 0.015 steps)
     for (let i = 1; i <= 99; i += 2) {
       const t = i / 100;
       const { x, y, angle } = spt(t);
-      const el = makeLeaf(x, y, lSzA[li % lSzA.length], angle - 55, li);
-      el.style.opacity = '0';
-      el.style.transition = 'opacity 0.2s ease';
-      svg.appendChild(el);
-      window._landingVineTimers.push(setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS + 40));
-      li++;
-    }
-    li = 0;
-    // Pass B: right-side leaves offset by 1%
-    for (let i = 2; i <= 99; i += 2) {
-      const t = i / 100;
-      const { x, y, angle } = spt(t);
-      const el = makeLeaf(x, y, lSzB[li % lSzB.length], angle + 42, li + 50);
-      el.style.opacity = '0';
-      el.style.transition = 'opacity 0.2s ease';
-      svg.appendChild(el);
-      window._landingVineTimers.push(setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS + 40));
+      const elA = makeLeaf(x, y, lSzA[li % lSzA.length], angle - 55, li);
+      elA.style.opacity = '0';
+      svg.appendChild(elA);
+      reveals.push({ t, el: elA });
+      const elB = makeLeaf(x, y, lSzB[li % lSzB.length], angle + 42, li + 50);
+      elB.style.opacity = '0';
+      svg.appendChild(elB);
+      reveals.push({ t, el: elB });
       li++;
     }
 
-    // Draw clockwise from top-left
+    // Draw clockwise — linear so t maps exactly to elapsed/DRAW_MS
     stem.style.strokeDasharray = totalLen;
     stem.style.strokeDashoffset = totalLen;
     requestAnimationFrame(() => requestAnimationFrame(() => {
-      stem.style.transition = `stroke-dashoffset ${DRAW_MS/1000}s cubic-bezier(0.25,0,0.2,1)`;
+      // Start stroke with LINEAR easing so t=0.5 → exactly DRAW_MS*0.5 elapsed
+      stem.style.transition = `stroke-dashoffset ${DRAW_MS/1000}s linear`;
       stem.style.strokeDashoffset = '0';
+      // Schedule reveals from this exact moment so they're in sync with the stroke
+      reveals.forEach(({ t, el }) => {
+        const tid = setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS);
+        window._landingVineTimers.push(tid);
+      });
     }));
   }
 
