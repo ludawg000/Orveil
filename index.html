@@ -5453,12 +5453,19 @@ function applyPresetByName(name) {
   previewEditsOnSelected();
 }
 
+let _editSaveTimer = null;
+function debouncedSaveEdits() {
+  clearTimeout(_editSaveTimer);
+  _editSaveTimer = setTimeout(saveEditsToProject, 800);
+}
+
 function onSliderInput(key, val) {
   const sv = document.getElementById('sv-' + key);
   if (sv) sv.textContent = Math.round(val);
   _activePresetName = null;
   renderPresetChips();
   previewEditsOnSelected();
+  debouncedSaveEdits();
 }
 
 function getSliderValues() {
@@ -5752,6 +5759,7 @@ function onCGChange() {
     if (img) img.style.filter = filter;
   });
   drawCGHistogram();
+  debouncedSaveEdits();
 }
 
 function applyCGToAll() {
