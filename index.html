@@ -6935,68 +6935,139 @@ document.addEventListener('keydown', e => {
   const logoEl   = logoWrap && logoWrap.querySelector('.vine-logo-inner');
   let logoVineSvg = null;
 
+  let logoFrontSvg = null;
+
   function triggerLogoVineInternal() {
-    if (logoVineSvg) { logoVineSvg.remove(); logoVineSvg = null; }
+    // Cleanup previous
+    document.querySelectorAll('.logo-vine-layer').forEach(el => el.remove());
+    logoVineSvg = null; logoFrontSvg = null;
     if (!logoWrap || !logoEl) return;
 
     const W = logoEl.offsetWidth, H = logoEl.offsetHeight;
-    const pad = 32;
+    const pad = 18;
 
-    // O: first letter of "Orveil" in Playfair Display
-    const ox = pad + W * 0.09;
-    const oy = pad + H * 0.46;
-    const or = H * 0.27;
+    const cap  = pad + H * 0.08;
+    const mid  = pad + H * 0.46;
+    const base = pad + H * 0.88;
+    const dot  = pad + H * -0.18;
+    const or   = H * 0.30;
+    const xO   = pad + W * 0.086;
+    const xR   = pad + W * 0.24;
+    const xV   = pad + W * 0.395;
+    const xE   = pad + W * 0.555;
+    const xI   = pad + W * 0.672;
+    const xL   = pad + W * 0.845;
+    const xEnd = pad + W + H * 0.25;
 
-    // Anchor points
-    const L = pad, R = pad + W, T = pad, B = pad + H;
-
-    // Organic vine path — asymmetric, dramatic, NOT a clean oval:
-    // starts left of O with a curly tendril, threads through the O hole,
-    // shoots high over the top, dips near 'v', sweeps wide right,
-    // curls under and back left with an uneven belly, ends with a tendril
+    // Vine path weaves THROUGH the letterforms horizontally
     const d = [
-      // ── Curly tendril entering from left ──
-      `M ${ox - or * 2.2} ${oy + or * 0.5}`,
-      `C ${ox - or * 2.8} ${oy - or * 0.8}, ${ox - or * 1.8} ${oy - or * 1.4}, ${ox - or * 0.9} ${oy}`,
-
-      // ── Loop THROUGH the O (clockwise) ──
-      `C ${ox - or} ${oy - or * 1.6}, ${ox + or} ${oy - or * 1.6}, ${ox + or * 0.95} ${oy + or * 0.1}`,
-      `C ${ox + or * 0.7} ${oy + or * 1.4}, ${ox - or * 0.3} ${oy + or * 1.2}, ${ox + or * 0.05} ${oy - or * 2.4}`,
-
-      // ── Climb steeply, sweep right over 'r','v','e' — high arc ──
-      `C ${ox + W * 0.18} ${T - H * 0.7}, ${L + W * 0.46} ${T - H * 0.55}, ${L + W * 0.6} ${T - H * 0.2}`,
-
-      // ── Dip slightly near 'i','l' then rise to top-right ──
-      `C ${L + W * 0.74} ${T - H * 0.05}, ${L + W * 0.88} ${T - H * 0.35}, ${R + H * 0.1} ${T + H * 0.08}`,
-
-      // ── Sweep wide around right end ──
-      `C ${R + H * 0.55} ${T + H * 0.15}, ${R + H * 0.65} ${T + H * 0.7}, ${R + H * 0.3} ${B + H * 0.08}`,
-
-      // ── Flow back left under text, irregular belly ──
-      `C ${R - W * 0.1} ${B + H * 0.45}, ${L + W * 0.65} ${B + H * 0.25}, ${L + W * 0.42} ${B + H * 0.42}`,
-      `C ${L + W * 0.22} ${B + H * 0.55}, ${L + W * 0.05} ${B + H * 0.35}, ${L - H * 0.1} ${B + H * 0.1}`,
-
-      // ── Curl back up left with a small backward hook ──
-      `C ${L - H * 0.3} ${B - H * 0.2}, ${L - H * 0.25} ${T + H * 0.5}, ${ox - or * 1.8} ${oy + or * 1.1}`,
-
-      // ── Tiny curly tendril end ──
-      `C ${ox - or * 2.5} ${oy + or * 1.6}, ${ox - or * 3.0} ${oy + or * 0.4}, ${ox - or * 2.6} ${oy - or * 0.3}`,
+      `M ${pad - H*0.5} ${mid + H*0.1}`,
+      `C ${pad - H*0.2} ${mid - H*0.45}, ${xO - or*1.3} ${mid - H*0.2}, ${xO - or*0.85} ${mid}`,
+      `C ${xO - or} ${mid - or*1.55}, ${xO + or} ${mid - or*1.55}, ${xO + or*0.9} ${mid}`,
+      `C ${xO + or*0.6} ${mid + or*1.3}, ${xO - or*0.1} ${mid + or*1.1}, ${xO + or*0.2} ${mid - or*0.5}`,
+      `C ${xR - W*0.04} ${cap - H*0.15}, ${xR + W*0.03} ${cap + H*0.1}, ${xR + W*0.05} ${mid - H*0.1}`,
+      `C ${xV - W*0.05} ${base + H*0.22}, ${xV + W*0.03} ${base + H*0.25}, ${xV + W*0.07} ${mid + H*0.05}`,
+      `C ${xE - W*0.04} ${cap + H*0.05}, ${xE + W*0.03} ${cap - H*0.05}, ${xE + W*0.06} ${mid}`,
+      `C ${xE + W*0.07} ${base*0.92}, ${xE - W*0.02} ${base + H*0.05}, ${xE - W*0.05} ${mid + H*0.15}`,
+      `C ${xI - W*0.04} ${cap + H*0.05}, ${xI} ${dot + H*0.1}, ${xI} ${dot}`,
+      `C ${xI + H*0.12} ${dot - H*0.18}, ${xI + H*0.2} ${dot + H*0.1}, ${xI + H*0.06} ${dot + H*0.18}`,
+      `C ${xI + W*0.05} ${mid}, ${xL - W*0.04} ${cap - H*0.1}, ${xL} ${cap}`,
+      `C ${xL + W*0.04} ${base - H*0.05}, ${xL + W*0.06} ${base + H*0.12}, ${xL + W*0.02} ${base + H*0.18}`,
+      `C ${xEnd - H*0.1} ${base + H*0.3}, ${xEnd} ${mid + H*0.15}, ${xEnd + H*0.1} ${mid - H*0.2}`,
+      `C ${xEnd + H*0.25} ${cap}, ${xEnd + H*0.1} ${cap - H*0.2}, ${xEnd - H*0.05} ${cap + H*0.05}`,
     ].join(' ');
 
-    const svg = document.createElementNS(ns, 'svg');
-    svg.style.cssText = `position:absolute;top:${-pad}px;left:${-pad}px;width:${W+pad*2}px;height:${H+pad*2}px;pointer-events:none;overflow:visible;z-index:20;`;
+    const svgCSS = `position:absolute;top:${-pad}px;left:${-pad}px;width:${W+pad*2}px;height:${H+pad*2}px;pointer-events:none;overflow:visible;`;
 
-    const stem = document.createElementNS(ns, 'path');
-    stem.setAttribute('d', d); stem.setAttribute('fill','none');
-    stem.setAttribute('stroke','#2d5a1b'); stem.setAttribute('stroke-width','2.4');
-    stem.setAttribute('stroke-linecap','round'); stem.setAttribute('stroke-linejoin','round');
-    svg.appendChild(stem);
-    logoVineSvg = svg;
+    function makeSvg(zi) {
+      const s = document.createElementNS(ns, 'svg');
+      s.className = 'logo-vine-layer';
+      s.style.cssText = svgCSS + `z-index:${zi};`;
+      return s;
+    }
+    function makeStem(pathD) {
+      const p = document.createElementNS(ns, 'path');
+      p.setAttribute('d', pathD); p.setAttribute('fill','none');
+      p.setAttribute('stroke','#2d5a1b'); p.setAttribute('stroke-width','2.4');
+      p.setAttribute('stroke-linecap','round'); p.setAttribute('stroke-linejoin','round');
+      return p;
+    }
+    function frontSegment(pathD, startLen, segLen) {
+      // Show only the segment [startLen, startLen+segLen] of the path
+      const p = makeStem(pathD);
+      p.setAttribute('stroke-dasharray', `0 ${startLen.toFixed(1)} ${segLen.toFixed(1)} 99999`);
+      p.setAttribute('stroke-dashoffset', '0');
+      p.style.opacity = '0';
+      p.style.transition = 'opacity 0.2s ease';
+      return p;
+    }
 
-    animateStem(logoWrap, svg, stem,
-      [0.05, 0.12, 0.19, 0.27, 0.35, 0.43, 0.52, 0.61, 0.70, 0.79, 0.87, 0.94],
-      [0.08, 0.16, 0.24, 0.33, 0.42, 0.51, 0.60, 0.69, 0.78, 0.88, 0.96],
-      5);
+    // ── BACK layer (z:0, behind text) ──
+    const svgBackReal = makeSvg(0);
+    const stemBack = makeStem(d);
+    svgBackReal.appendChild(stemBack);
+    logoWrap.appendChild(svgBackReal);
+    logoVineSvg = svgBackReal;
+
+    // z-order: text above back vine
+    logoEl.style.position = 'relative';
+    logoEl.style.zIndex = '1';
+
+    // ── FRONT layer (z:2, in front of text) ──
+    const svgFront = makeSvg(2);
+    logoWrap.appendChild(svgFront);
+    logoFrontSvg = svgFront;
+
+    // Measure path length
+    const totalLen = stemBack.getTotalLength();
+
+    // "Over-letter" crossings: vine goes IN FRONT of letter at these t-ranges
+    // [t_start, t_end, delay_ms_after_anim_start]
+    const overCrossings = [
+      [0.30, 0.40, 520],   // over 'r' ascender
+      [0.50, 0.60, 840],   // over 'e' top
+      [0.67, 0.82, 1130],  // over 'i' spike + dot
+      [0.83, 0.93, 1420],  // over 'l' tall stroke
+    ];
+
+    overCrossings.forEach(([tS, tE, delay]) => {
+      const seg = frontSegment(d, tS * totalLen, (tE - tS) * totalLen);
+      svgFront.appendChild(seg);
+      setTimeout(() => {
+        requestAnimationFrame(() => { seg.style.opacity = '1'; });
+      }, delay);
+    });
+
+    // Thorns & leaves on back layer
+    function sample(t) {
+      const l = t * totalLen;
+      const a = stemBack.getPointAtLength(l);
+      const b = stemBack.getPointAtLength(Math.min(l + 2, totalLen));
+      return { x: a.x, y: a.y, angle: Math.atan2(b.y-a.y, b.x-a.x)*180/Math.PI };
+    }
+    const thornTs = [0.05,0.11,0.18,0.25,0.33,0.41,0.49,0.57,0.65,0.73,0.81,0.90,0.96];
+    thornTs.forEach((t,i) => {
+      const {x,y,angle} = sample(t);
+      const el = makeThorn(x,y,angle,5);
+      el.style.opacity='0'; el.style.transition=`opacity 0.16s ease ${0.4+i*0.05}s`;
+      svgBackReal.appendChild(el);
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{ el.style.opacity='1'; }));
+    });
+    const leafTs = [0.08,0.15,0.22,0.30,0.38,0.46,0.54,0.62,0.70,0.78,0.86,0.94];
+    const lSz = [7,6,8,6,7,5,8,6,7,6,8,6];
+    leafTs.forEach((t,i) => {
+      const {x,y,angle} = sample(t);
+      const el = makeLeaf(x,y,lSz[i],angle+(i%2===0?-45:42),i);
+      el.style.opacity='0'; el.style.transition=`opacity 0.28s ease ${0.25+i*0.07}s`;
+      svgBackReal.appendChild(el);
+      requestAnimationFrame(()=>requestAnimationFrame(()=>{ el.style.opacity='1'; }));
+    });
+
+    // Animate back stem drawing in
+    stemBack.style.strokeDasharray = totalLen;
+    stemBack.style.strokeDashoffset = totalLen;
+    stemBack.style.transition = 'stroke-dashoffset 1.8s cubic-bezier(0.3,0,0.2,1)';
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{ stemBack.style.strokeDashoffset='0'; }));
   }
 
   // Expose so showScreen can call it
