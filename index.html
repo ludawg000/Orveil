@@ -5679,7 +5679,48 @@ function resetCG() {
   drawCGHistogram();
 }
 
-let _cgHistImg = null; // cached { src, img } — avoids reload on every slider/wheel/curve change
+// Cache: { src, rawData: Uint8ClampedArray, w, h }
+// Raw pixels stored once; color grade applied in JS on every redraw (no ctx.filter unreliability)
+let _cgHistCache = null;
+
+function _applyGradeToHistogram(rawData, w, h) {
+  const { lift, gamma, gain, temp, tint, contrast, saturation, shadows, highlights, blacks, whites, curve } = CG_STATE;
+  const lumAdj = lift.lum*0.002 + gamma.lum*0.005 + gain.lum*0.002;
+  const toIn=x=>(x-10)/130, toOut=y=>1-(y-10)/110;
+  const shadowDev = toOut(curve.p1.y)  - toIn(curve.p1.x);
+  const midDev    = toOut(curve.mid.y) - toIn(curve.mid.x);
+  const highDev   = toOut(curve.p2.y)  - toIn(curve.p2.x);
+  const curveBias = shadowDev*0.25 + midDev*0.5 + highDev*0.25;
+  const curveContrast = (highDev - shadowDev) * 0.35;
+  const bright = Math.max(0.05, 1 + lumAdj + shadows*0.003 + highlights*0.002 + whites*0.003 + blacks*0.002 + curveBias);
+  const cont   = Math.max(0.1,  1 + contrast*0.01 + curveContrast);
+  const sat    = Math.max(0,    1 + saturation*0.015 + (lift.s*0.25 + gamma.s*0.5 + gain.s*0.25)*0.3);
+  // Hue from wheels + temp/tint — CSS hue-rotate matrix
+  const wheelH = lift.h*lift.s*0.2 + gamma.h*gamma.s*0.4 + gain.h*gain.s*0.2;
+  const hDeg = wheelH + (-temp*0.18) + (tint*0.08);
+  const hr = hDeg * Math.PI / 180;
+  const cos = Math.cos(hr), sin = Math.sin(hr);
+  const m00=0.213+cos*0.787-sin*0.213, m01=0.715-cos*0.715-sin*0.715, m02=0.072-cos*0.072+sin*0.928;
+  const m10=0.213-cos*0.213+sin*0.143, m11=0.715+cos*0.285+sin*0.140, m12=0.072-cos*0.072-sin*0.283;
+  const m20=0.213-cos*0.213-sin*0.787, m21=0.715-cos*0.715+sin*0.715, m22=0.072+cos*0.928+sin*0.072;
+
+  const rH=new Uint32Array(256), gH=new Uint32Array(256), bH=new Uint32Array(256);
+  const cl = v => v < 0 ? 0 : v > 1 ? 1 : v;
+  for (let i = 0; i < rawData.length; i += 4) {
+    let r=rawData[i]/255, g=rawData[i+1]/255, b=rawData[i+2]/255;
+    // Brightness
+    r=cl(r*bright); g=cl(g*bright); b=cl(b*bright);
+    // Contrast
+    r=cl((r-0.5)*cont+0.5); g=cl((g-0.5)*cont+0.5); b=cl((b-0.5)*cont+0.5);
+    // Saturation
+    const lm=0.2126*r+0.7152*g+0.0722*b;
+    r=cl(lm+(r-lm)*sat); g=cl(lm+(g-lm)*sat); b=cl(lm+(b-lm)*sat);
+    // Hue rotation (CSS hue-rotate matrix)
+    const nr=cl(m00*r+m01*g+m02*b), ng=cl(m10*r+m11*g+m12*b), nb=cl(m20*r+m21*g+m22*b);
+    rH[Math.round(nr*255)]++; gH[Math.round(ng*255)]++; bH[Math.round(nb*255)]++;
+  }
+  return { rH, gH, bH };
+}
 
 async function drawCGHistogram() {
   const canvas = document.getElementById('cg-histogram');
@@ -5692,72 +5733,75 @@ async function drawCGHistogram() {
 
   if (imgEl?.src) {
     try {
-      // Load once; cache for all subsequent filter-change redraws (no async stall = no flicker)
-      if (_cgHistImg?.src !== imgEl.src) {
+      // Load raw pixels once, cache by src
+      if (_cgHistCache?.src !== imgEl.src) {
         const img = new Image();
         img.crossOrigin = 'anonymous';
         await new Promise((res, rej) => { img.onload=res; img.onerror=rej; img.src=imgEl.src; });
-        _cgHistImg = { src: imgEl.src, img };
+        const iw=img.naturalWidth||img.width, ih=img.naturalHeight||img.height;
+        if (iw <= 0 || ih <= 0) throw new Error('bad dims');
+        const scale=Math.min(1, 200/Math.max(iw,ih));
+        const w=Math.max(1,Math.round(iw*scale)), h=Math.max(1,Math.round(ih*scale));
+        const tmp=document.createElement('canvas'); tmp.width=w; tmp.height=h;
+        tmp.getContext('2d').drawImage(img,0,0,w,h);
+        const raw=tmp.getContext('2d').getImageData(0,0,w,h).data; // SecurityError if CORS blocked
+        _cgHistCache = { src: imgEl.src, rawData: raw, w, h };
       }
-      const img = _cgHistImg.img;
-      const iw = img.naturalWidth||img.width, ih = img.naturalHeight||img.height;
-      if (iw > 0 && ih > 0) {
-        const scale = Math.min(1, 200/Math.max(iw,ih));
-        const w = Math.max(1,Math.round(iw*scale)), h = Math.max(1,Math.round(ih*scale));
-        const tmp = document.createElement('canvas'); tmp.width=w; tmp.height=h;
-        const tc = tmp.getContext('2d');
-        // Apply current color grade so wheels/sliders/curve all show in the histogram
-        tc.filter = buildCGFilter();
-        tc.drawImage(img, 0, 0, w, h);
-        const { data } = tc.getImageData(0, 0, w, h); // throws SecurityError if CORS blocked
-        const rH=new Uint32Array(256), gH=new Uint32Array(256), bH=new Uint32Array(256);
-        for (let i=0; i<data.length; i+=4) { rH[data[i]]++; gH[data[i+1]]++; bH[data[i+2]]++; }
-        let peak=1;
-        for (let i=1; i<255; i++) peak=Math.max(peak,rH[i],gH[i],bH[i]);
 
-        ctx.clearRect(0,0,W,H);
-        ctx.fillStyle='#0a0a0a'; ctx.fillRect(0,0,W,H);
-        ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=0.7;
-        [0.25,0.5,0.75].forEach(t=>{
-          ctx.beginPath(); ctx.moveTo(t*W,0); ctx.lineTo(t*W,H); ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(0,t*H); ctx.lineTo(W,t*H); ctx.stroke();
-        });
-        const drawCh=(hist,color)=>{
-          ctx.beginPath(); ctx.moveTo(0,H);
-          for (let x=0; x<W; x++) {
-            const bin=Math.round(x*255/(W-1));
-            ctx.lineTo(x, H-(hist[bin]/peak)*H*0.95);
-          }
-          ctx.lineTo(W,H); ctx.closePath(); ctx.fillStyle=color; ctx.fill();
-        };
-        drawCh(bH,'rgba(41,128,185,0.6)');
-        drawCh(gH,'rgba(39,174,96,0.55)');
-        drawCh(rH,'rgba(192,57,43,0.6)');
-        ctx.fillStyle='#444'; ctx.font='500 8px sans-serif';
-        ctx.fillText('0',2,H-2); ctx.fillText('255',W-16,H-2);
-        return;
-      }
-    } catch(e) { /* CORS blocked — fall through to simulation */ }
+      // Apply current color grade to cached raw pixels — always reflects wheels/sliders/curve
+      const { rH, gH, bH } = _applyGradeToHistogram(_cgHistCache.rawData, _cgHistCache.w, _cgHistCache.h);
+      let peak=1;
+      for (let i=1; i<255; i++) peak=Math.max(peak,rH[i],gH[i],bH[i]);
+
+      ctx.clearRect(0,0,W,H); ctx.fillStyle='#0a0a0a'; ctx.fillRect(0,0,W,H);
+      ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=0.7;
+      [0.25,0.5,0.75].forEach(t=>{
+        ctx.beginPath(); ctx.moveTo(t*W,0); ctx.lineTo(t*W,H); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0,t*H); ctx.lineTo(W,t*H); ctx.stroke();
+      });
+      const drawCh=(hist,color)=>{
+        ctx.beginPath(); ctx.moveTo(0,H);
+        for (let x=0;x<W;x++) ctx.lineTo(x, H-(hist[Math.round(x*255/(W-1))]/peak)*H*0.95);
+        ctx.lineTo(W,H); ctx.closePath(); ctx.fillStyle=color; ctx.fill();
+      };
+      drawCh(bH,'rgba(41,128,185,0.6)');
+      drawCh(gH,'rgba(39,174,96,0.55)');
+      drawCh(rH,'rgba(192,57,43,0.6)');
+      ctx.fillStyle='#444'; ctx.font='500 8px sans-serif';
+      ctx.fillText('0',2,H-2); ctx.fillText('255',W-16,H-2);
+      return;
+    } catch(e) { /* CORS blocked — simulation below */ }
   }
 
-  // Fallback simulation
-  ctx.clearRect(0,0,W,H);
-  ctx.fillStyle='#0a0a0a'; ctx.fillRect(0,0,W,H);
+  // Simulation fallback — per-channel offsets from wheel hue/sat
+  ctx.clearRect(0,0,W,H); ctx.fillStyle='#0a0a0a'; ctx.fillRect(0,0,W,H);
   ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=0.7;
   [0.25,0.5,0.75].forEach(t=>{
     ctx.beginPath(); ctx.moveTo(t*W,0); ctx.lineTo(t*W,H); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(0,t*H); ctx.lineTo(W,t*H); ctx.stroke();
   });
-  const bright=(1+CG_STATE.lift.lum*0.002+CG_STATE.gamma.lum*0.005+CG_STATE.gain.lum*0.002);
-  const cont=(1+CG_STATE.contrast*0.01);
-  const shift=Math.min(Math.max((bright-1)*30+W/2,10),W-10);
-  const spread=Math.max(0.3,Math.min(2.5,cont));
-  [{color:'rgba(192,57,43,0.7)',off:-3},{color:'rgba(39,174,96,0.7)',off:0},{color:'rgba(41,128,185,0.7)',off:3}]
+  const { lift, gamma, gain } = CG_STATE;
+  const lumBright = 1 + lift.lum*0.002 + gamma.lum*0.005 + gain.lum*0.002;
+  const cont = 1 + CG_STATE.contrast*0.01;
+  const spread = Math.max(0.3, Math.min(2.5, cont));
+  // Per-channel shift from wheel hues (hue=0°=right=red, 120°=green, 240°/-120°=blue in color wheel)
+  const chBias = (h, s, w) => ({
+    r: Math.cos((h)*Math.PI/180)*s*w,
+    g: Math.cos((h-120)*Math.PI/180)*s*w,
+    b: Math.cos((h+120)*Math.PI/180)*s*w,
+  });
+  const lb=chBias(lift.h,  lift.s,  0.12);
+  const mb=chBias(gamma.h, gamma.s, 0.22);
+  const gb=chBias(gain.h,  gain.s,  0.12);
+  const rOff=(lumBright-1+lb.r+mb.r+gb.r)*40;
+  const gOff=(lumBright-1+lb.g+mb.g+gb.g)*40;
+  const bOff=(lumBright-1+lb.b+mb.b+gb.b)*40;
+  [{color:'rgba(192,57,43,0.7)',off:rOff},{color:'rgba(39,174,96,0.7)',off:gOff},{color:'rgba(41,128,185,0.7)',off:bOff}]
     .forEach(({color,off})=>{
       ctx.beginPath(); ctx.moveTo(0,H);
       for(let x=0;x<W;x++){
-        const nx=(x-shift-off)/(W*0.18*spread);
-        ctx.lineTo(x,H-Math.exp(-nx*nx*0.5)*H*0.8);
+        const nx=(x-(W/2+off))/(W*0.18*spread);
+        ctx.lineTo(x, H-Math.exp(-nx*nx*0.5)*H*0.8);
       }
       ctx.lineTo(W,H); ctx.closePath(); ctx.fillStyle=color; ctx.fill();
     });
