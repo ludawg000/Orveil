@@ -8091,6 +8091,7 @@ document.addEventListener('keydown', e => {
     // and makes the SVG scroll with the page (correct behavior on mobile)
     const VW = loginScreen.offsetWidth;
     const VH = loginScreen.offsetHeight;
+    window._lastVineW = VW; // track so resize handler can ignore height-only changes
     const navH = nav.offsetTop + nav.offsetHeight;  // bottom of nav relative to login-screen
 
     const mobile = VW < 600;
@@ -8241,11 +8242,14 @@ document.addEventListener('keydown', e => {
   // Auto-play on page load (login-screen starts active)
   setTimeout(buildLandingVine, 400);
 
-  // On resize: tear down immediately, snap-rebuild 150ms after resize stops
+  // On resize: only rebuild if WIDTH changed — height-only changes are iOS address
+  // bar show/hide (overscroll, pull-to-refresh) and should be ignored
+  window._lastVineW = 0;
   let _vineResizeTimer = null;
   window.addEventListener('resize', () => {
     if (!document.getElementById('login-screen')?.classList.contains('active')) return;
-    // Remove vine instantly so wrong-sized vine doesn't linger
+    const newW = document.getElementById('login-screen').offsetWidth;
+    if (Math.abs(newW - window._lastVineW) < 10) return; // height-only change — ignore
     document.querySelectorAll('.landing-vine-svg').forEach(el => el.remove());
     window._landingVineTimers.forEach(clearTimeout);
     window._landingVineTimers = [];
