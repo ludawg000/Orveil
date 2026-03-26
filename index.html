@@ -147,11 +147,14 @@
     font-family: var(--sans); font-size: 0.68rem; font-weight: 500;
     letter-spacing: 0.12em; text-transform: uppercase;
     background: var(--white); color: var(--black);
-    border: 1px solid var(--black); padding: 0.65rem 1.2rem; cursor: pointer;
-    transition: all 0.2s;
+    border: 1px solid var(--black); padding: 0.45rem 0.9rem 0.5rem; cursor: pointer;
+    transition: all 0.2s; line-height: 1;
   }
   .manage-btn:hover { background: var(--black); color: var(--white); }
+  .manage-btn:hover .manage-btn-icons svg { stroke: var(--white); }
   .manage-btn.active { background: var(--black); color: var(--white); }
+  .manage-btn.active .manage-btn-icons svg { stroke: var(--white); }
+  .manage-btn-icons { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 4px; opacity: 0.55; }
 
   /* RETRO TV MODE — realistic vintage set */
   .retro-tv .projects-grid { display: none; }
@@ -2691,7 +2694,11 @@
         <div class="dash-title">Good to see you, <input class="dash-name-input" id="user-name" type="text" placeholder="_____" maxlength="30" spellcheck="false"></div>
       </div>
       <div style="display:flex;align-items:center;gap:0.8rem">
-        <button class="manage-btn" id="manage-btn" onclick="toggleManageMode()">Manage<span style="display:block;font-size:0.75rem;letter-spacing:0.05em;margin-top:0.25rem;opacity:0.6;">✎ &nbsp;＋ &nbsp;🗑</span></button>
+        <button class="manage-btn" id="manage-btn" onclick="toggleManageMode()">Manage<span class="manage-btn-icons">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+        </span></button>
         <button class="new-project-btn" onclick="openNewProject()">+ New Project</button>
       </div>
     </div>
