@@ -2243,6 +2243,15 @@
     white-space: nowrap; transition: background 0.2s;
   }
   .copy-link-btn:hover { background: var(--g600); }
+  .delivery-email-row { display: flex; gap: 0.5rem; }
+  .delivery-email-row .delivery-email-input { flex: 1; }
+  .delivery-get-link-btn {
+    font-family: var(--sans); font-size: 0.7rem; font-weight: 500;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    background: var(--g200); color: var(--white); border: none;
+    padding: 0 1.1rem; cursor: pointer; white-space: nowrap; transition: background 0.2s;
+  }
+  .delivery-get-link-btn:hover { background: var(--g300); }
 
   /* GALLERY CUSTOMIZATION */
   .delivery-customize-toggle {
@@ -3945,7 +3954,10 @@
       </div>
     </div>
 
-    <input class="delivery-email-input" id="client-email" type="email" placeholder="Client email address">
+    <div class="delivery-email-row">
+      <input class="delivery-email-input" id="client-email" type="email" placeholder="Client email address">
+      <button class="delivery-get-link-btn" id="get-link-btn" onclick="generateGalleryLink()">Get Link</button>
+    </div>
     <div class="delivery-options" id="delivery-options">
       <div class="delivery-opt selected" data-style="standard" onclick="selectDelivery(this)">
         <div><div class="delivery-opt-name">Standard</div><div class="delivery-opt-desc">Friendly and warm</div></div>
@@ -6741,6 +6753,41 @@ async function generateGalleryDesign() {
     showToast('Could not generate design: ' + err.message);
   }
   btn.disabled = false; btn.textContent = 'Generate Design';
+}
+
+async function generateGalleryLink() {
+  const btn = document.getElementById('get-link-btn');
+  btn.textContent = '...';
+  btn.disabled = true;
+
+  const { data: proj } = await dbSelect('projects', 'share_token', `id=eq.${currentProject.id}`, { single: true });
+  let token = proj?.share_token;
+  if (!token) {
+    const bytes = new Uint8Array(9);
+    crypto.getRandomValues(bytes);
+    token = btoa(String.fromCharCode(...bytes)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'').slice(0,12);
+    const { error } = await dbUpdate('projects', { share_token: token }, `id=eq.${currentProject.id}`);
+    if (error) { showToast('Could not generate link.'); btn.textContent = 'Get Link'; btn.disabled = false; return; }
+  }
+
+  // Save current gallery settings so the link reflects the current design
+  await dbUpdate('projects', {
+    gallery_logo_path: currentGallerySettings.logo_path,
+    gallery_bg_color: currentGallerySettings.bg_color,
+    gallery_accent_color: currentGallerySettings.accent_color,
+    gallery_font_family: currentGallerySettings.font_family,
+    gallery_layout: currentGallerySettings.layout
+  }, `id=eq.${currentProject.id}`);
+  await dbUpdate('projects', { gallery_wallpaper: currentGallerySettings.wallpaper }, `id=eq.${currentProject.id}`);
+  try { if (currentGallerySettings.bg_gradient) await dbUpdate('projects', { gallery_bg_gradient: currentGallerySettings.bg_gradient }, `id=eq.${currentProject.id}`); } catch {}
+
+  const galleryUrl = `${window.location.origin}${window.location.pathname}?gallery=${token}`;
+  document.getElementById('delivery-link-input').value = galleryUrl;
+  document.getElementById('delivery-link-box').classList.add('active');
+  try { await navigator.clipboard.writeText(galleryUrl); showToast('Link copied to clipboard!'); } catch { showToast('Link generated!'); }
+
+  btn.textContent = 'Get Link';
+  btn.disabled = false;
 }
 
 async function sendDelivery() {
