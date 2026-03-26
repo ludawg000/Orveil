@@ -6450,7 +6450,9 @@ function updateGalleryPreview() {
   screen.style.backgroundColor = bg;
   screen.style.border = `4px solid ${accent}`;
   screen.style.padding = '14px';
-  screen.style.backgroundImage = patterns[wp] || '';
+  const grad = s.bg_gradient || '';
+  const patternImg = patterns[wp] || '';
+  screen.style.backgroundImage = grad && patternImg ? `${patternImg}, ${grad}` : (patternImg || grad || '');
   screen.style.backgroundSize = sizes[wp] || 'auto';
   screen.style.backgroundRepeat = 'repeat';
 
@@ -6637,9 +6639,11 @@ async function generateGalleryDesign() {
     const d = data.design;
     if (d.bg_color) { currentGallerySettings.bg_color = d.bg_color; document.getElementById('gallery-bg-color').value = d.bg_color; }
     if (d.accent_color) { currentGallerySettings.accent_color = d.accent_color; document.getElementById('gallery-accent-color').value = d.accent_color; }
+    if (d.bg_gradient) { currentGallerySettings.bg_gradient = d.bg_gradient; } else { currentGallerySettings.bg_gradient = null; }
     if (d.wallpaper) { currentGallerySettings.wallpaper = d.wallpaper; document.querySelectorAll('.wallpaper-opt').forEach(o => o.classList.toggle('active', o.dataset.wp === d.wallpaper)); }
     if (d.layout) { currentGallerySettings.layout = d.layout; document.querySelectorAll('.layout-opt').forEach(o => o.classList.toggle('selected', o.dataset.layout === d.layout)); }
     if (d.font) { loadGoogleFont(d.font); currentGallerySettings.font_family = d.font; document.getElementById('font-selected').style.display = 'block'; document.getElementById('font-selected-name').textContent = d.font; document.getElementById('font-preview-sample').style.fontFamily = `'${d.font}', serif`; }
+    if (d.design_name) { document.getElementById('ai-design-toggle').textContent = `✦ ${d.design_name}`; }
     // Sync color preset UI
     document.querySelectorAll('.color-preset').forEach(p => {
       const preset = COLOR_PRESETS[p.dataset.preset];

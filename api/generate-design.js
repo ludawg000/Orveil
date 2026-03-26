@@ -10,23 +10,27 @@ export default async function handler(req, res) {
   if (!GROQ_API_KEY) return res.status(500).json({ error: 'Groq API key not configured' });
   if (!prompt) return res.status(400).json({ error: 'Prompt required' });
 
-  const system = `You are an expert photography gallery designer. Based on the photographer's description, return a gallery design as JSON.
+  const system = `You are a world-class photography gallery art director. Create a bold, intentional, visually distinctive gallery design based on the photographer's description. Every design should feel like it was crafted by a creative director — not generic.
 
-Available values:
-- bg_color: any hex color (dark tones for luxury/moody, light for airy/bright)
-- accent_color: any hex color (must contrast well with bg_color — this is used for text)
+Return ONLY a JSON object with these fields:
+
+- bg_color: hex color for background. Be bold — deep charcoals, rich creams, dusty mauves, forest greens, navy, terracotta, etc. Never plain white or black.
+- accent_color: hex color for text/buttons. Must strongly contrast bg_color. Often a warm gold, ivory, blush, sage, or off-white on dark, or a deep moody tone on light.
+- bg_gradient: optional CSS linear-gradient string for background (adds depth). Example: "linear-gradient(135deg, #1a0e08 0%, #2d1a0e 100%)". Use for most designs.
 - wallpaper: "none" | "linen" | "lace" | "geometric" | "dots" | "marble"
 - layout: "masonry" | "grid" | "slideshow"
-- font: a Google Fonts font name that matches the aesthetic (e.g. "Cormorant Garamond", "Josefin Sans", "Playfair Display", "Montserrat", "Lora", "DM Serif Display")
+- font: Google Fonts name matching the aesthetic. Examples: "Cormorant Garamond" (romantic/luxury), "Josefin Sans" (modern/clean), "DM Serif Display" (editorial), "Italiana" (fashion), "Libre Baskerville" (classic), "Raleway" (minimal modern), "Bodoni Moda" (high fashion), "Crimson Pro" (warm editorial)
+- design_name: a 2-3 word name for this design theme (e.g. "Tuscan Warmth", "Arctic Editorial", "Midnight Romance")
 
 Rules:
-- bg_color and accent_color must have strong contrast (light text on dark bg, or dark text on light bg)
-- For moody/luxury: dark bg (#0a0a0a–#2a1a10), warm accent (#d4a574–#e8d5b0)
-- For airy/bright: light bg (#fafafa–#f5f0eb), dark accent (#1a1a1a–#3a2a20)
-- For colorful themes: match the palette to the described mood
-- Return ONLY valid JSON, no explanation, no markdown code blocks.
+- bg_color and accent_color must have STRONG contrast
+- bg_gradient should complement bg_color (slightly lighter or darker variation, same hue family)
+- Match every element to the described mood — a sunflower wedding should feel golden and warm, not grey
+- Be specific and committed to a palette — no generic beige on white
+- Return ONLY valid JSON, no explanation
 
-Example output: {"bg_color":"#1a0e08","accent_color":"#d4a574","wallpaper":"lace","layout":"masonry","font":"Cormorant Garamond"}`;
+Example for "moody rainy day editorial":
+{"bg_color":"#1c1f2b","accent_color":"#c8cdd8","bg_gradient":"linear-gradient(160deg,#1c1f2b 0%,#252836 100%)","wallpaper":"geometric","layout":"masonry","font":"Josefin Sans","design_name":"Storm Editorial"}`;
 
   try {
     const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -39,10 +43,10 @@ Example output: {"bg_color":"#1a0e08","accent_color":"#d4a574","wallpaper":"lace
         model: 'llama-3.3-70b-versatile',
         messages: [
           { role: 'system', content: system },
-          { role: 'user', content: `Project: "${projectName || 'Untitled'}". Description: ${prompt}` },
+          { role: 'user', content: `Project: "${projectName || 'Untitled'}". Aesthetic description: ${prompt}` },
         ],
-        max_tokens: 120,
-        temperature: 0.7,
+        max_tokens: 200,
+        temperature: 0.9,
       }),
     });
 
@@ -50,9 +54,7 @@ Example output: {"bg_color":"#1a0e08","accent_color":"#d4a574","wallpaper":"lace
     if (!resp.ok) return res.status(resp.status).json({ error: data.error?.message || 'Groq error' });
 
     let raw = data.choices?.[0]?.message?.content?.trim() || '{}';
-    // Strip markdown code fences if model adds them
     raw = raw.replace(/```json?/g, '').replace(/```/g, '').trim();
-    // Extract just the JSON object in case model adds surrounding text
     const jsonMatch = raw.match(/\{[\s\S]*\}/);
     if (!jsonMatch) return res.status(500).json({ error: 'No JSON in response' });
     const design = JSON.parse(jsonMatch[0]);
