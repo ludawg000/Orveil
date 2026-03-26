@@ -6657,7 +6657,7 @@ async function generateGalleryDesign() {
     updateEmailPreview();
     showToast('Design applied ✦');
   } catch (err) {
-    showToast('Could not generate design.');
+    showToast('Could not generate design: ' + err.message);
   }
   btn.disabled = false; btn.textContent = 'Generate Design';
 }

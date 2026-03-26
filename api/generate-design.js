@@ -52,7 +52,10 @@ Example output: {"bg_color":"#1a0e08","accent_color":"#d4a574","wallpaper":"lace
     let raw = data.choices?.[0]?.message?.content?.trim() || '{}';
     // Strip markdown code fences if model adds them
     raw = raw.replace(/```json?/g, '').replace(/```/g, '').trim();
-    const design = JSON.parse(raw);
+    // Extract just the JSON object in case model adds surrounding text
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) return res.status(500).json({ error: 'No JSON in response' });
+    const design = JSON.parse(jsonMatch[0]);
     return res.status(200).json({ design });
   } catch (err) {
     return res.status(500).json({ error: err.message });
