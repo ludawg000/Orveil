@@ -4600,7 +4600,7 @@ async function openProject(id, name) {
   const showInviteBtn = isOwner && (isMobile || showInviteSetting);
   document.querySelector('.project-nav-actions .invite-btn').style.display = showInviteBtn ? 'inline-block' : 'none';
   document.querySelector('.project-nav-actions .deliver-btn').style.display = isOwner ? '' : 'none';
-  document.getElementById('select-mode-btn').style.display = isOwner ? '' : 'none';
+  document.getElementById('select-mode-btn').style.display = isOwner ? 'inline-block' : 'none';
   if (!isOwner) {
     if (!currentProject.allowCollabEdit) {
       document.querySelector('.project-nav-actions .upload-btn').style.display = 'none';
