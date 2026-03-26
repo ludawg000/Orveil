@@ -5188,40 +5188,47 @@ async function loadProjects() {
       });
     }
 
-    // Load thumbnails in background via REST
-    projects.forEach(async p => {
+    // Load all thumbnails in a single batched query
+    (async () => {
       try {
-        const fUrl = `${SUPABASE_URL}/rest/v1/files?select=path,type,thumb_path&project_id=eq.${p.id}&limit=10`;
+        const ids = projects.map(p => p.id);
+        if (!ids.length) return;
+        const fUrl = `${SUPABASE_URL}/rest/v1/files?select=project_id,path,type,thumb_path&project_id=in.(${ids.join(',')})&order=created_at.asc`;
         const fResp = await fetch(fUrl, { headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${accessToken}` } });
-        const files = await fResp.json();
-        const el = document.getElementById(`pthumb-${p.id}`);
-        if (!el || !files?.length) return;
+        const allFiles = await fResp.json();
+        if (!Array.isArray(allFiles)) return;
 
-        // Prefer an image file for the thumbnail
-        const img = files.find(f => f.type?.startsWith('image/'));
-        if (img) {
-          el.innerHTML = `<img src="${SUPABASE_URL}/storage/v1/object/public/projects/${img.path}" alt="" loading="lazy">`;
-          return;
-        }
+        // Group by project_id
+        const byProject = {};
+        allFiles.forEach(f => { (byProject[f.project_id] = byProject[f.project_id] || []).push(f); });
 
-        // Try a video with a stored thumbnail
-        const vidThumb = files.find(f => f.thumb_path);
-        if (vidThumb) {
-          el.innerHTML = `<img src="${SUPABASE_URL}/storage/v1/object/public/projects/${vidThumb.thumb_path}" alt="" loading="lazy">`;
-          return;
-        }
+        ids.forEach(pid => {
+          const files = byProject[pid];
+          const el = document.getElementById(`pthumb-${pid}`);
+          if (!el || !files?.length) return;
 
-        // Generate thumbnail from first video on the fly
-        const vid = files.find(f => f.type?.startsWith('video/'));
-        if (vid) {
-          const vidUrl = `${SUPABASE_URL}/storage/v1/object/public/projects/${vid.path}`;
-          const dataUrl = await genThumb(vidUrl, vid.name);
-          if (dataUrl && document.getElementById(`pthumb-${p.id}`)) {
-            el.innerHTML = `<img src="${dataUrl}" alt="" loading="lazy">`;
+          const img = files.find(f => f.type?.startsWith('image/'));
+          if (img) {
+            el.innerHTML = `<img src="${SUPABASE_URL}/storage/v1/object/public/projects/${img.path}" alt="">`;
+            return;
           }
-        }
+          const vidThumb = files.find(f => f.thumb_path);
+          if (vidThumb) {
+            el.innerHTML = `<img src="${SUPABASE_URL}/storage/v1/object/public/projects/${vidThumb.thumb_path}" alt="">`;
+            return;
+          }
+          // Video-only projects: generate thumb on the fly
+          const vid = files.find(f => f.type?.startsWith('video/'));
+          if (vid) {
+            const vidUrl = `${SUPABASE_URL}/storage/v1/object/public/projects/${vid.path}`;
+            genThumb(vidUrl, vid.name).then(dataUrl => {
+              if (dataUrl && document.getElementById(`pthumb-${pid}`))
+                document.getElementById(`pthumb-${pid}`).innerHTML = `<img src="${dataUrl}" alt="">`;
+            });
+          }
+        });
       } catch {}
-    });
+    })();
   } catch (err) {
     target.innerHTML = `<div class="empty-state"><div class="empty-title">${err.name === 'AbortError' ? 'Connection timed out.' : 'Error loading projects.'}</div>
       <div class="empty-sub">${err.name === 'AbortError' ? 'Could not reach the database.' : err.message}</div>
