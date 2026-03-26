@@ -1894,6 +1894,9 @@
   }
   .select-btn:hover { border-color: var(--black); color: var(--black); }
   #project-screen.edit-mode .select-btn { display: none !important; }
+  #project-screen.edit-mode .file-card { cursor: pointer; }
+  #project-screen.edit-mode .file-card:hover { transform: none; box-shadow: none; }
+  #project-screen.edit-mode .file-card .select-check { display: flex; }
   .select-toolbar {
     display: none; align-items: center; gap: 1rem;
     padding: 0.75rem 2.5rem; background: var(--g100);
@@ -5372,7 +5375,8 @@ function updateSelectCount() {
 }
 
 function handleFileCardClick(e, fileId, idx) {
-  if (!selectMode) return;
+  const inEditMode = document.getElementById('project-screen').classList.contains('edit-mode');
+  if (!selectMode && !inEditMode) return;
   e.stopPropagation();
   const card = e.currentTarget;
   if (selectedFileIds.has(fileId)) {
