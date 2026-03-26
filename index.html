@@ -6994,34 +6994,38 @@ document.addEventListener('keydown', e => {
       return { x: a.x, y: a.y, angle: Math.atan2(b.y-a.y, b.x-a.x)*180/Math.PI };
     }
 
-    const DRAW_DUR = 1.2; // seconds — must match transition below
+    const DRAW_MS = 1200; // ms
 
-    // Thorns — appear exactly when the vine stroke reaches them
+    // Thorns — setTimeout fires exactly when stroke reaches each position
     const thornTs = [0.06,0.15,0.25,0.36,0.47,0.58,0.68,0.78,0.88];
     thornTs.forEach(t => {
       const {x,y,angle} = sample(t);
       const el = makeThorn(x,y,angle,4);
-      el.style.opacity='0'; el.style.transition=`opacity 0.18s ease ${t*DRAW_DUR}s`;
+      el.style.opacity = '0';
+      el.style.transition = 'opacity 0.18s ease';
       svg.appendChild(el);
-      requestAnimationFrame(()=>requestAnimationFrame(()=>{ el.style.opacity='1'; }));
+      setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS);
     });
 
-    // Leaves — appear exactly when the vine stroke reaches them
+    // Leaves — setTimeout fires exactly when stroke reaches each position
     const leafTs = [0.09,0.20,0.31,0.43,0.54,0.65,0.76];
     const lSz =    [7,   6,   7,   6,   7,   6,   7  ];
     leafTs.forEach((t,i) => {
       const {x,y,angle} = sample(t);
       const el = makeLeaf(x,y,lSz[i],angle+(i%2===0?-52:38),i);
-      el.style.opacity='0'; el.style.transition=`opacity 0.22s ease ${t*DRAW_DUR}s`;
+      el.style.opacity = '0';
+      el.style.transition = 'opacity 0.22s ease';
       svg.appendChild(el);
-      requestAnimationFrame(()=>requestAnimationFrame(()=>{ el.style.opacity='1'; }));
+      setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS);
     });
 
     // Draw animation — 1.2s left to right
     stem.style.strokeDasharray = totalLen;
     stem.style.strokeDashoffset = totalLen;
-    stem.style.transition = `stroke-dashoffset ${DRAW_DUR}s cubic-bezier(0.3,0,0.2,1)`;
-    requestAnimationFrame(()=>requestAnimationFrame(()=>{ stem.style.strokeDashoffset='0'; }));
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      stem.style.transition = `stroke-dashoffset ${DRAW_MS/1000}s cubic-bezier(0.3,0,0.2,1)`;
+      stem.style.strokeDashoffset = '0';
+    }));
   }
 
   // Expose so showScreen can call it
