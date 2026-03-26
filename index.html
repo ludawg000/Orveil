@@ -1700,6 +1700,70 @@
   }
   .file-delete:hover { background: rgba(10,10,10,0.85); }
 
+  /* SELECT MODE */
+  .select-btn {
+    font-family: var(--sans); font-size: 0.68rem; font-weight: 400;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    background: transparent; color: var(--g400);
+    border: 1px solid var(--g200); padding: 0.7rem 1.4rem; cursor: pointer;
+    transition: all 0.3s; display: none;
+  }
+  .select-btn:hover { border-color: var(--black); color: var(--black); }
+  #project-screen.edit-mode .select-btn { display: none !important; }
+  .select-toolbar {
+    display: none; align-items: center; gap: 1rem;
+    padding: 0.75rem 2.5rem; background: var(--g100);
+    border-bottom: 1px solid var(--g200); flex-wrap: wrap;
+  }
+  #project-screen.select-mode .select-toolbar { display: flex; }
+  #project-screen.select-mode .deliver-btn,
+  #project-screen.select-mode .upload-btn { display: none; }
+  #project-screen.select-mode .select-btn { background: var(--black); color: var(--white); border-color: var(--black); }
+  .select-count {
+    font-family: var(--sans); font-size: 0.68rem; font-weight: 500;
+    letter-spacing: 0.08em; color: var(--black); margin-right: auto;
+  }
+  .select-all-btn {
+    font-family: var(--sans); font-size: 0.65rem; font-weight: 400;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    background: transparent; color: var(--g400);
+    border: 1px solid var(--g200); padding: 0.5rem 1rem; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .select-all-btn:hover { border-color: var(--black); color: var(--black); }
+  .select-delete-btn {
+    font-family: var(--sans); font-size: 0.65rem; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    background: #c0392b; color: white;
+    border: 1px solid #c0392b; padding: 0.5rem 1.2rem; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .select-delete-btn:disabled { opacity: 0.35; cursor: default; }
+  .select-delete-btn:not(:disabled):hover { background: #a93226; border-color: #a93226; }
+  .select-cancel-btn {
+    font-family: var(--sans); font-size: 0.65rem; font-weight: 400;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    background: transparent; color: var(--g400);
+    border: none; padding: 0.5rem 0.4rem; cursor: pointer;
+    transition: color 0.2s;
+  }
+  .select-cancel-btn:hover { color: var(--black); }
+  #project-screen.select-mode .file-delete { display: none !important; }
+  #project-screen.select-mode .file-card { cursor: pointer; }
+  #project-screen.select-mode .file-card:hover { transform: none; box-shadow: none; }
+  .file-card.selected { border-color: var(--black) !important; box-shadow: 0 0 0 2px var(--black); transform: none !important; }
+  .file-card .select-check {
+    position: absolute; top: 0.5rem; left: 0.5rem; z-index: 5;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: white; border: 1.5px solid var(--g300);
+    display: none; align-items: center; justify-content: center;
+    font-size: 0.6rem; transition: all 0.15s;
+  }
+  #project-screen.select-mode .file-card .select-check { display: flex; }
+  .file-card.selected .select-check {
+    background: var(--black); border-color: var(--black); color: white;
+  }
+
   /* DROP ZONE */
   .drop-zone {
     border: 1px solid var(--g200);
@@ -2980,12 +3044,19 @@
     <span class="edit-mode-badge">Edit Mode</span>
     <div class="project-nav-actions">
       <button class="invite-btn" onclick="openInviteFromProject(event)">+ Invite</button>
+      <button class="select-btn" id="select-mode-btn" onclick="toggleSelectMode()">Select</button>
       <button class="deliver-btn" onclick="openDelivery()">Deliver to Client</button>
       <button class="upload-btn" onclick="document.getElementById('file-input').click()">+ Upload</button>
     </div>
   </nav>
   <div class="edit-toolbar">
     <span class="edit-toolbar-label">Editing tools coming soon</span>
+  </div>
+  <div class="select-toolbar">
+    <span class="select-count" id="select-count">0 selected</span>
+    <button class="select-all-btn" onclick="selectAllFiles()">Select All</button>
+    <button class="select-delete-btn" id="select-delete-btn" onclick="deleteSelectedFiles()" disabled>Delete Selected</button>
+    <button class="select-cancel-btn" onclick="toggleSelectMode()">Cancel</button>
   </div>
   <div class="project-main">
     <div class="drop-zone" id="drop-zone" onclick="document.getElementById('file-input').click()">
@@ -3960,6 +4031,7 @@ function genThumb(url, name) {
 
 // ─── LIGHTBOX ───
 function openProjectFile(index) {
+  if (selectMode) return;
   // Use the lightbox to view project files
   galleryFiles = projectFiles;
   openLightbox(index);
@@ -4528,6 +4600,7 @@ async function openProject(id, name) {
   const showInviteBtn = isOwner && (isMobile || showInviteSetting);
   document.querySelector('.project-nav-actions .invite-btn').style.display = showInviteBtn ? 'inline-block' : 'none';
   document.querySelector('.project-nav-actions .deliver-btn').style.display = isOwner ? '' : 'none';
+  document.getElementById('select-mode-btn').style.display = isOwner ? '' : 'none';
   if (!isOwner) {
     if (!currentProject.allowCollabEdit) {
       document.querySelector('.project-nav-actions .upload-btn').style.display = 'none';
@@ -4580,7 +4653,8 @@ async function loadFiles() {
     } else if (isVideo) {
       thumb = `<div class="file-thumb-placeholder" id="fthumb-${i}">Generating...</div>`;
     }
-    return `<div class="file-card" ondblclick="openProjectFile(${i})">
+    return `<div class="file-card" data-file-id="${f.id}" onclick="handleFileCardClick(event,'${f.id}',${i})" ondblclick="openProjectFile(${i})">
+      <div class="select-check">&#10003;</div>
       <div class="file-thumb">${thumb}</div>
       <div class="file-info">
         <div class="file-name">${escHtml(f.name)}</div>
@@ -4746,6 +4820,78 @@ async function handleFileSelect(fileList) {
   }, 2000);
 
   document.getElementById('file-input').value = '';
+  await loadFiles();
+  await updateStorage();
+}
+
+// ─── SELECT MODE ───
+let selectMode = false;
+const selectedFileIds = new Set();
+
+function toggleSelectMode() {
+  selectMode = !selectMode;
+  selectedFileIds.clear();
+  document.querySelectorAll('.file-card.selected').forEach(c => c.classList.remove('selected'));
+  document.getElementById('project-screen').classList.toggle('select-mode', selectMode);
+  updateSelectCount();
+}
+
+function updateSelectCount() {
+  const n = selectedFileIds.size;
+  document.getElementById('select-count').textContent = `${n} file${n !== 1 ? 's' : ''} selected`;
+  document.getElementById('select-delete-btn').disabled = n === 0;
+}
+
+function handleFileCardClick(e, fileId, idx) {
+  if (!selectMode) return;
+  e.stopPropagation();
+  const card = e.currentTarget;
+  if (selectedFileIds.has(fileId)) {
+    selectedFileIds.delete(fileId);
+    card.classList.remove('selected');
+  } else {
+    selectedFileIds.add(fileId);
+    card.classList.add('selected');
+  }
+  updateSelectCount();
+}
+
+function selectAllFiles() {
+  projectFiles.forEach(f => {
+    selectedFileIds.add(f.id);
+    const card = document.querySelector(`.file-card[data-file-id="${f.id}"]`);
+    if (card) card.classList.add('selected');
+  });
+  updateSelectCount();
+}
+
+async function deleteSelectedFiles() {
+  const n = selectedFileIds.size;
+  if (n === 0) return;
+  if (!confirm(`Delete ${n} file${n !== 1 ? 's' : ''}? This cannot be undone.`)) return;
+
+  const toDelete = projectFiles.filter(f => selectedFileIds.has(f.id));
+  let totalSize = 0;
+  showToast(`Deleting ${n} file${n !== 1 ? 's' : ''}...`);
+
+  for (const f of toDelete) {
+    await storageRemove('projects', [f.path]);
+    await dbDelete('files', `id=eq.${f.id}`);
+    totalSize += f.size || 0;
+  }
+
+  const { data: profile } = await dbSelect('profiles', 'storage_used', `id=eq.${currentUser.id}`, { single: true });
+  if (profile) {
+    await dbUpdate('profiles', { storage_used: Math.max(0, (profile.storage_used || 0) - totalSize) }, `id=eq.${currentUser.id}`);
+  }
+
+  const { data: proj } = await dbSelect('projects', 'file_count', `id=eq.${currentProject.id}`, { single: true });
+  if (proj) {
+    await dbUpdate('projects', { file_count: Math.max(0, (proj.file_count || 0) - n) }, `id=eq.${currentProject.id}`);
+  }
+
+  showToast(`${n} file${n !== 1 ? 's' : ''} deleted.`);
+  toggleSelectMode();
   await loadFiles();
   await updateStorage();
 }
@@ -6068,6 +6214,7 @@ async function sendInvite() {
 // ─── NAVIGATION ───
 function showDashboard() {
   document.getElementById('project-screen').classList.remove('edit-mode');
+  if (selectMode) toggleSelectMode();
   showScreen('app-screen');
   loadProjects();
 }
