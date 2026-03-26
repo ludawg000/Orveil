@@ -5038,6 +5038,18 @@ function renderPresetChips() {
 function applyPresetByName(name) {
   const p = (EDIT_PRESETS[_activeEditGenre] || []).find(x => x.name === name);
   if (!p) return;
+  if (_activePresetName === name) {
+    _activePresetName = null;
+    renderPresetChips();
+    ['exposure','contrast','saturation','warmth','highlights','fade'].forEach(key => {
+      const sl = document.getElementById('sl-' + key);
+      const sv = document.getElementById('sv-' + key);
+      if (sl) sl.value = 0;
+      if (sv) sv.textContent = 0;
+    });
+    document.querySelectorAll('.file-card.selected .file-thumb img').forEach(img => { img.style.filter = ''; });
+    return;
+  }
   _activePresetName = p.name;
   [['exposure',p.e],['contrast',p.c],['saturation',p.s],['warmth',p.w],['highlights',p.h],['fade',p.f]].forEach(([key,val]) => {
     const sl = document.getElementById('sl-' + key);
