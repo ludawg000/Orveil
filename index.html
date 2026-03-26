@@ -6615,7 +6615,7 @@ function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if (id === 'auth-screen') {
-    setTimeout(triggerLogoVine, 150);
+    setTimeout(window.triggerLogoVine, 150);
   } else {
     // Leaving auth screen — tear down vine so next visit starts fresh
     document.querySelectorAll('.logo-vine-layer').forEach(el => el.remove());
@@ -6979,7 +6979,7 @@ document.addEventListener('keydown', e => {
     const svgW = W + pad*2 + 22;
     const svgH = H + pad*2 + 22;
     const svg = document.createElementNS(ns, 'svg');
-    svg.className = 'logo-vine-layer';
+    svg.setAttribute('class', 'logo-vine-layer');
     svg.style.cssText = `position:absolute;top:${-pad}px;left:${-pad}px;width:${svgW}px;height:${svgH}px;pointer-events:none;overflow:visible;z-index:20;`;
 
     const stem = document.createElementNS(ns, 'path');
