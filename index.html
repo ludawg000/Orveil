@@ -5695,6 +5695,7 @@ function _applyGradeToHistogram(rawData, w, h) {
   const bright = Math.max(0.05, 1 + lumAdj + shadows*0.003 + highlights*0.002 + whites*0.003 + blacks*0.002 + curveBias);
   const cont   = Math.max(0.1,  1 + contrast*0.01 + curveContrast);
   const sat    = Math.max(0,    1 + saturation*0.015 + (lift.s*0.25 + gamma.s*0.5 + gain.s*0.25)*0.3);
+  const sepia  = Math.min(temp > 0 ? temp*0.002 : 0, 0.25); // mirrors buildCGFilter exactly
   // Hue from wheels + temp/tint — CSS hue-rotate matrix
   const wheelH = lift.h*lift.s*0.2 + gamma.h*gamma.s*0.4 + gain.h*gain.s*0.2;
   const hDeg = wheelH + (-temp*0.18) + (tint*0.08);
@@ -5716,7 +5717,14 @@ function _applyGradeToHistogram(rawData, w, h) {
     const lm=0.2126*r+0.7152*g+0.0722*b;
     r=cl(lm+(r-lm)*sat); g=cl(lm+(g-lm)*sat); b=cl(lm+(b-lm)*sat);
     // Hue rotation (CSS hue-rotate matrix)
-    const nr=cl(m00*r+m01*g+m02*b), ng=cl(m10*r+m11*g+m12*b), nb=cl(m20*r+m21*g+m22*b);
+    let nr=cl(m00*r+m01*g+m02*b), ng=cl(m10*r+m11*g+m12*b), nb=cl(m20*r+m21*g+m22*b);
+    // Sepia — only applied when temp > 0, matches buildCGFilter: sepia=min(temp*0.002,0.25)
+    if (sepia > 0) {
+      const sr=cl(nr*(1-sepia*0.607)+ng*(sepia*0.769)+nb*(sepia*0.189));
+      const sg=cl(nr*(sepia*0.349)+ng*(1-sepia*0.314)+nb*(sepia*0.168));
+      const sbv=cl(nr*(sepia*0.272)+ng*(sepia*0.534)+nb*(1-sepia*0.869));
+      nr=sr; ng=sg; nb=sbv;
+    }
     rH[Math.round(nr*255)]++; gH[Math.round(ng*255)]++; bH[Math.round(nb*255)]++;
   }
   return { rH, gH, bH };
