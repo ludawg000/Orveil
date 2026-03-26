@@ -3222,6 +3222,16 @@
             <span style="color:var(--g300);font-size:0.72rem;">Loading...</span>
           </div>
         </div>
+        <div style="border-top:1px solid var(--g200);margin-top:0.5rem;">
+          <button onclick="toggleSecretPanel()" style="width:100%;text-align:left;padding:1rem 0;background:none;border:none;cursor:pointer;font-family:var(--sans);font-size:0.6rem;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:var(--g300);display:flex;justify-content:space-between;align-items:center;" id="secret-toggle">
+            <span>Secret</span><span id="secret-chevron" style="font-size:0.7rem;">▸</span>
+          </button>
+          <div id="secret-panel" style="display:none;padding-bottom:0.5rem;">
+            <div style="font-size:0.65rem;color:var(--g400);margin-bottom:0.8rem;">Click a user to see their activity.</div>
+            <div id="secret-users-list"></div>
+            <div id="secret-activity" style="margin-top:1rem;"></div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -6344,6 +6354,77 @@ async function loadAdminStats() {
   loadAdminUsers();
 }
 
+let _secretUsers = [];
+
+function toggleSecretPanel() {
+  const panel = document.getElementById('secret-panel');
+  const chevron = document.getElementById('secret-chevron');
+  const open = panel.style.display === 'none';
+  panel.style.display = open ? '' : 'none';
+  chevron.textContent = open ? '▾' : '▸';
+  if (open && _secretUsers.length) renderSecretUserList();
+}
+
+function renderSecretUserList() {
+  const el = document.getElementById('secret-users-list');
+  if (!el || !_secretUsers.length) return;
+  el.innerHTML = _secretUsers.map(u =>
+    `<div onclick="loadUserActivity('${u.id}','${u.email}')" style="padding:0.4rem 0.6rem;cursor:pointer;font-size:0.75rem;border-radius:2px;transition:background 0.15s;" onmouseover="this.style.background='var(--g100)'" onmouseout="this.style.background=''">${u.email}</div>`
+  ).join('');
+}
+
+async function loadUserActivity(userId, email) {
+  const el = document.getElementById('secret-activity');
+  if (!el) return;
+  el.innerHTML = `<div style="font-size:0.72rem;color:var(--g400);">Loading ${email}…</div>`;
+
+  // Highlight selected
+  document.querySelectorAll('#secret-users-list div').forEach(d => d.style.fontWeight = '400');
+  const selected = [...document.querySelectorAll('#secret-users-list div')].find(d => d.onclick?.toString().includes(userId));
+  if (selected) selected.style.fontWeight = '600';
+
+  try {
+    const resp = await fetch(`/api/admin-user-activity?userId=${userId}`, {
+      headers: { 'x-admin-email': currentUser.email }
+    });
+    if (!resp.ok) throw new Error('Failed');
+    const { projects, storageUsed, lastSeen } = await resp.json();
+
+    const totalFiles = projects.reduce((s, p) => s + (p.file_count || 0), 0);
+    const lastSeenStr = lastSeen ? timeAgo(lastSeen) : 'never';
+
+    el.innerHTML = `
+      <div style="border:1px solid var(--g200);padding:1rem;margin-top:0.5rem;">
+        <div style="font-size:0.65rem;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:var(--g400);margin-bottom:0.8rem;">${email}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.8rem;margin-bottom:1rem;">
+          <div style="text-align:center;">
+            <div style="font-size:1.3rem;font-weight:500;font-family:var(--serif);font-style:italic;">${projects.length}</div>
+            <div style="font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--g400);">Projects</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:1.3rem;font-weight:500;font-family:var(--serif);font-style:italic;">${totalFiles}</div>
+            <div style="font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--g400);">Files</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:1.3rem;font-weight:500;font-family:var(--serif);font-style:italic;">${formatBytes(storageUsed)}</div>
+            <div style="font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--g400);">Storage</div>
+          </div>
+        </div>
+        <div style="font-size:0.65rem;color:var(--g400);margin-bottom:0.6rem;">Last seen: ${lastSeenStr}</div>
+        ${projects.length ? `
+        <div style="font-size:0.6rem;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--g400);margin-bottom:0.4rem;">Projects</div>
+        ${projects.map(p => `
+          <div style="display:flex;justify-content:space-between;padding:0.3rem 0;border-top:1px solid var(--g100);font-size:0.72rem;">
+            <span>${p.name}</span>
+            <span style="color:var(--g400);font-size:0.65rem;">${p.file_count || 0} files · ${timeAgo(p.created_at)}</span>
+          </div>`).join('')}
+        ` : '<div style="font-size:0.72rem;color:var(--g300);">No projects yet.</div>'}
+      </div>`;
+  } catch (e) {
+    el.innerHTML = `<div style="font-size:0.72rem;color:var(--g400);">Error loading activity.</div>`;
+  }
+}
+
 async function loadAdminUsers() {
   if (!currentUser || currentUser.email !== 'lucianegil04@gmail.com') return;
   const listEl = document.getElementById('admin-users-list');
@@ -6355,6 +6436,8 @@ async function loadAdminUsers() {
     });
     if (!resp.ok) throw new Error('Failed');
     const { users } = await resp.json();
+    _secretUsers = users;
+    if (document.getElementById('secret-panel')?.style.display !== 'none') renderSecretUserList();
     if (!users.length) { listEl.innerHTML = '<span style="color:var(--g300);font-size:0.72rem;">No users yet.</span>'; return; }
     listEl.innerHTML = users.map((u, i) => {
       const joined = new Date(u.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
