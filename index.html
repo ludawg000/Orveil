@@ -6934,8 +6934,11 @@ document.addEventListener('keydown', e => {
   const logoWrap = document.querySelector('.vine-logo-wrap');
   const logoEl   = logoWrap && logoWrap.querySelector('.vine-logo-inner');
   let logoVineSvg = null;
+  let logoVineTimers = [];
 
   function triggerLogoVineInternal() {
+    logoVineTimers.forEach(id => clearTimeout(id));
+    logoVineTimers = [];
     document.querySelectorAll('.logo-vine-layer').forEach(el => el.remove());
     logoVineSvg = null;
     if (!logoWrap || !logoEl) return;
@@ -7004,7 +7007,7 @@ document.addEventListener('keydown', e => {
       el.style.opacity = '0';
       el.style.transition = 'opacity 0.18s ease';
       svg.appendChild(el);
-      setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS);
+      logoVineTimers.push(setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS));
     });
 
     // Leaves — setTimeout fires exactly when stroke reaches each position
@@ -7016,7 +7019,7 @@ document.addEventListener('keydown', e => {
       el.style.opacity = '0';
       el.style.transition = 'opacity 0.22s ease';
       svg.appendChild(el);
-      setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS);
+      logoVineTimers.push(setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS));
     });
 
     // Draw animation — 1.2s left to right
