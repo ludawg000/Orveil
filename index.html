@@ -3188,6 +3188,37 @@
       </div>
     </div>
 
+    <div class="settings-section" id="admin-section" style="display:none; border-color: var(--black);">
+      <div class="settings-section-header" style="background:var(--black);color:var(--white);letter-spacing:0.18em;">Admin</div>
+      <div class="settings-section-body">
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Total Accounts</div>
+            <div class="settings-row-sub">All-time signups</div>
+          </div>
+          <span id="admin-total-users" style="font-size:1.4rem;font-weight:500;font-family:var(--serif);font-style:italic;">—</span>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Active Now</div>
+            <div class="settings-row-sub">Users active in the last 15 minutes</div>
+          </div>
+          <span id="admin-active-now" style="font-size:1.4rem;font-weight:500;font-family:var(--serif);font-style:italic;">—</span>
+        </div>
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Avg Session</div>
+            <div class="settings-row-sub">Average time users spend per session</div>
+          </div>
+          <span id="admin-avg-session" style="font-size:1.4rem;font-weight:500;font-family:var(--serif);font-style:italic;">—</span>
+        </div>
+        <div class="settings-row">
+          <div></div>
+          <button onclick="loadAdminStats()" style="font-family:var(--sans);font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;background:none;border:1px solid var(--g200);padding:0.5rem 1rem;cursor:pointer;color:var(--g400);transition:all 0.2s;" onmouseover="this.style.borderColor='var(--black)';this.style.color='var(--black)'" onmouseout="this.style.borderColor='var(--g200)';this.style.color='var(--g400)'">Refresh</button>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
 
@@ -4393,6 +4424,15 @@ async function initApp() {
       pendingJoinProject = null;
       window.history.replaceState(null, '', window.location.pathname);
     }
+
+    // Record session start + last_seen, start heartbeat
+    const now = new Date().toISOString();
+    await dbUpdate('profiles', { session_start: now, last_seen: now }, `id=eq.${currentUser.id}`);
+    startLastSeenHeartbeat();
+
+    // Show admin section for owner account
+    const adminSection = document.getElementById('admin-section');
+    if (adminSection) adminSection.style.display = currentUser.email === 'lucianegil04@gmail.com' ? '' : 'none';
 
     showScreen('app-screen');
     await loadProjects();
@@ -6253,6 +6293,50 @@ async function sendInvite() {
   }
 }
 
+// ─── ADMIN ───
+let _lastSeenInterval = null;
+
+function startLastSeenHeartbeat() {
+  if (_lastSeenInterval) clearInterval(_lastSeenInterval);
+  _lastSeenInterval = setInterval(async () => {
+    if (currentUser) {
+      await dbUpdate('profiles', { last_seen: new Date().toISOString() }, `id=eq.${currentUser.id}`);
+    }
+  }, 5 * 60 * 1000); // every 5 minutes
+}
+
+async function loadAdminStats() {
+  if (!currentUser || currentUser.email !== 'lucianegil04@gmail.com') return;
+  const totalEl = document.getElementById('admin-total-users');
+  const activeEl = document.getElementById('admin-active-now');
+  const sessionEl = document.getElementById('admin-avg-session');
+  if (totalEl) totalEl.textContent = '…';
+  if (activeEl) activeEl.textContent = '…';
+  if (sessionEl) sessionEl.textContent = '…';
+  try {
+    const resp = await fetch('/api/admin-stats', {
+      headers: { 'x-admin-email': currentUser.email }
+    });
+    if (!resp.ok) throw new Error('Failed');
+    const { totalUsers, activeNow, avgSessionMinutes } = await resp.json();
+    if (totalEl) totalEl.textContent = totalUsers ?? '—';
+    if (activeEl) activeEl.textContent = activeNow ?? '—';
+    if (sessionEl) {
+      if (avgSessionMinutes == null) {
+        sessionEl.textContent = '—';
+      } else if (avgSessionMinutes < 1) {
+        sessionEl.textContent = '< 1 min';
+      } else {
+        sessionEl.textContent = `${avgSessionMinutes} min`;
+      }
+    }
+  } catch (e) {
+    if (totalEl) totalEl.textContent = 'Error';
+    if (activeEl) activeEl.textContent = 'Error';
+    if (sessionEl) sessionEl.textContent = 'Error';
+  }
+}
+
 // ─── NAVIGATION ───
 async function showDashboard() {
   document.getElementById('project-screen').classList.remove('edit-mode');
@@ -6279,6 +6363,7 @@ function clearCacheAndReload() {
 
 function openSettings() {
   showScreen('settings-screen');
+  if (currentUser?.email === 'lucianegil04@gmail.com') loadAdminStats();
   const meta = currentUser.user_metadata || {};
   const initial = meta.full_name?.[0] || meta.name?.[0] || currentUser.email?.[0] || '?';
 
