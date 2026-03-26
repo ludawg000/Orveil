@@ -1729,16 +1729,74 @@
   }
   #project-screen.edit-mode .edit-mode-badge { display: inline-block; }
   #project-screen .edit-toolbar {
-    display: none; align-items: center; justify-content: center;
-    padding: 0.8rem 2.5rem; background: var(--g100);
+    display: none; flex-direction: column; align-items: stretch;
+    padding: 0.55rem 1.5rem; background: var(--g100);
     border-bottom: 1px solid var(--g200);
   }
   #project-screen.edit-mode .edit-toolbar { display: flex; }
-  .edit-toolbar-label {
-    font-family: var(--sans); font-size: 0.65rem; font-weight: 400;
-    letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--g300);
+  .edit-tb-row {
+    display: flex; align-items: center; gap: 1.2rem;
+    overflow-x: auto; padding-bottom: 0.1rem;
   }
+  .edit-tb-section { display: flex; flex-direction: column; gap: 0.35rem; flex-shrink: 0; }
+  .edit-tb-divider { width: 1px; height: 56px; background: var(--g200); flex-shrink: 0; }
+  .edit-genre-tabs { display: flex; gap: 0.25rem; }
+  .edit-genre-tab {
+    font-family: var(--sans); font-size: 0.58rem; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    background: transparent; border: 1px solid var(--g200);
+    color: var(--g400); padding: 0.28rem 0.65rem;
+    border-radius: 2px; cursor: pointer; transition: all 0.15s;
+  }
+  .edit-genre-tab.active { background: var(--black); color: var(--white); border-color: var(--black); }
+  .edit-preset-chips { display: flex; gap: 0.35rem; flex-wrap: nowrap; }
+  .edit-preset-chip {
+    font-family: var(--sans); font-size: 0.56rem; font-weight: 400;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    background: var(--white); border: 1px solid var(--g200);
+    color: var(--black); padding: 0.22rem 0.6rem;
+    border-radius: 999px; cursor: pointer; white-space: nowrap; transition: all 0.15s;
+  }
+  .edit-preset-chip.active, .edit-preset-chip:hover { background: var(--black); color: var(--white); border-color: var(--black); }
+  .edit-sliders-grid {
+    display: grid; grid-template-columns: repeat(3,1fr); gap: 0.25rem 1.1rem;
+  }
+  .edit-slider-row { display: flex; align-items: center; gap: 0.35rem; }
+  .edit-slider-label {
+    font-family: var(--sans); font-size: 0.53rem; font-weight: 500;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    color: var(--g400); width: 54px; flex-shrink: 0;
+  }
+  .edit-slider {
+    width: 86px; -webkit-appearance: none; appearance: none;
+    height: 2px; background: var(--g200); border-radius: 2px;
+    outline: none; cursor: pointer;
+  }
+  .edit-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 10px; height: 10px;
+    border-radius: 50%; background: var(--black); cursor: pointer;
+  }
+  .edit-slider-val {
+    font-family: var(--sans); font-size: 0.53rem; color: var(--g400);
+    width: 24px; text-align: right; font-variant-numeric: tabular-nums;
+  }
+  .edit-tb-actions { display: flex; flex-direction: column; gap: 0.35rem; flex-shrink: 0; }
+  .edit-apply-btn {
+    font-family: var(--sans); font-size: 0.58rem; font-weight: 500;
+    letter-spacing: 0.07em; text-transform: uppercase;
+    background: var(--black); color: var(--white);
+    border: none; padding: 0.38rem 0.85rem;
+    border-radius: 2px; cursor: pointer; white-space: nowrap;
+  }
+  .edit-apply-btn:hover { background: #222; }
+  .edit-reset-btn {
+    font-family: var(--sans); font-size: 0.58rem; font-weight: 500;
+    letter-spacing: 0.07em; text-transform: uppercase;
+    background: transparent; color: var(--g400);
+    border: 1px solid var(--g200); padding: 0.38rem 0.85rem;
+    border-radius: 2px; cursor: pointer; white-space: nowrap;
+  }
+  .edit-reset-btn:hover { border-color: var(--black); color: var(--black); }
 
   .project-nav {
     display: flex; align-items: center; gap: 1.2rem;
@@ -3220,7 +3278,58 @@
     </div>
   </nav>
   <div class="edit-toolbar">
-    <span class="edit-toolbar-label">Editing tools coming soon</span>
+    <div class="edit-tb-row">
+      <div class="edit-tb-section">
+        <div class="edit-genre-tabs">
+          <button class="edit-genre-tab active" onclick="setEditGenre('wedding',this)">Wedding</button>
+          <button class="edit-genre-tab" onclick="setEditGenre('engagement',this)">Engagement</button>
+          <button class="edit-genre-tab" onclick="setEditGenre('realestate',this)">Real Estate</button>
+          <button class="edit-genre-tab" onclick="setEditGenre('landscape',this)">Landscape</button>
+        </div>
+        <div class="edit-preset-chips" id="edit-preset-chips"></div>
+      </div>
+      <div class="edit-tb-divider"></div>
+      <div class="edit-tb-section">
+        <div class="edit-sliders-grid">
+          <div class="edit-slider-row">
+            <label class="edit-slider-label">Exposure</label>
+            <input type="range" class="edit-slider" id="sl-exposure" min="-100" max="100" value="0" oninput="onSliderInput('exposure',this.value)">
+            <span class="edit-slider-val" id="sv-exposure">0</span>
+          </div>
+          <div class="edit-slider-row">
+            <label class="edit-slider-label">Warmth</label>
+            <input type="range" class="edit-slider" id="sl-warmth" min="-100" max="100" value="0" oninput="onSliderInput('warmth',this.value)">
+            <span class="edit-slider-val" id="sv-warmth">0</span>
+          </div>
+          <div class="edit-slider-row">
+            <label class="edit-slider-label">Contrast</label>
+            <input type="range" class="edit-slider" id="sl-contrast" min="-100" max="100" value="0" oninput="onSliderInput('contrast',this.value)">
+            <span class="edit-slider-val" id="sv-contrast">0</span>
+          </div>
+          <div class="edit-slider-row">
+            <label class="edit-slider-label">Highlights</label>
+            <input type="range" class="edit-slider" id="sl-highlights" min="-100" max="100" value="0" oninput="onSliderInput('highlights',this.value)">
+            <span class="edit-slider-val" id="sv-highlights">0</span>
+          </div>
+          <div class="edit-slider-row">
+            <label class="edit-slider-label">Saturation</label>
+            <input type="range" class="edit-slider" id="sl-saturation" min="-100" max="100" value="0" oninput="onSliderInput('saturation',this.value)">
+            <span class="edit-slider-val" id="sv-saturation">0</span>
+          </div>
+          <div class="edit-slider-row">
+            <label class="edit-slider-label">Fade</label>
+            <input type="range" class="edit-slider" id="sl-fade" min="0" max="100" value="0" oninput="onSliderInput('fade',this.value)">
+            <span class="edit-slider-val" id="sv-fade">0</span>
+          </div>
+        </div>
+      </div>
+      <div class="edit-tb-divider"></div>
+      <div class="edit-tb-actions">
+        <button class="edit-apply-btn" onclick="applyEditsToSelected()">Apply to Selected</button>
+        <button class="edit-apply-btn" onclick="applyEditsToAll()">Apply to All</button>
+        <button class="edit-reset-btn" onclick="resetEdits()">Reset All</button>
+      </div>
+    </div>
   </div>
   <div class="select-toolbar">
     <span class="select-count" id="select-count">0 selected</span>
@@ -4875,6 +4984,135 @@ function openProjectEditMode(id, name, event) {
   document.getElementById('project-back-btn').innerHTML = '&#8592; Project Manager';
   showScreen('project-screen');
   loadFiles();
+  _activeEditGenre = 'wedding';
+  _activePresetName = null;
+  document.querySelectorAll('.edit-genre-tab').forEach((t,i) => t.classList.toggle('active', i === 0));
+  resetEdits();
+}
+
+// ── Photo Presets & Color Grading ──────────────────────────────
+const EDIT_PRESETS = {
+  wedding: [
+    { name: 'Canon Warm',  e:8,  c:-8,  s:12, w:30, h:-10, f:15 },
+    { name: 'Film Fade',   e:5,  c:-15, s:5,  w:15, h:-20, f:35 },
+    { name: 'Clean White', e:20, c:-5,  s:8,  w:10, h:0,   f:5  },
+  ],
+  engagement: [
+    { name: 'Romantic Rose', e:12, c:-12, s:8,  w:20, h:-15, f:20 },
+    { name: 'Airy Light',    e:25, c:-18, s:0,  w:10, h:-10, f:25 },
+    { name: 'Golden Hour',   e:8,  c:5,   s:20, w:45, h:-5,  f:10 },
+  ],
+  realestate: [
+    { name: 'Sony Clean',    e:15, c:20, s:-10, w:-15, h:-5, f:0 },
+    { name: 'Bright & Airy', e:25, c:5,  s:-5,  w:-5,  h:0,  f:0 },
+    { name: 'High Contrast', e:10, c:35, s:0,   w:-10, h:-10, f:0 },
+  ],
+  landscape: [
+    { name: 'Rich & Punchy', e:-5, c:25, s:40, w:5,   h:-20, f:0 },
+    { name: 'Mountain Blue', e:0,  c:20, s:30, w:-25, h:-10, f:0 },
+    { name: 'Golden Greens', e:5,  c:15, s:35, w:20,  h:-15, f:5 },
+  ],
+};
+let _activeEditGenre = 'wedding';
+let _activePresetName = null;
+
+function setEditGenre(genre, tabEl) {
+  _activeEditGenre = genre;
+  _activePresetName = null;
+  document.querySelectorAll('.edit-genre-tab').forEach(t => t.classList.remove('active'));
+  tabEl.classList.add('active');
+  renderPresetChips();
+}
+
+function renderPresetChips() {
+  const wrap = document.getElementById('edit-preset-chips');
+  if (!wrap) return;
+  const presets = EDIT_PRESETS[_activeEditGenre] || [];
+  wrap.innerHTML = presets.map(p =>
+    `<button class="edit-preset-chip${p.name === _activePresetName ? ' active' : ''}" onclick="applyPresetByName('${p.name.replace(/'/g,"\\'")}')">${p.name}</button>`
+  ).join('');
+}
+
+function applyPresetByName(name) {
+  const p = (EDIT_PRESETS[_activeEditGenre] || []).find(x => x.name === name);
+  if (!p) return;
+  _activePresetName = p.name;
+  [['exposure',p.e],['contrast',p.c],['saturation',p.s],['warmth',p.w],['highlights',p.h],['fade',p.f]].forEach(([key,val]) => {
+    const sl = document.getElementById('sl-' + key);
+    const sv = document.getElementById('sv-' + key);
+    if (sl) sl.value = val;
+    if (sv) sv.textContent = val;
+  });
+  renderPresetChips();
+  previewEditsOnSelected();
+}
+
+function onSliderInput(key, val) {
+  const sv = document.getElementById('sv-' + key);
+  if (sv) sv.textContent = Math.round(val);
+  _activePresetName = null;
+  renderPresetChips();
+  previewEditsOnSelected();
+}
+
+function getSliderValues() {
+  return {
+    e: parseFloat(document.getElementById('sl-exposure')?.value || 0),
+    c: parseFloat(document.getElementById('sl-contrast')?.value || 0),
+    s: parseFloat(document.getElementById('sl-saturation')?.value || 0),
+    w: parseFloat(document.getElementById('sl-warmth')?.value || 0),
+    h: parseFloat(document.getElementById('sl-highlights')?.value || 0),
+    f: parseFloat(document.getElementById('sl-fade')?.value || 0),
+  };
+}
+
+function buildEditorFilter(e, c, s, w, h, f) {
+  const brightness = Math.max(0.05, 1 + e * 0.008 + h * 0.003 + f * 0.001);
+  const contrast   = Math.max(0.1,  1 + c * 0.008 - f * 0.003);
+  const saturate   = Math.max(0,    1 + s * 0.015 - f * 0.003);
+  const hueRot     = (-w * 0.2).toFixed(1);
+  const sepia      = Math.min(w > 0 ? w * 0.002 : 0, 0.3).toFixed(3);
+  return `brightness(${brightness.toFixed(3)}) contrast(${contrast.toFixed(3)}) saturate(${saturate.toFixed(3)}) hue-rotate(${hueRot}deg) sepia(${sepia})`;
+}
+
+function previewEditsOnSelected() {
+  const selected = document.querySelectorAll('.file-card.selected');
+  if (!selected.length) return;
+  const { e, c, s, w, h, f } = getSliderValues();
+  const filterStr = buildEditorFilter(e, c, s, w, h, f);
+  selected.forEach(card => {
+    const img = card.querySelector('.file-thumb img');
+    if (img) img.style.filter = filterStr;
+  });
+}
+
+function applyEditsToSelected() {
+  const selected = document.querySelectorAll('.file-card.selected');
+  if (!selected.length) { alert('Select at least one photo first.'); return; }
+  const { e, c, s, w, h, f } = getSliderValues();
+  const filterStr = buildEditorFilter(e, c, s, w, h, f);
+  selected.forEach(card => {
+    const img = card.querySelector('.file-thumb img');
+    if (img) img.style.filter = filterStr;
+  });
+}
+
+function applyEditsToAll() {
+  const { e, c, s, w, h, f } = getSliderValues();
+  const filterStr = buildEditorFilter(e, c, s, w, h, f);
+  document.querySelectorAll('#files-grid .file-thumb img').forEach(img => { img.style.filter = filterStr; });
+}
+
+function resetEdits() {
+  document.querySelectorAll('#files-grid .file-thumb img').forEach(img => { img.style.filter = ''; });
+  ['exposure','contrast','saturation','warmth','highlights','fade'].forEach(key => {
+    const sl = document.getElementById('sl-' + key);
+    const sv = document.getElementById('sv-' + key);
+    if (sl) sl.value = 0;
+    if (sv) sv.textContent = 0;
+  });
+  _activePresetName = null;
+  renderPresetChips();
 }
 
 async function loadFiles() {
