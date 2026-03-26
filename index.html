@@ -3964,13 +3964,6 @@
       </div>
     </div>
     <textarea class="delivery-custom-input" id="delivery-custom-text" placeholder="Write your own delivery message..." style="display:none"></textarea>
-    <div class="ai-design-row">
-      <button class="ai-design-toggle" id="ai-design-toggle" onclick="toggleAIDesignPrompt()">✦ Style with AI</button>
-      <div class="ai-design-panel" id="ai-design-panel" style="display:none">
-        <textarea class="ai-design-input" id="ai-design-input" placeholder="Describe the aesthetic... e.g. 'moody destination wedding in Tuscany, warm golden tones' or 'clean modern real estate, bright and minimal'"></textarea>
-        <button class="ai-design-generate-btn" id="ai-design-generate-btn" onclick="generateGalleryDesign()">Generate Design</button>
-      </div>
-    </div>
     <div class="delivery-preview-box">
       <div class="delivery-preview-label">Message Preview</div>
       <div class="delivery-preview-text" id="delivery-preview-text"></div>
@@ -3983,6 +3976,15 @@
       <div class="customize-cols">
         <div class="customize-settings-col">
           <div class="delivery-customize" id="delivery-customize">
+            <div class="customize-section">
+              <div class="ai-design-row">
+                <button class="ai-design-toggle" id="ai-design-toggle" onclick="toggleAIDesignPrompt()">✦ Style with AI</button>
+                <div class="ai-design-panel" id="ai-design-panel" style="display:none">
+                  <textarea class="ai-design-input" id="ai-design-input" placeholder="Describe the aesthetic... e.g. 'moody destination wedding in Tuscany, warm golden tones'"></textarea>
+                  <button class="ai-design-generate-btn" id="ai-design-generate-btn" onclick="generateGalleryDesign()">Generate Design</button>
+                </div>
+              </div>
+            </div>
             <div class="customize-section">
               <label class="customize-label">Color Presets</label>
               <div class="color-presets">
@@ -6638,8 +6640,21 @@ async function generateGalleryDesign() {
     if (d.wallpaper) { currentGallerySettings.wallpaper = d.wallpaper; document.querySelectorAll('.wallpaper-opt').forEach(o => o.classList.toggle('active', o.dataset.wp === d.wallpaper)); }
     if (d.layout) { currentGallerySettings.layout = d.layout; document.querySelectorAll('.layout-opt').forEach(o => o.classList.toggle('selected', o.dataset.layout === d.layout)); }
     if (d.font) { loadGoogleFont(d.font); currentGallerySettings.font_family = d.font; document.getElementById('font-selected').style.display = 'block'; document.getElementById('font-selected-name').textContent = d.font; document.getElementById('font-preview-sample').style.fontFamily = `'${d.font}', serif`; }
+    // Sync color preset UI
+    document.querySelectorAll('.color-preset').forEach(p => {
+      const preset = COLOR_PRESETS[p.dataset.preset];
+      p.classList.toggle('active', preset && preset.bg === d.bg_color && preset.accent === d.accent_color);
+    });
     checkContrast();
+    // Open customize panel if not already open
+    const customizeLayout = document.getElementById('customize-layout');
+    if (customizeLayout.style.display === 'none') {
+      customizeLayout.style.display = 'block';
+      document.getElementById('customize-arrow').classList.add('open');
+      document.querySelector('#delivery-modal .modal').classList.add('customize-open');
+    }
     updateGalleryPreview();
+    updateEmailPreview();
     showToast('Design applied ✦');
   } catch (err) {
     showToast('Could not generate design.');
