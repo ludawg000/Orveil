@@ -1737,6 +1737,112 @@
   }
   #project-screen.edit-mode .presets-btn { display: inline-block; }
   #project-screen.edit-mode.presets-open .presets-btn { background: var(--black); color: var(--white); border-color: var(--black); }
+  .colorgrade-btn {
+    display: none; font-family: var(--sans); font-size: 0.62rem; font-weight: 500;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    background: transparent; border: 1px solid var(--g200);
+    color: var(--black); padding: 0.45rem 1rem;
+    border-radius: 2px; cursor: pointer;
+  }
+  #project-screen.edit-mode .colorgrade-btn { display: inline-block; }
+  #project-screen.edit-mode.cg-open .colorgrade-btn { background: var(--black); color: var(--white); border-color: var(--black); }
+  /* Color Grade Toolbar */
+  .colorgrade-toolbar {
+    display: none; align-items: stretch;
+    padding: 0.7rem 1.5rem; background: #0f0f0f;
+    border-bottom: 1px solid #1e1e1e; overflow-x: auto;
+  }
+  #project-screen.edit-mode.cg-open .colorgrade-toolbar { display: flex; }
+  .cg-row { display: flex; align-items: center; gap: 1.4rem; min-width: max-content; }
+  .cg-section {
+    display: flex; flex-direction: column; gap: 0.4rem; flex-shrink: 0;
+  }
+  .cg-section-label {
+    font-family: var(--sans); font-size: 0.5rem; font-weight: 600;
+    letter-spacing: 0.14em; text-transform: uppercase; color: #555;
+  }
+  .cg-divider { width: 1px; height: 120px; background: #1e1e1e; flex-shrink: 0; }
+  /* Wheels */
+  .cg-wheels-row { display: flex; gap: 1rem; }
+  .cg-wheel-wrap { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
+  .cg-wheel-name {
+    font-family: var(--sans); font-size: 0.5rem; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #666;
+  }
+  .cg-wheel-container {
+    position: relative; width: 90px; height: 90px; cursor: crosshair;
+    border-radius: 50%; overflow: hidden;
+  }
+  .cg-wheel { display: block; border-radius: 50%; }
+  .cg-wheel-dot {
+    position: absolute; width: 10px; height: 10px;
+    border-radius: 50%; background: white;
+    border: 1.5px solid #000; pointer-events: none;
+    top: 40px; left: 40px;
+    box-shadow: 0 0 3px rgba(0,0,0,0.6);
+  }
+  .cg-lum-slider {
+    width: 86px; -webkit-appearance: none; appearance: none;
+    height: 3px; background: #2a2a2a; border-radius: 2px; outline: none; cursor: pointer;
+  }
+  .cg-lum-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 9px; height: 9px;
+    border-radius: 50%; background: #fff; cursor: pointer;
+  }
+  .cg-lum-val {
+    font-family: var(--sans); font-size: 0.5rem; color: #444;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Tone Curve */
+  .cg-curve-wrap { display: flex; flex-direction: column; gap: 0.35rem; }
+  .cg-curve-channels { display: flex; gap: 0.3rem; }
+  .cg-ch-btn {
+    font-family: var(--sans); font-size: 0.55rem; font-weight: 600;
+    background: transparent; border: 1px solid #2a2a2a;
+    color: #555; width: 22px; height: 20px;
+    border-radius: 2px; cursor: pointer; padding: 0;
+  }
+  .cg-ch-btn.active { background: #222; border-color: #444; color: #fff; }
+  /* Primary Sliders */
+  .cg-primary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem 1rem; }
+  .cg-sl-row { display: flex; align-items: center; gap: 0.35rem; }
+  .cg-sl-label {
+    font-family: var(--sans); font-size: 0.5rem; font-weight: 500;
+    letter-spacing: 0.04em; text-transform: uppercase;
+    color: #555; width: 52px; flex-shrink: 0;
+  }
+  .cg-sl-track-wrap { position: relative; }
+  .cg-sl {
+    width: 80px; -webkit-appearance: none; appearance: none;
+    height: 3px; background: #2a2a2a; border-radius: 2px; outline: none; cursor: pointer;
+  }
+  .cg-sl-color { background: var(--track-bg, #2a2a2a); }
+  .cg-sl::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 10px; height: 10px;
+    border-radius: 50%; background: #fff; cursor: pointer;
+    border: 1.5px solid #444;
+  }
+  .cg-sl-val {
+    font-family: var(--sans); font-size: 0.5rem; color: #444;
+    width: 22px; text-align: right; font-variant-numeric: tabular-nums;
+  }
+  /* Actions */
+  .cg-apply-btn {
+    font-family: var(--sans); font-size: 0.58rem; font-weight: 500;
+    letter-spacing: 0.07em; text-transform: uppercase;
+    background: #fff; color: #000;
+    border: none; padding: 0.4rem 0.9rem;
+    border-radius: 2px; cursor: pointer; white-space: nowrap; margin-bottom: 0.4rem;
+  }
+  .cg-apply-btn:hover { background: #ddd; }
+  .cg-reset-btn {
+    font-family: var(--sans); font-size: 0.58rem; font-weight: 500;
+    letter-spacing: 0.07em; text-transform: uppercase;
+    background: transparent; color: #555;
+    border: 1px solid #2a2a2a; padding: 0.4rem 0.9rem;
+    border-radius: 2px; cursor: pointer; white-space: nowrap;
+  }
+  .cg-reset-btn:hover { border-color: #555; color: #aaa; }
   #project-screen .edit-toolbar {
     display: none; flex-direction: column; align-items: stretch;
     padding: 0.55rem 1.5rem; background: var(--g100);
@@ -3284,6 +3390,7 @@
     <span class="edit-mode-badge">Edit Mode</span>
     <div class="project-nav-actions">
       <button class="presets-btn" onclick="togglePresetsPanel()">Presets</button>
+      <button class="colorgrade-btn" onclick="toggleCGPanel()">Color Grade</button>
       <button class="invite-btn" onclick="openInviteFromProject(event)">+ Invite</button>
       <button class="select-btn" id="select-mode-btn" onclick="toggleSelectMode()">Select</button>
       <button class="deliver-btn" onclick="openDelivery()">Deliver to Client</button>
@@ -3343,6 +3450,146 @@
       </div>
     </div>
   </div>
+  <!-- COLOR GRADE PANEL -->
+  <div class="colorgrade-toolbar" id="colorgrade-toolbar">
+    <div class="cg-row">
+
+      <!-- Color Wheels -->
+      <div class="cg-section">
+        <div class="cg-section-label">Color Wheels</div>
+        <div class="cg-wheels-row">
+          <div class="cg-wheel-wrap">
+            <div class="cg-wheel-name">Lift</div>
+            <div class="cg-wheel-container" id="cg-wc-lift">
+              <canvas class="cg-wheel" id="cg-wheel-lift" width="90" height="90"></canvas>
+              <div class="cg-wheel-dot" id="cg-dot-lift"></div>
+            </div>
+            <input type="range" class="cg-lum-slider" id="cg-lum-lift" min="-100" max="100" value="0" oninput="onCGLumChange('lift',this.value)">
+            <span class="cg-lum-val" id="cg-lv-lift">0</span>
+          </div>
+          <div class="cg-wheel-wrap">
+            <div class="cg-wheel-name">Gamma</div>
+            <div class="cg-wheel-container" id="cg-wc-gamma">
+              <canvas class="cg-wheel" id="cg-wheel-gamma" width="90" height="90"></canvas>
+              <div class="cg-wheel-dot" id="cg-dot-gamma"></div>
+            </div>
+            <input type="range" class="cg-lum-slider" id="cg-lum-gamma" min="-100" max="100" value="0" oninput="onCGLumChange('gamma',this.value)">
+            <span class="cg-lum-val" id="cg-lv-gamma">0</span>
+          </div>
+          <div class="cg-wheel-wrap">
+            <div class="cg-wheel-name">Gain</div>
+            <div class="cg-wheel-container" id="cg-wc-gain">
+              <canvas class="cg-wheel" id="cg-wheel-gain" width="90" height="90"></canvas>
+              <div class="cg-wheel-dot" id="cg-dot-gain"></div>
+            </div>
+            <input type="range" class="cg-lum-slider" id="cg-lum-gain" min="-100" max="100" value="0" oninput="onCGLumChange('gain',this.value)">
+            <span class="cg-lum-val" id="cg-lv-gain">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cg-divider"></div>
+
+      <!-- Tone Curve -->
+      <div class="cg-section">
+        <div class="cg-section-label">Tone Curve</div>
+        <div class="cg-curve-wrap">
+          <div class="cg-curve-channels">
+            <button class="cg-ch-btn active" onclick="setCGChannel(this,'#0a0a0a')">L</button>
+            <button class="cg-ch-btn" onclick="setCGChannel(this,'#c0392b')" style="color:#c0392b">R</button>
+            <button class="cg-ch-btn" onclick="setCGChannel(this,'#27ae60')" style="color:#27ae60">G</button>
+            <button class="cg-ch-btn" onclick="setCGChannel(this,'#2980b9')" style="color:#2980b9">B</button>
+          </div>
+          <svg id="cg-curve-svg" width="150" height="130" viewBox="0 0 150 130" style="display:block;">
+            <rect x="10" y="10" width="130" height="110" fill="#f8f8f6" rx="1"/>
+            <line x1="42" y1="10" x2="42" y2="120" stroke="#e4e4e0" stroke-width="0.7"/>
+            <line x1="75" y1="10" x2="75" y2="120" stroke="#e4e4e0" stroke-width="0.7"/>
+            <line x1="108" y1="10" x2="108" y2="120" stroke="#e4e4e0" stroke-width="0.7"/>
+            <line x1="10" y1="47" x2="140" y2="47" stroke="#e4e4e0" stroke-width="0.7"/>
+            <line x1="10" y1="75" x2="140" y2="75" stroke="#e4e4e0" stroke-width="0.7"/>
+            <line x1="10" y1="103" x2="140" y2="103" stroke="#e4e4e0" stroke-width="0.7"/>
+            <line x1="10" y1="120" x2="140" y2="10" stroke="#ccc" stroke-width="0.7" stroke-dasharray="3,2"/>
+            <path id="cg-curve-path" fill="none" stroke="#0a0a0a" stroke-width="1.8"
+              d="M10,120 C10,120 42,120 75,65 C108,10 140,10 140,10"/>
+            <circle id="cg-cp1" cx="75" cy="65" r="5" fill="#0a0a0a" style="cursor:move"/>
+            <circle id="cg-cp2" cx="42" cy="103" r="4" fill="white" stroke="#0a0a0a" stroke-width="1.5" style="cursor:move"/>
+            <circle id="cg-cp3" cx="108" cy="27" r="4" fill="white" stroke="#0a0a0a" stroke-width="1.5" style="cursor:move"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="cg-divider"></div>
+
+      <!-- Primary Controls -->
+      <div class="cg-section">
+        <div class="cg-section-label">Primary</div>
+        <div class="cg-primary-grid">
+          <div class="cg-sl-row">
+            <label class="cg-sl-label">Temp</label>
+            <div class="cg-sl-track-wrap" style="--track-bg:linear-gradient(to right,#4fc3f7,#fff5e0,#ff8f00)">
+              <input type="range" class="cg-sl cg-sl-color" id="cg-temp" min="-100" max="100" value="0" oninput="onCGSl('temp',this.value)">
+            </div>
+            <span class="cg-sl-val" id="cg-sv-temp">0</span>
+          </div>
+          <div class="cg-sl-row">
+            <label class="cg-sl-label">Tint</label>
+            <div class="cg-sl-track-wrap" style="--track-bg:linear-gradient(to right,#27ae60,#ddd,#c0392b)">
+              <input type="range" class="cg-sl cg-sl-color" id="cg-tint" min="-100" max="100" value="0" oninput="onCGSl('tint',this.value)">
+            </div>
+            <span class="cg-sl-val" id="cg-sv-tint">0</span>
+          </div>
+          <div class="cg-sl-row">
+            <label class="cg-sl-label">Contrast</label>
+            <input type="range" class="cg-sl" id="cg-contrast" min="-100" max="100" value="0" oninput="onCGSl('contrast',this.value)">
+            <span class="cg-sl-val" id="cg-sv-contrast">0</span>
+          </div>
+          <div class="cg-sl-row">
+            <label class="cg-sl-label">Saturation</label>
+            <input type="range" class="cg-sl" id="cg-saturation" min="-100" max="100" value="0" oninput="onCGSl('saturation',this.value)">
+            <span class="cg-sl-val" id="cg-sv-saturation">0</span>
+          </div>
+          <div class="cg-sl-row">
+            <label class="cg-sl-label">Shadows</label>
+            <input type="range" class="cg-sl" id="cg-shadows" min="-100" max="100" value="0" oninput="onCGSl('shadows',this.value)">
+            <span class="cg-sl-val" id="cg-sv-shadows">0</span>
+          </div>
+          <div class="cg-sl-row">
+            <label class="cg-sl-label">Highlights</label>
+            <input type="range" class="cg-sl" id="cg-highlights" min="-100" max="100" value="0" oninput="onCGSl('highlights',this.value)">
+            <span class="cg-sl-val" id="cg-sv-highlights">0</span>
+          </div>
+          <div class="cg-sl-row">
+            <label class="cg-sl-label">Blacks</label>
+            <input type="range" class="cg-sl" id="cg-blacks" min="-100" max="100" value="0" oninput="onCGSl('blacks',this.value)">
+            <span class="cg-sl-val" id="cg-sv-blacks">0</span>
+          </div>
+          <div class="cg-sl-row">
+            <label class="cg-sl-label">Whites</label>
+            <input type="range" class="cg-sl" id="cg-whites" min="-100" max="100" value="0" oninput="onCGSl('whites',this.value)">
+            <span class="cg-sl-val" id="cg-sv-whites">0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cg-divider"></div>
+
+      <!-- Histogram Scope -->
+      <div class="cg-section">
+        <div class="cg-section-label">Histogram</div>
+        <canvas id="cg-histogram" width="120" height="90" style="display:block;border-radius:2px;background:#0a0a0a;"></canvas>
+      </div>
+
+      <div class="cg-divider"></div>
+
+      <!-- Actions -->
+      <div class="cg-section" style="justify-content:center;">
+        <button class="cg-apply-btn" onclick="applyCGToAll()">Apply to All</button>
+        <button class="cg-reset-btn" onclick="resetCG()">Reset</button>
+      </div>
+
+    </div>
+  </div>
+
   <div class="select-toolbar">
     <span class="select-count" id="select-count">0 selected</span>
     <button class="select-all-btn" onclick="selectAllFiles()">Select All</button>
@@ -4998,7 +5245,7 @@ function openProjectEditMode(id, name, event) {
   loadFiles();
   _activeEditGenre = 'wedding';
   _activePresetName = null;
-  document.getElementById('project-screen').classList.remove('presets-open');
+  document.getElementById('project-screen').classList.remove('presets-open','cg-open');
   document.querySelectorAll('.edit-genre-tab').forEach((t,i) => t.classList.toggle('active', i === 0));
   resetEdits();
 }
@@ -5143,6 +5390,245 @@ function resetEdits() {
   });
   _activePresetName = null;
   renderPresetChips();
+}
+
+// ── Color Grade ────────────────────────────────────────────────
+const CG_STATE = {
+  lift:  { h: 0, s: 0, lum: 0 },
+  gamma: { h: 0, s: 0, lum: 0 },
+  gain:  { h: 0, s: 0, lum: 0 },
+  temp: 0, tint: 0, contrast: 0, saturation: 0,
+  shadows: 0, highlights: 0, blacks: 0, whites: 0,
+  curve: { p1: {x:42, y:103}, p2: {x:108, y:27} },
+  curveColor: '#0a0a0a',
+};
+let _cgInited = false;
+let _cgDragging = null;
+let _cgCurveDragging = null;
+
+function toggleCGPanel() {
+  const screen = document.getElementById('project-screen');
+  const opening = !screen.classList.contains('cg-open');
+  screen.classList.toggle('cg-open');
+  if (opening && !_cgInited) { initCG(); _cgInited = true; }
+  if (opening) drawCGHistogram();
+}
+
+function initCG() {
+  ['lift','gamma','gain'].forEach(w => drawCGWheel(w));
+  initCGWheelDrag();
+  initCGCurveDrag();
+}
+
+function hue2rgb(p,q,t){ if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<1/2)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p; }
+function hslToRgb(h,s,l){ let r,g,b;if(!s){r=g=b=l;}else{const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q;r=hue2rgb(p,q,h+1/3);g=hue2rgb(p,q,h);b=hue2rgb(p,q,h-1/3);}return[Math.round(r*255),Math.round(g*255),Math.round(b*255)]; }
+
+function drawCGWheel(name) {
+  const canvas = document.getElementById('cg-wheel-' + name);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const sz = canvas.width, cx = sz/2, cy = sz/2, r = cx - 1;
+  const img = ctx.createImageData(sz, sz);
+  for (let y = 0; y < sz; y++) {
+    for (let x = 0; x < sz; x++) {
+      const dx = x-cx, dy = y-cy, d = Math.sqrt(dx*dx+dy*dy);
+      const i = (y*sz+x)*4;
+      if (d <= r) {
+        const hue = ((Math.atan2(dy,dx)*180/Math.PI)+360)%360;
+        const sat = d/r;
+        const [rv,gv,bv] = hslToRgb(hue/360, sat, 0.5);
+        img.data[i]=rv; img.data[i+1]=gv; img.data[i+2]=bv; img.data[i+3]=255;
+      } else { img.data[i+3]=0; }
+    }
+  }
+  ctx.putImageData(img,0,0);
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2);
+  ctx.strokeStyle='#333'; ctx.lineWidth=1; ctx.stroke();
+}
+
+function initCGWheelDrag() {
+  ['lift','gamma','gain'].forEach(name => {
+    const wc = document.getElementById('cg-wc-'+name);
+    if (!wc) return;
+    wc.addEventListener('mousedown', e => { _cgDragging=name; moveCGWheel(e,name); });
+    wc.addEventListener('touchstart', e => { e.preventDefault(); _cgDragging=name; moveCGWheel(e.touches[0],name); }, {passive:false});
+  });
+  document.addEventListener('mousemove', e => { if(_cgDragging) moveCGWheel(e,_cgDragging); });
+  document.addEventListener('mouseup', () => { _cgDragging=null; });
+  document.addEventListener('touchmove', e => { if(_cgDragging){e.preventDefault();moveCGWheel(e.touches[0],_cgDragging);} }, {passive:false});
+  document.addEventListener('touchend', () => { _cgDragging=null; });
+}
+
+function moveCGWheel(e, name) {
+  const wc = document.getElementById('cg-wc-'+name);
+  const dot = document.getElementById('cg-dot-'+name);
+  if (!wc||!dot) return;
+  const rect = wc.getBoundingClientRect();
+  const cx=rect.width/2, cy=rect.height/2, r=cx-1;
+  let dx=e.clientX-rect.left-cx, dy=e.clientY-rect.top-cy;
+  const d=Math.sqrt(dx*dx+dy*dy);
+  if(d>r){dx=dx/d*r;dy=dy/d*r;}
+  dot.style.left=(cx+dx-5)+'px'; dot.style.top=(cy+dy-5)+'px';
+  CG_STATE[name].h=(Math.atan2(dy,dx)*180/Math.PI);
+  CG_STATE[name].s=Math.min(d/r,1);
+  onCGChange();
+}
+
+function onCGLumChange(name,val){
+  CG_STATE[name].lum=parseFloat(val);
+  document.getElementById('cg-lv-'+name).textContent=Math.round(val);
+  onCGChange();
+}
+
+function onCGSl(key,val){
+  CG_STATE[key]=parseFloat(val);
+  document.getElementById('cg-sv-'+key).textContent=Math.round(val);
+  onCGChange();
+}
+
+function initCGCurveDrag() {
+  const svg = document.getElementById('cg-curve-svg');
+  if (!svg) return;
+  ['cg-cp1','cg-cp2','cg-cp3'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('mousedown', e => { e.stopPropagation(); _cgCurveDragging=id; });
+    el.addEventListener('touchstart', e => { e.preventDefault(); e.stopPropagation(); _cgCurveDragging=id; }, {passive:false});
+  });
+  document.addEventListener('mousemove', e => { if(_cgCurveDragging) moveCGCurvePoint(e); });
+  document.addEventListener('mouseup', () => { _cgCurveDragging=null; });
+  document.addEventListener('touchmove', e => { if(_cgCurveDragging){e.preventDefault();moveCGCurvePoint(e.touches[0]);} }, {passive:false});
+  document.addEventListener('touchend', () => { _cgCurveDragging=null; });
+}
+
+function moveCGCurvePoint(e) {
+  const svg = document.getElementById('cg-curve-svg');
+  if (!svg||!_cgCurveDragging) return;
+  const rect = svg.getBoundingClientRect();
+  const scaleX=150/rect.width, scaleY=130/rect.height;
+  const x=Math.max(10,Math.min(140,(e.clientX-rect.left)*scaleX));
+  const y=Math.max(10,Math.min(120,(e.clientY-rect.top)*scaleY));
+  const el=document.getElementById(_cgCurveDragging);
+  if (el){ el.setAttribute('cx',x.toFixed(1)); el.setAttribute('cy',y.toFixed(1)); }
+  if (_cgCurveDragging==='cg-cp2') { CG_STATE.curve.p1={x,y}; }
+  else if (_cgCurveDragging==='cg-cp3') { CG_STATE.curve.p2={x,y}; }
+  updateCGCurvePath();
+  onCGChange();
+}
+
+function updateCGCurvePath() {
+  const p=document.getElementById('cg-curve-path');
+  const cp1=document.getElementById('cg-cp1');
+  const p1={x:parseFloat(cp1?.getAttribute('cx')||75),y:parseFloat(cp1?.getAttribute('cy')||65)};
+  const p2x=CG_STATE.curve.p1.x, p2y=CG_STATE.curve.p1.y;
+  const p3x=CG_STATE.curve.p2.x, p3y=CG_STATE.curve.p2.y;
+  if(p) p.setAttribute('d',`M10,120 C${p2x.toFixed(1)},120 ${p1.x.toFixed(1)},${p1.y.toFixed(1)} ${p3x.toFixed(1)},${p3y.toFixed(1)} C${p3x.toFixed(1)},${p3y.toFixed(1)} ${p3x.toFixed(1)},10 140,10`);
+}
+
+function setCGChannel(btn, color) {
+  document.querySelectorAll('.cg-ch-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  CG_STATE.curveColor = color;
+  const path = document.getElementById('cg-curve-path');
+  if (path) path.setAttribute('stroke', color);
+  ['cg-cp1','cg-cp2','cg-cp3'].forEach(id => {
+    const el=document.getElementById(id);
+    if(el) { const isFilled=id==='cg-cp1'; el.setAttribute(isFilled?'fill':'stroke',color); }
+  });
+}
+
+function buildCGFilter() {
+  const { lift, gamma, gain, temp, tint, contrast, saturation, shadows, highlights, blacks, whites, curve } = CG_STATE;
+  const wheelH = lift.h*lift.s*0.2 + gamma.h*gamma.s*0.4 + gain.h*gain.s*0.2;
+  const wheelS = (lift.s*0.25 + gamma.s*0.5 + gain.s*0.25) * 0.3;
+  const lumAdj = lift.lum*0.002 + gamma.lum*0.005 + gain.lum*0.002;
+  // Curve: how far p1 (midpoint) deviates from diagonal
+  const curveMidX=(curve.p1.x-10)/130, curveMidY=1-(curve.p1.y-10)/110;
+  const curveBias = (curveMidY - curveMidX) * 0.4; // positive = lifted mids
+  const brightness = Math.max(0.05, 1 + lumAdj + shadows*0.003 + highlights*0.002 + whites*0.003 + blacks*0.002 + curveBias);
+  const cont = Math.max(0.1, 1 + contrast*0.01);
+  const sat = Math.max(0, 1 + saturation*0.015 + wheelS);
+  const hue = wheelH + (-temp*0.18) + (tint*0.08);
+  const sepia = Math.min(temp>0?temp*0.002:0, 0.25);
+  return `brightness(${brightness.toFixed(3)}) contrast(${cont.toFixed(3)}) saturate(${sat.toFixed(3)}) hue-rotate(${hue.toFixed(1)}deg) sepia(${sepia.toFixed(3)})`;
+}
+
+function onCGChange() {
+  const filter = buildCGFilter();
+  document.querySelectorAll('.file-card.selected .file-thumb img').forEach(img => { img.style.filter = filter; });
+  drawCGHistogram();
+}
+
+function applyCGToAll() {
+  const filter = buildCGFilter();
+  document.querySelectorAll('#files-grid .file-thumb img').forEach(img => { img.style.filter = filter; });
+}
+
+function resetCG() {
+  ['lift','gamma','gain'].forEach(name => {
+    CG_STATE[name]={h:0,s:0,lum:0};
+    const dot=document.getElementById('cg-dot-'+name);
+    if(dot){dot.style.left='40px';dot.style.top='40px';}
+    const sl=document.getElementById('cg-lum-'+name);
+    if(sl) sl.value=0;
+    const lv=document.getElementById('cg-lv-'+name);
+    if(lv) lv.textContent=0;
+  });
+  ['temp','tint','contrast','saturation','shadows','highlights','blacks','whites'].forEach(k => {
+    CG_STATE[k]=0;
+    const sl=document.getElementById('cg-'+k);
+    if(sl) sl.value=0;
+    const sv=document.getElementById('cg-sv-'+k);
+    if(sv) sv.textContent=0;
+  });
+  CG_STATE.curve={p1:{x:42,y:103},p2:{x:108,y:27}};
+  const cp1=document.getElementById('cg-cp1'); if(cp1){cp1.setAttribute('cx',75);cp1.setAttribute('cy',65);}
+  const cp2=document.getElementById('cg-cp2'); if(cp2){cp2.setAttribute('cx',42);cp2.setAttribute('cy',103);}
+  const cp3=document.getElementById('cg-cp3'); if(cp3){cp3.setAttribute('cx',108);cp3.setAttribute('cy',27);}
+  const path=document.getElementById('cg-curve-path');
+  if(path) path.setAttribute('d','M10,120 C10,120 42,120 75,65 C108,10 140,10 140,10');
+  document.querySelectorAll('#files-grid .file-thumb img').forEach(img=>{img.style.filter='';});
+  drawCGHistogram();
+}
+
+function drawCGHistogram() {
+  const canvas = document.getElementById('cg-histogram');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#0a0a0a';
+  ctx.fillRect(0,0,W,H);
+  // Grid
+  ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=0.7;
+  [0.25,0.5,0.75].forEach(t=>{
+    ctx.beginPath(); ctx.moveTo(t*W,0); ctx.lineTo(t*W,H); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,t*H); ctx.lineTo(W,t*H); ctx.stroke();
+  });
+  // Simulate histogram shape based on current CG state
+  const bright=(1+CG_STATE.lift.lum*0.002+CG_STATE.gamma.lum*0.005+CG_STATE.gain.lum*0.002);
+  const cont=(1+CG_STATE.contrast*0.01);
+  const shift=Math.min(Math.max((bright-1)*30+W/2,10),W-10);
+  const spread=Math.max(0.3,Math.min(2.5,cont));
+  const channels=[
+    {color:'rgba(192,57,43,0.7)',off:-3},
+    {color:'rgba(39,174,96,0.7)',off:0},
+    {color:'rgba(41,128,185,0.7)',off:3},
+  ];
+  channels.forEach(({color,off})=>{
+    ctx.beginPath();
+    ctx.moveTo(0,H);
+    for(let x=0;x<W;x++){
+      const nx=(x-shift-off)/(W*0.18*spread);
+      const h=Math.exp(-nx*nx*0.5)*H*0.8;
+      ctx.lineTo(x,H-h);
+    }
+    ctx.lineTo(W,H); ctx.closePath();
+    ctx.fillStyle=color; ctx.fill();
+  });
+  // Labels
+  ctx.fillStyle='#333'; ctx.font='500 8px sans-serif';
+  ctx.fillText('0',2,H-2); ctx.fillText('255',W-16,H-2);
 }
 
 async function loadFiles() {
