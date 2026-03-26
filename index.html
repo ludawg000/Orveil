@@ -29,6 +29,7 @@
 
   /* LANDING PAGE */
   #login-screen {
+    position: relative;
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
@@ -8083,16 +8084,14 @@ document.addEventListener('keydown', e => {
     window._landingVineTimers = [];
 
     const nav = document.querySelector('.landing-nav');
-    if (!nav) return;
+    const loginScreen = document.getElementById('login-screen');
+    if (!nav || !loginScreen) return;
 
-    // Inject a 100vw/100vh probe — most reliable cross-browser viewport measurement
-    const _probe = document.createElement('div');
-    _probe.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;pointer-events:none;visibility:hidden;z-index:-1;';
-    document.body.appendChild(_probe);
-    const VW = _probe.offsetWidth;
-    const VH = _probe.offsetHeight;
-    _probe.remove();
-    const navH  = nav.getBoundingClientRect().bottom;  // bottom of nav = top of border
+    // Use the login screen's own dimensions — reliable on mobile Safari,
+    // and makes the SVG scroll with the page (correct behavior on mobile)
+    const VW = loginScreen.offsetWidth;
+    const VH = loginScreen.offsetHeight;
+    const navH = nav.offsetTop + nav.offsetHeight;  // bottom of nav relative to login-screen
 
     const mobile = VW < 600;
     const pad  = mobile ? 6 : 12;
@@ -8131,7 +8130,9 @@ document.addEventListener('keydown', e => {
     svg.setAttribute('width', VW);
     svg.setAttribute('height', VH);
     svg.setAttribute('viewBox', `0 0 ${VW} ${VH}`);
-    svg.style.cssText = `position:fixed;top:0;left:0;width:${VW}px;height:${VH}px;pointer-events:none;overflow:visible;z-index:5;`;
+    // position:absolute inside #login-screen — scrolls with page content on mobile
+    // (avoids mobile Safari fixed-position viewport jump bug)
+    svg.style.cssText = `position:absolute;top:0;left:0;width:${VW}px;height:${VH}px;pointer-events:none;overflow:visible;z-index:5;`;
 
     const stem = document.createElementNS(ns, 'path');
     stem.setAttribute('d', d);
@@ -8141,7 +8142,7 @@ document.addEventListener('keydown', e => {
     stem.setAttribute('stroke-linecap', 'round');
     stem.setAttribute('stroke-linejoin', 'round');
     svg.appendChild(stem);
-    document.body.appendChild(svg);
+    loginScreen.appendChild(svg);
 
     const totalLen = stem.getTotalLength();
     const DRAW_MS  = 5500;
