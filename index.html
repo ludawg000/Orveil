@@ -6614,7 +6614,13 @@ async function showDashboard() {
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  if (id === 'auth-screen') setTimeout(triggerLogoVine, 150);
+  if (id === 'auth-screen') {
+    setTimeout(triggerLogoVine, 150);
+  } else {
+    // Leaving auth screen — tear down vine so next visit starts fresh
+    document.querySelectorAll('.logo-vine-layer').forEach(el => el.remove());
+    if (window._logoVineTimers) { window._logoVineTimers.forEach(clearTimeout); window._logoVineTimers = []; }
+  }
 }
 
 // ─── SETTINGS ───
@@ -6929,11 +6935,11 @@ document.addEventListener('keydown', e => {
   }
 
   // ── LOGO VINE (auto-play, organic underline) ──────────────────────────────
-  let logoVineTimers = [];
+  window._logoVineTimers = window._logoVineTimers || [];
 
   function triggerLogoVineInternal() {
-    logoVineTimers.forEach(id => clearTimeout(id));
-    logoVineTimers = [];
+    window._logoVineTimers.forEach(id => clearTimeout(id));
+    window._logoVineTimers = [];
     document.querySelectorAll('.logo-vine-layer').forEach(el => el.remove());
 
     const logoWrap = document.querySelector('.vine-logo-wrap');
@@ -7004,7 +7010,7 @@ document.addEventListener('keydown', e => {
       el.style.opacity = '0';
       el.style.transition = 'opacity 0.18s ease';
       svg.appendChild(el);
-      logoVineTimers.push(setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS));
+      window._logoVineTimers.push(setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS));
     });
 
     // Leaves — setTimeout fires exactly when stroke reaches each position
@@ -7016,7 +7022,7 @@ document.addEventListener('keydown', e => {
       el.style.opacity = '0';
       el.style.transition = 'opacity 0.22s ease';
       svg.appendChild(el);
-      logoVineTimers.push(setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS));
+      window._logoVineTimers.push(setTimeout(() => { el.style.opacity = '1'; }, t * DRAW_MS));
     });
 
     // Draw animation — 1.2s left to right
