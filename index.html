@@ -5850,21 +5850,24 @@ function buildCurveLUT(c) {
   });
 }
 
+let _cgFilterRev = 0;
+
 // Update the SVG feComponentTransfer with composite per-channel curves (L applied first, then R/G/B)
+// Returns a nonce string encoding the new tableValues so the CSS filter string changes every time
 function updateChannelFilter() {
   const fR=document.getElementById('cg-fR'), fG=document.getElementById('cg-fG'), fB=document.getElementById('cg-fB');
-  if (!fR) return;
+  if (!fR) return '';
   const L=buildCurveLUT(CG_STATE.curves.L), R=buildCurveLUT(CG_STATE.curves.R);
   const G=buildCurveLUT(CG_STATE.curves.G), B=buildCurveLUT(CG_STATE.curves.B);
-  // Compose: for each of 9 input steps, run through L then channel curve
   const compose=(lLut,chLut)=>lLut.map(v=>{
     const x=v*8, i=Math.min(7,Math.floor(x)), f=x-i;
     return Math.max(0,Math.min(1,chLut[i]+f*(chLut[i+1]-chLut[i])));
   });
   const fmt=arr=>arr.map(v=>v.toFixed(4)).join(' ');
-  fR.setAttribute('tableValues', fmt(compose(L,R)));
-  fG.setAttribute('tableValues', fmt(compose(L,G)));
-  fB.setAttribute('tableValues', fmt(compose(L,B)));
+  const rVals=compose(L,R), gVals=compose(L,G), bVals=compose(L,B);
+  fR.setAttribute('tableValues', fmt(rVals));
+  fG.setAttribute('tableValues', fmt(gVals));
+  fB.setAttribute('tableValues', fmt(bVals));
 }
 
 function buildCGFilter() {
@@ -5878,7 +5881,10 @@ function buildCGFilter() {
   const hue = wheelH + (-temp*0.18) + (tint*0.08);
   const sepia = Math.min(temp>0?temp*0.002:0, 0.25);
   updateChannelFilter();
-  return `url(#cg-ch-filter) brightness(${brightness.toFixed(3)}) contrast(${cont.toFixed(3)}) saturate(${sat.toFixed(3)}) hue-rotate(${hue.toFixed(1)}deg) sepia(${sepia.toFixed(3)})`;
+  // Increment rev so brightness string changes every time curves move, forcing browser to re-evaluate SVG filter
+  _cgFilterRev = (_cgFilterRev + 1) % 100000;
+  const nonce = _cgFilterRev * 1e-10; // max 0.00001 — imperceptible
+  return `url(#cg-ch-filter) brightness(${(brightness + nonce).toFixed(10)}) contrast(${cont.toFixed(3)}) saturate(${sat.toFixed(3)}) hue-rotate(${hue.toFixed(1)}deg) sepia(${sepia.toFixed(3)})`;
 }
 
 function onCGChange() {
