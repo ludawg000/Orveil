@@ -5784,13 +5784,12 @@ function getProjectEditFilter() {
   const eSepia  = Math.min(w > 0 ? w*0.003 : 0, 0.35);
   // CG contributions
   const { dark, shadow, light, global: glob, temp, tint, contrast, saturation, shadows, highlights, blacks, whites } = CG_STATE;
-  const wheelH  = dark.h*dark.s*0.02 + shadow.h*shadow.s*0.04 + light.h*light.s*0.04 + glob.h*glob.s*0.10;
   const wheelS  = (dark.s*0.1 + shadow.s*0.2 + light.s*0.2 + glob.s*0.4) * 0.35;
   const lumAdj  = dark.lum*0.002 + shadow.lum*0.003 + light.lum*0.003 + glob.lum*0.005;
   const cgBright = Math.max(0.05, 1 + lumAdj + shadows*0.003 + highlights*0.002 + whites*0.003 + blacks*0.002);
   const cgCont  = Math.max(0.1,  1 + contrast*0.01);
   const cgSat   = Math.max(0,    1 + saturation*0.015 + wheelS);
-  const cgHue   = wheelH + (-temp*0.18) + (tint*0.08);
+  const cgHue   = (-temp*0.18) + (tint*0.08);
   const cgSepia = Math.min(temp > 0 ? temp*0.002 : 0, 0.25);
   // Combine into single CSS string — multiply brightness/contrast/sat, sum hue/sepia
   // This ensures bakeEditsToImageData reads one value per function (no duplicate regex issue)
@@ -6095,13 +6094,12 @@ function cgCurvesAreDefault() {
 
 function buildCGFilter() {
   const { dark, shadow, light, global: glob, temp, tint, contrast, saturation, shadows, highlights, blacks, whites } = CG_STATE;
-  const wheelH = dark.h*dark.s*0.02 + shadow.h*shadow.s*0.04 + light.h*light.s*0.04 + glob.h*glob.s*0.10;
   const wheelS = (dark.s*0.1 + shadow.s*0.2 + light.s*0.2 + glob.s*0.4) * 0.35;
   const lumAdj = dark.lum*0.002 + shadow.lum*0.003 + light.lum*0.003 + glob.lum*0.005;
   const brightness = Math.max(0.05, 1 + lumAdj + shadows*0.003 + highlights*0.002 + whites*0.003 + blacks*0.002);
   const cont = Math.max(0.1, 1 + contrast*0.01);
   const sat = Math.max(0, 1 + saturation*0.015 + wheelS);
-  const hue = wheelH + (-temp*0.18) + (tint*0.08);
+  const hue = (-temp*0.18) + (tint*0.08);
   const sepia = Math.min(temp>0?temp*0.002:0, 0.25);
   // Only apply SVG curve filter when curves are actually modified — the feComponentTransfer
   // has colour-space side-effects even at identity values, causing unwanted contrast/shift
@@ -6227,9 +6225,8 @@ function _applyGradeToHistogram(rawData, w, h) {
   const rLut=makeLut(L,R), gLut=makeLut(L,G), bLut=makeLut(L,B);
   const sat    = Math.max(0,    1 + saturation*0.015 + (dark.s*0.1 + shadow.s*0.2 + light.s*0.2 + glob.s*0.4)*0.35);
   const sepia  = Math.min(temp > 0 ? temp*0.002 : 0, 0.25); // mirrors buildCGFilter exactly
-  // Hue from wheels + temp/tint — CSS hue-rotate matrix
-  const wheelH = dark.h*dark.s*0.02 + shadow.h*shadow.s*0.04 + light.h*light.s*0.04 + glob.h*glob.s*0.10;
-  const hDeg = wheelH + (-temp*0.18) + (tint*0.08);
+  // Hue from temp/tint only — wheels don't contribute hue-rotate (wrong for zone-based color push)
+  const hDeg = (-temp*0.18) + (tint*0.08);
   const hr = hDeg * Math.PI / 180;
   const cos = Math.cos(hr), sin = Math.sin(hr);
   const m00=0.213+cos*0.787-sin*0.213, m01=0.715-cos*0.715-sin*0.715, m02=0.072-cos*0.072+sin*0.928;
