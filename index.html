@@ -3607,31 +3607,40 @@
           <div class="cg-section-label">Color Wheels</div>
           <div class="cg-wheels-row">
             <div class="cg-wheel-wrap">
-              <div class="cg-wheel-name-row"><div class="cg-wheel-name">Lift</div><button class="param-reset" onclick="resetCGWheel('lift')" title="Reset">&#8635;</button></div>
-              <div class="cg-wheel-container" id="cg-wc-lift">
-                <canvas class="cg-wheel" id="cg-wheel-lift" width="90" height="90"></canvas>
-                <div class="cg-wheel-dot" id="cg-dot-lift"></div>
+              <div class="cg-wheel-name-row"><div class="cg-wheel-name">Dark</div><button class="param-reset" onclick="resetCGWheel('dark')" title="Reset">&#8635;</button></div>
+              <div class="cg-wheel-container" id="cg-wc-dark">
+                <canvas class="cg-wheel" id="cg-wheel-dark" width="90" height="90"></canvas>
+                <div class="cg-wheel-dot" id="cg-dot-dark"></div>
               </div>
-              <input type="range" class="cg-lum-slider" id="cg-lum-lift" min="-100" max="100" value="0" oninput="onCGLumChange('lift',this.value)">
-              <span class="cg-lum-val" id="cg-lv-lift">0</span>
+              <input type="range" class="cg-lum-slider" id="cg-lum-dark" min="-100" max="100" value="0" oninput="onCGLumChange('dark',this.value)">
+              <span class="cg-lum-val" id="cg-lv-dark">0</span>
             </div>
             <div class="cg-wheel-wrap">
-              <div class="cg-wheel-name-row"><div class="cg-wheel-name">Gamma</div><button class="param-reset" onclick="resetCGWheel('gamma')" title="Reset">&#8635;</button></div>
-              <div class="cg-wheel-container" id="cg-wc-gamma">
-                <canvas class="cg-wheel" id="cg-wheel-gamma" width="90" height="90"></canvas>
-                <div class="cg-wheel-dot" id="cg-dot-gamma"></div>
+              <div class="cg-wheel-name-row"><div class="cg-wheel-name">Shadow</div><button class="param-reset" onclick="resetCGWheel('shadow')" title="Reset">&#8635;</button></div>
+              <div class="cg-wheel-container" id="cg-wc-shadow">
+                <canvas class="cg-wheel" id="cg-wheel-shadow" width="90" height="90"></canvas>
+                <div class="cg-wheel-dot" id="cg-dot-shadow"></div>
               </div>
-              <input type="range" class="cg-lum-slider" id="cg-lum-gamma" min="-100" max="100" value="0" oninput="onCGLumChange('gamma',this.value)">
-              <span class="cg-lum-val" id="cg-lv-gamma">0</span>
+              <input type="range" class="cg-lum-slider" id="cg-lum-shadow" min="-100" max="100" value="0" oninput="onCGLumChange('shadow',this.value)">
+              <span class="cg-lum-val" id="cg-lv-shadow">0</span>
             </div>
             <div class="cg-wheel-wrap">
-              <div class="cg-wheel-name-row"><div class="cg-wheel-name">Gain</div><button class="param-reset" onclick="resetCGWheel('gain')" title="Reset">&#8635;</button></div>
-              <div class="cg-wheel-container" id="cg-wc-gain">
-                <canvas class="cg-wheel" id="cg-wheel-gain" width="90" height="90"></canvas>
-                <div class="cg-wheel-dot" id="cg-dot-gain"></div>
+              <div class="cg-wheel-name-row"><div class="cg-wheel-name">Light</div><button class="param-reset" onclick="resetCGWheel('light')" title="Reset">&#8635;</button></div>
+              <div class="cg-wheel-container" id="cg-wc-light">
+                <canvas class="cg-wheel" id="cg-wheel-light" width="90" height="90"></canvas>
+                <div class="cg-wheel-dot" id="cg-dot-light"></div>
               </div>
-              <input type="range" class="cg-lum-slider" id="cg-lum-gain" min="-100" max="100" value="0" oninput="onCGLumChange('gain',this.value)">
-              <span class="cg-lum-val" id="cg-lv-gain">0</span>
+              <input type="range" class="cg-lum-slider" id="cg-lum-light" min="-100" max="100" value="0" oninput="onCGLumChange('light',this.value)">
+              <span class="cg-lum-val" id="cg-lv-light">0</span>
+            </div>
+            <div class="cg-wheel-wrap">
+              <div class="cg-wheel-name-row"><div class="cg-wheel-name">Global</div><button class="param-reset" onclick="resetCGWheel('global')" title="Reset">&#8635;</button></div>
+              <div class="cg-wheel-container" id="cg-wc-global">
+                <canvas class="cg-wheel" id="cg-wheel-global" width="90" height="90"></canvas>
+                <div class="cg-wheel-dot" id="cg-dot-global"></div>
+              </div>
+              <input type="range" class="cg-lum-slider" id="cg-lum-global" min="-100" max="100" value="0" oninput="onCGLumChange('global',this.value)">
+              <span class="cg-lum-val" id="cg-lv-global">0</span>
             </div>
           </div>
           <div class="cg-section-label" style="margin-top:1rem">Tone Curve</div>
@@ -5495,27 +5504,27 @@ const EDIT_PRESETS = {
   wedding: [
     { name: 'Airy Film',     e:18, c:-18, s:-5,  w:8,  h:-18, f:30,
       cg: { temp:12, tint:2, contrast:-8, saturation:-5, shadows:8, highlights:-12, blacks:12, whites:0,
-            lift:{h:-45,s:0.18,lum:6}, L:{p1:{x:42,y:87},mid:{x:75,y:70},p2:{x:108,y:34}} } },
+            shadow:{h:-45,s:0.18,lum:6}, L:{p1:{x:42,y:87},mid:{x:75,y:70},p2:{x:108,y:34}} } },
     { name: 'Dark Romance',  e:-16, c:15, s:5,   w:14, h:-20, f:5,
       cg: { temp:18, tint:-2, contrast:5, saturation:5, shadows:-8, highlights:-18, blacks:-5, whites:-8,
-            lift:{h:-45,s:0.28,lum:-3}, gain:{h:-45,s:0.18,lum:0}, L:{p1:{x:42,y:110},mid:{x:75,y:63},p2:{x:108,y:22}} } },
+            shadow:{h:-45,s:0.28,lum:-3}, light:{h:-45,s:0.18,lum:0}, L:{p1:{x:42,y:110},mid:{x:75,y:63},p2:{x:108,y:22}} } },
     { name: 'Blush & Ivory', e:16, c:-15, s:-15, w:12, h:-15, f:18,
       cg: { temp:8, tint:4, contrast:-8, saturation:-12, shadows:5, highlights:-10, blacks:8, whites:0,
-            lift:{h:-45,s:0.14,lum:4}, L:{p1:{x:42,y:90},mid:{x:75,y:71},p2:{x:108,y:36}} } },
+            shadow:{h:-45,s:0.14,lum:4}, L:{p1:{x:42,y:90},mid:{x:75,y:71},p2:{x:108,y:36}} } },
     { name: 'True Color',    e:5,  c:0,   s:3,   w:5,  h:-5,  f:2,
       cg: { temp:4, tint:0, contrast:0, saturation:0, shadows:0, highlights:-5, blacks:0, whites:0 } },
   ],
   portrait: [
     { name: 'True Life',     e:2,  c:2,   s:4,   w:5,  h:-4,  f:0,
       cg: { temp:5, tint:2, contrast:1, saturation:4, shadows:3, highlights:-5, blacks:1, whites:1,
-            gamma:{h:-45,s:0.09,lum:1},
+            global:{h:-45,s:0.09,lum:1},
             L:{p1:{x:42,y:102},mid:{x:75,y:65},p2:{x:108,y:28}} } },
     { name: 'Skin Glow',     e:10, c:-5,  s:5,   w:22, h:-12, f:8,
       cg: { temp:22, tint:4, contrast:-5, saturation:5, shadows:5, highlights:-10, blacks:5, whites:0,
-            gamma:{h:-45,s:0.22,lum:2}, L:{p1:{x:42,y:95},mid:{x:75,y:68},p2:{x:108,y:32}} } },
+            global:{h:-45,s:0.22,lum:2}, L:{p1:{x:42,y:95},mid:{x:75,y:68},p2:{x:108,y:32}} } },
     { name: 'Matte Cool',    e:5,  c:-12, s:-18, w:-18, h:0,  f:22,
       cg: { temp:-18, tint:3, contrast:-5, saturation:-12, shadows:8, highlights:-8, blacks:10, whites:-5,
-            lift:{h:180,s:0.28,lum:5}, L:{p1:{x:42,y:88},mid:{x:75,y:72},p2:{x:108,y:38}} } },
+            shadow:{h:180,s:0.28,lum:5}, L:{p1:{x:42,y:88},mid:{x:75,y:72},p2:{x:108,y:38}} } },
     { name: 'Editorial',     e:-3, c:15,  s:0,   w:-8, h:-8,  f:0,
       cg: { temp:-10, tint:0, contrast:8, saturation:-5, shadows:-5, highlights:-5, blacks:-2, whites:5,
             L:{p1:{x:42,y:108},mid:{x:75,y:62},p2:{x:108,y:22}} } },
@@ -5529,24 +5538,24 @@ const EDIT_PRESETS = {
             L:{p1:{x:42,y:115},mid:{x:75,y:62},p2:{x:108,y:18}} } },
     { name: 'Tokyo Night',   e:0,  c:15,  s:-10, w:-22, h:-15, f:0,
       cg: { temp:-28, tint:5, contrast:10, saturation:-5, shadows:-8, highlights:-10, blacks:-6, whites:0,
-            lift:{h:180,s:0.32,lum:-4}, L:{p1:{x:42,y:112},mid:{x:75,y:63},p2:{x:108,y:22}} } },
+            shadow:{h:180,s:0.32,lum:-4}, L:{p1:{x:42,y:112},mid:{x:75,y:63},p2:{x:108,y:22}} } },
     { name: 'Faded Ink',     e:5,  c:-15, s:-10, w:10, h:-5,  f:42,
       cg: { temp:14, tint:2, contrast:-8, saturation:-8, shadows:10, highlights:-10, blacks:12, whites:-5,
-            lift:{h:-45,s:0.18,lum:5}, L:{p1:{x:42,y:88},mid:{x:75,y:72},p2:{x:108,y:38}} } },
+            shadow:{h:-45,s:0.18,lum:5}, L:{p1:{x:42,y:88},mid:{x:75,y:72},p2:{x:108,y:38}} } },
     { name: 'Neon Drift',    e:-5, c:12,  s:22,  w:-14, h:-10, f:0,
       cg: { temp:-14, tint:0, contrast:8, saturation:12, shadows:-4, highlights:-8, blacks:-2, whites:0,
-            lift:{h:180,s:0.12,lum:-2} } },
+            shadow:{h:180,s:0.12,lum:-2} } },
   ],
   landscape: [
     { name: 'Fuji Vivid',    e:0,  c:15,  s:40,  w:8,  h:-14, f:0,
       cg: { temp:5, tint:0, contrast:8, saturation:28, shadows:-2, highlights:-10, blacks:0, whites:3,
-            gain:{h:-45,s:0.22,lum:0}, L:{p1:{x:42,y:110},mid:{x:75,y:63},p2:{x:108,y:22}} } },
+            light:{h:-45,s:0.22,lum:0}, L:{p1:{x:42,y:110},mid:{x:75,y:63},p2:{x:108,y:22}} } },
     { name: 'Nordic Cool',   e:-5, c:12,  s:8,   w:-38, h:-18, f:0,
       cg: { temp:-38, tint:5, contrast:8, saturation:5, shadows:-4, highlights:-8, blacks:0, whites:0,
-            lift:{h:180,s:0.18,lum:-2}, L:{p1:{x:42,y:110},mid:{x:75,y:64},p2:{x:108,y:24}} } },
+            shadow:{h:180,s:0.18,lum:-2}, L:{p1:{x:42,y:110},mid:{x:75,y:64},p2:{x:108,y:24}} } },
     { name: 'Golden Hour',   e:5,  c:8,   s:22,  w:45, h:-10, f:5,
       cg: { temp:40, tint:-4, contrast:5, saturation:12, shadows:0, highlights:-10, blacks:0, whites:0,
-            gain:{h:-45,s:0.30,lum:0}, lift:{h:-45,s:0.12,lum:0}, L:{p1:{x:42,y:104},mid:{x:75,y:63},p2:{x:108,y:24}} } },
+            light:{h:-45,s:0.30,lum:0}, shadow:{h:-45,s:0.12,lum:0}, L:{p1:{x:42,y:104},mid:{x:75,y:63},p2:{x:108,y:24}} } },
     { name: 'Moody Mist',    e:-8, c:8,   s:-14, w:-8, h:-22, f:12,
       cg: { temp:-14, tint:5, contrast:6, saturation:-10, shadows:-4, highlights:-16, blacks:-2, whites:-5,
             L:{p1:{x:42,y:110},mid:{x:75,y:66},p2:{x:108,y:28}} } },
@@ -5557,7 +5566,7 @@ const EDIT_PRESETS = {
             L:{p1:{x:42,y:98},mid:{x:75,y:63},p2:{x:108,y:22}} } },
     { name: 'Luxury Warm',   e:14, c:3,   s:-3,  w:14, h:-5,  f:5,
       cg: { temp:16, tint:2, contrast:3, saturation:-5, shadows:5, highlights:-8, blacks:3, whites:3,
-            gain:{h:-45,s:0.22,lum:0}, lift:{h:-45,s:0.1,lum:3}, L:{p1:{x:42,y:100},mid:{x:75,y:64},p2:{x:108,y:24}} } },
+            light:{h:-45,s:0.22,lum:0}, shadow:{h:-45,s:0.1,lum:3}, L:{p1:{x:42,y:100},mid:{x:75,y:64},p2:{x:108,y:24}} } },
     { name: 'Sony Crisp',    e:18, c:5,   s:-12, w:-16, h:-8, f:0,
       cg: { temp:-18, tint:0, contrast:6, saturation:-10, shadows:3, highlights:-5, blacks:0, whites:5,
             L:{p1:{x:42,y:106},mid:{x:75,y:64},p2:{x:108,y:23}} } },
@@ -5598,7 +5607,7 @@ function applyCGPreset(cg) {
     if (sv) sv.textContent = Math.round(val);
   });
   // Color wheels
-  ['lift','gamma','gain'].forEach(name => {
+  ['dark','shadow','light','global'].forEach(name => {
     const w = (cg && cg[name]) || defWheel;
     CG_STATE[name] = {h: w.h||0, s: w.s||0, lum: w.lum||0};
     const dot = document.getElementById('cg-dot-' + name);
@@ -5774,10 +5783,10 @@ function getProjectEditFilter() {
   const eHue    = -w * 0.3;
   const eSepia  = Math.min(w > 0 ? w*0.003 : 0, 0.35);
   // CG contributions
-  const { lift, gamma, gain, temp, tint, contrast, saturation, shadows, highlights, blacks, whites } = CG_STATE;
-  const wheelH  = lift.h*lift.s*0.2 + gamma.h*gamma.s*0.4 + gain.h*gain.s*0.2;
-  const wheelS  = (lift.s*0.25 + gamma.s*0.5 + gain.s*0.25) * 0.3;
-  const lumAdj  = lift.lum*0.002 + gamma.lum*0.005 + gain.lum*0.002;
+  const { dark, shadow, light, global: glob, temp, tint, contrast, saturation, shadows, highlights, blacks, whites } = CG_STATE;
+  const wheelH  = dark.h*dark.s*0.1 + shadow.h*shadow.s*0.2 + light.h*light.s*0.2 + glob.h*glob.s*0.5;
+  const wheelS  = (dark.s*0.1 + shadow.s*0.2 + light.s*0.2 + glob.s*0.4) * 0.35;
+  const lumAdj  = dark.lum*0.002 + shadow.lum*0.003 + light.lum*0.003 + glob.lum*0.005;
   const cgBright = Math.max(0.05, 1 + lumAdj + shadows*0.003 + highlights*0.002 + whites*0.003 + blacks*0.002);
   const cgCont  = Math.max(0.1,  1 + contrast*0.01);
   const cgSat   = Math.max(0,    1 + saturation*0.015 + wheelS);
@@ -5832,9 +5841,10 @@ async function resetEdits() {
 
 // ── Color Grade ────────────────────────────────────────────────
 const CG_STATE = {
-  lift:  { h: 0, s: 0, lum: 0 },
-  gamma: { h: 0, s: 0, lum: 0 },
-  gain:  { h: 0, s: 0, lum: 0 },
+  dark:   { h: 0, s: 0, lum: 0 },
+  shadow: { h: 0, s: 0, lum: 0 },
+  light:  { h: 0, s: 0, lum: 0 },
+  global: { h: 0, s: 0, lum: 0 },
   temp: 0, tint: 0, contrast: 0, saturation: 0,
   shadows: 0, highlights: 0, blacks: 0, whites: 0,
   curves: {
@@ -5879,7 +5889,7 @@ function setFilesView(mode, btn) {
 function toggleCGPanel() { /* no-op: panel always visible in edit mode */ }
 
 function initCG() {
-  ['lift','gamma','gain'].forEach(w => drawCGWheel(w));
+  ['dark','shadow','light','global'].forEach(w => drawCGWheel(w));
   initCGWheelDrag();
   initCGCurveDrag();
 }
@@ -5911,7 +5921,7 @@ function drawCGWheel(name) {
 }
 
 function initCGWheelDrag() {
-  ['lift','gamma','gain'].forEach(name => {
+  ['dark','shadow','light','global'].forEach(name => {
     const wc = document.getElementById('cg-wc-'+name);
     if (!wc) return;
     wc.addEventListener('mousedown', e => { _cgDragging=name; moveCGWheel(e,name); });
@@ -6079,10 +6089,10 @@ function updateChannelFilter() {
 }
 
 function buildCGFilter() {
-  const { lift, gamma, gain, temp, tint, contrast, saturation, shadows, highlights, blacks, whites } = CG_STATE;
-  const wheelH = lift.h*lift.s*0.2 + gamma.h*gamma.s*0.4 + gain.h*gain.s*0.2;
-  const wheelS = (lift.s*0.25 + gamma.s*0.5 + gain.s*0.25) * 0.3;
-  const lumAdj = lift.lum*0.002 + gamma.lum*0.005 + gain.lum*0.002;
+  const { dark, shadow, light, global: glob, temp, tint, contrast, saturation, shadows, highlights, blacks, whites } = CG_STATE;
+  const wheelH = dark.h*dark.s*0.1 + shadow.h*shadow.s*0.2 + light.h*light.s*0.2 + glob.h*glob.s*0.5;
+  const wheelS = (dark.s*0.1 + shadow.s*0.2 + light.s*0.2 + glob.s*0.4) * 0.35;
+  const lumAdj = dark.lum*0.002 + shadow.lum*0.003 + light.lum*0.003 + glob.lum*0.005;
   const brightness = Math.max(0.05, 1 + lumAdj + shadows*0.003 + highlights*0.002 + whites*0.003 + blacks*0.002);
   const cont = Math.max(0.1, 1 + contrast*0.01);
   const sat = Math.max(0, 1 + saturation*0.015 + wheelS);
@@ -6153,7 +6163,7 @@ function resetCGCurveChannel() {
 }
 
 function resetCG() {
-  ['lift','gamma','gain'].forEach(name => {
+  ['dark','shadow','light','global'].forEach(name => {
     CG_STATE[name]={h:0,s:0,lum:0};
     const dot=document.getElementById('cg-dot-'+name);
     if(dot){dot.style.left='40px';dot.style.top='40px';}
@@ -6187,8 +6197,8 @@ function resetCG() {
 let _cgHistCache = null;
 
 function _applyGradeToHistogram(rawData, w, h) {
-  const { lift, gamma, gain, temp, tint, contrast, saturation, shadows, highlights, blacks, whites } = CG_STATE;
-  const lumAdj = lift.lum*0.002 + gamma.lum*0.005 + gain.lum*0.002;
+  const { dark, shadow, light, global: glob, temp, tint, contrast, saturation, shadows, highlights, blacks, whites } = CG_STATE;
+  const lumAdj = dark.lum*0.002 + shadow.lum*0.003 + light.lum*0.003 + glob.lum*0.005;
   const bright = Math.max(0.05, 1 + lumAdj + shadows*0.003 + highlights*0.002 + whites*0.003 + blacks*0.002);
   const cont   = Math.max(0.1,  1 + contrast*0.01);
   // Build per-channel 256-entry LUTs from tone curves (L composed with each channel)
@@ -6205,10 +6215,10 @@ function _applyGradeToHistogram(rawData, w, h) {
     return lut;
   };
   const rLut=makeLut(L,R), gLut=makeLut(L,G), bLut=makeLut(L,B);
-  const sat    = Math.max(0,    1 + saturation*0.015 + (lift.s*0.25 + gamma.s*0.5 + gain.s*0.25)*0.3);
+  const sat    = Math.max(0,    1 + saturation*0.015 + (dark.s*0.1 + shadow.s*0.2 + light.s*0.2 + glob.s*0.4)*0.35);
   const sepia  = Math.min(temp > 0 ? temp*0.002 : 0, 0.25); // mirrors buildCGFilter exactly
   // Hue from wheels + temp/tint — CSS hue-rotate matrix
-  const wheelH = lift.h*lift.s*0.2 + gamma.h*gamma.s*0.4 + gain.h*gain.s*0.2;
+  const wheelH = dark.h*dark.s*0.1 + shadow.h*shadow.s*0.2 + light.h*light.s*0.2 + glob.h*glob.s*0.5;
   const hDeg = wheelH + (-temp*0.18) + (tint*0.08);
   const hr = hDeg * Math.PI / 180;
   const cos = Math.cos(hr), sin = Math.sin(hr);
@@ -6307,8 +6317,8 @@ async function drawCGHistogram() {
     ctx.beginPath(); ctx.moveTo(t*W,0); ctx.lineTo(t*W,H); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(0,t*H); ctx.lineTo(W,t*H); ctx.stroke();
   });
-  const { lift, gamma, gain } = CG_STATE;
-  const lumBright = 1 + lift.lum*0.002 + gamma.lum*0.005 + gain.lum*0.002;
+  const { dark, shadow, light, global: glob } = CG_STATE;
+  const lumBright = 1 + dark.lum*0.002 + shadow.lum*0.003 + light.lum*0.003 + glob.lum*0.005;
   const cont = 1 + CG_STATE.contrast*0.01;
   const spread = Math.max(0.3, Math.min(2.5, cont));
   // Per-channel shift from wheel hues
@@ -6317,22 +6327,23 @@ async function drawCGHistogram() {
     g: Math.cos((h-120)*Math.PI/180)*s*wt,
     b: Math.cos((h+120)*Math.PI/180)*s*wt,
   });
-  const lb=chBias(lift.h,  lift.s,  0.12);
-  const mb=chBias(gamma.h, gamma.s, 0.22);
-  const gb=chBias(gain.h,  gain.s,  0.12);
   // Per-channel curve midpoint deviation — sample each composed LUT at x=0.5
   let rCurve=0, gCurve=0, bCurve=0;
   try {
     const lL=buildCurveLUT(CG_STATE.curves.L), lR=buildCurveLUT(CG_STATE.curves.R);
     const lG=buildCurveLUT(CG_STATE.curves.G), lB=buildCurveLUT(CG_STATE.curves.B);
-    const midAt=(lLut,ch)=>{ const lv=lLut[3]+0.5*(lLut[4]-lLut[3]); const cx=lv*8, ci=Math.min(7,Math.floor(cx)), cf=cx-ci; return ch[ci]+cf*(ch[ci+1]-ch[ci]); };
+    const midAt=(lLut,ch)=>{ const lv=lLut[127]; const cx=lv*255, ci=Math.min(254,Math.floor(cx)), cf=cx-ci; return ch[ci]+cf*(ch[ci+1]-ch[ci]); };
     rCurve=(midAt(lL,lR)-0.5)*W*0.8;
     gCurve=(midAt(lL,lG)-0.5)*W*0.8;
     bCurve=(midAt(lL,lB)-0.5)*W*0.8;
   } catch(e) {}
-  const rOff=(lumBright-1+lb.r+mb.r+gb.r)*40 + rCurve;
-  const gOff=(lumBright-1+lb.g+mb.g+gb.g)*40 + gCurve;
-  const bOff=(lumBright-1+lb.b+mb.b+gb.b)*40 + bCurve;
+  const db=chBias(dark.h,   dark.s,   0.06);
+  const sb=chBias(shadow.h, shadow.s, 0.14);
+  const lb=chBias(light.h,  light.s,  0.14);
+  const glb=chBias(glob.h,  glob.s,   0.35);
+  const rOff=(lumBright-1+db.r+sb.r+lb.r+glb.r)*40 + rCurve;
+  const gOff=(lumBright-1+db.g+sb.g+lb.g+glb.g)*40 + gCurve;
+  const bOff=(lumBright-1+db.b+sb.b+lb.b+glb.b)*40 + bCurve;
   [{color:'rgba(192,57,43,0.7)',off:rOff},{color:'rgba(39,174,96,0.7)',off:gOff},{color:'rgba(41,128,185,0.7)',off:bOff}]
     .forEach(({color,off})=>{
       ctx.beginPath(); ctx.moveTo(0,H);
