@@ -3550,9 +3550,10 @@
         <div class="esp-body">
           <div class="edit-genre-tabs">
             <button class="edit-genre-tab active" onclick="setEditGenre('wedding',this)">Wedding</button>
-            <button class="edit-genre-tab" onclick="setEditGenre('engagement',this)">Engagement</button>
-            <button class="edit-genre-tab" onclick="setEditGenre('realestate',this)">Real Estate</button>
+            <button class="edit-genre-tab" onclick="setEditGenre('portrait',this)">Portrait</button>
+            <button class="edit-genre-tab" onclick="setEditGenre('street',this)">Street</button>
             <button class="edit-genre-tab" onclick="setEditGenre('landscape',this)">Landscape</button>
+            <button class="edit-genre-tab" onclick="setEditGenre('realestate',this)">Real Estate</button>
           </div>
           <div class="edit-preset-chips" id="edit-preset-chips"></div>
           <div class="edit-sliders-grid">
@@ -5492,24 +5493,34 @@ function toggleEspSection(btn) {
 // ── Photo Presets & Color Grading ──────────────────────────────
 const EDIT_PRESETS = {
   wedding: [
-    { name: 'Canon Warm',  e:8,  c:-8,  s:12, w:30, h:-10, f:15 },
-    { name: 'Film Fade',   e:5,  c:-15, s:5,  w:15, h:-20, f:35 },
-    { name: 'Clean White', e:20, c:-5,  s:8,  w:10, h:0,   f:5  },
+    { name: 'Airy Film',     e:20,  c:-25, s:-10, w:12,  h:-28, f:40 },
+    { name: 'Dark Romance',  e:-14, c:20,  s:10,  w:28,  h:-32, f:5  },
+    { name: 'Blush & Ivory', e:24,  c:-18, s:-18, w:20,  h:-22, f:18 },
+    { name: 'True Color',    e:8,   c:5,   s:8,   w:8,   h:-8,  f:3  },
   ],
-  engagement: [
-    { name: 'Romantic Rose', e:12, c:-12, s:8,  w:20, h:-15, f:20 },
-    { name: 'Airy Light',    e:25, c:-18, s:0,  w:10, h:-10, f:25 },
-    { name: 'Golden Hour',   e:8,  c:5,   s:20, w:45, h:-5,  f:10 },
+  portrait: [
+    { name: 'Skin Glow',     e:15,  c:-8,  s:10,  w:30,  h:-14, f:8  },
+    { name: 'Matte Cool',    e:5,   c:-12, s:-22, w:-28, h:0,   f:28 },
+    { name: 'Editorial',     e:-5,  c:32,  s:-12, w:-18, h:-12, f:0  },
+    { name: 'Soft Haze',     e:28,  c:-28, s:-8,  w:8,   h:-32, f:22 },
   ],
-  realestate: [
-    { name: 'Sony Clean',    e:15, c:20, s:-10, w:-15, h:-5, f:0 },
-    { name: 'Bright & Airy', e:25, c:5,  s:-5,  w:-5,  h:0,  f:0 },
-    { name: 'High Contrast', e:10, c:35, s:0,   w:-10, h:-10, f:0 },
+  street: [
+    { name: 'Silver Grain',  e:-5,  c:28,  s:-82, w:0,   h:-10, f:18 },
+    { name: 'Tokyo Night',   e:0,   c:40,  s:-15, w:-32, h:-20, f:0  },
+    { name: 'Faded Ink',     e:5,   c:-18, s:-12, w:12,  h:-5,  f:50 },
+    { name: 'Neon Drift',    e:-5,  c:22,  s:32,  w:-22, h:-15, f:0  },
   ],
   landscape: [
-    { name: 'Rich & Punchy', e:-5, c:25, s:40, w:5,   h:-20, f:0 },
-    { name: 'Mountain Blue', e:0,  c:20, s:30, w:-25, h:-10, f:0 },
-    { name: 'Golden Greens', e:5,  c:15, s:35, w:20,  h:-15, f:5 },
+    { name: 'Fuji Vivid',    e:0,   c:30,  s:52,  w:12,  h:-16, f:0  },
+    { name: 'Nordic Cool',   e:-5,  c:24,  s:14,  w:-48, h:-20, f:0  },
+    { name: 'Golden Hour',   e:5,   c:12,  s:32,  w:58,  h:-12, f:5  },
+    { name: 'Moody Mist',    e:-8,  c:15,  s:-18, w:-12, h:-28, f:14 },
+  ],
+  realestate: [
+    { name: 'MLS Bright',    e:28,  c:8,   s:-12, w:-8,  h:-12, f:0  },
+    { name: 'Luxury Warm',   e:15,  c:12,  s:-5,  w:18,  h:-5,  f:5  },
+    { name: 'Sony Crisp',    e:18,  c:25,  s:-18, w:-22, h:-8,  f:0  },
+    { name: 'Natural',       e:10,  c:0,   s:0,   w:5,   h:-5,  f:2  },
   ],
 };
 let _activeEditGenre = 'wedding';
