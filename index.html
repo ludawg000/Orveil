@@ -4619,7 +4619,14 @@ function renderGalleryGrid(layout) {
       </div>`;
     }
     const ef = f.edit_settings || galleryEditFilter;
-    const filterAttr = ef ? ` style="filter:${ef}"` : '';
+    let filterAttr = '';
+    if (ef) {
+      try {
+        const ed = JSON.parse(ef);
+        const cleanCss = (ed.css||'').replace(/url\([^)]*\)\s*/g,'');
+        filterAttr = cleanCss ? ` style="filter:${cleanCss}"` : '';
+      } catch { filterAttr = ` style="filter:${ef.replace(/url\([^)]*\)\s*/g,'')}"`;  }
+    }
     return `<div class="gallery-item" onclick="openLightbox(${i})">
       <img src="${f.publicUrl}" alt="${escHtml(f.name)}" loading="lazy"${filterAttr}>
       <div class="gallery-item-overlay">
@@ -4690,7 +4697,11 @@ function updateSlideshow() {
       media.innerHTML = `<video class="slideshow-video" src="${f.publicUrl}" controls></video>`;
     } else {
       const ssEf = f.edit_settings || galleryEditFilter;
-      const ssFilter = ssEf ? ` style="filter:${ssEf}"` : '';
+      let ssFilter = '';
+      if (ssEf) {
+        try { const ed=JSON.parse(ssEf); const c=(ed.css||'').replace(/url\([^)]*\)\s*/g,''); ssFilter=c?` style="filter:${c}"`:''; }
+        catch { ssFilter=` style="filter:${ssEf.replace(/url\([^)]*\)\s*/g,'')}"`;  }
+      }
       media.innerHTML = `<img class="slideshow-img" src="${f.publicUrl}" alt="${escHtml(f.name)}" onclick="openLightbox(${slideshowIndex})"${ssFilter}>`;
     }
     media.style.opacity = '1';
@@ -4803,7 +4814,11 @@ function renderLightbox() {
     media.innerHTML = `<video class="lightbox-video" src="${f.publicUrl}" controls autoplay></video>`;
   } else {
     const lbEf = f.edit_settings || galleryEditFilter;
-    const lbFilter = lbEf ? ` style="filter:${lbEf}"` : '';
+    let lbFilter = '';
+    if (lbEf) {
+      try { const ed=JSON.parse(lbEf); const c=(ed.css||'').replace(/url\([^)]*\)\s*/g,''); lbFilter=c?` style="filter:${c}"`:''; }
+      catch { lbFilter=` style="filter:${lbEf.replace(/url\([^)]*\)\s*/g,'')}"`;  }
+    }
     media.innerHTML = `<img class="lightbox-img" src="${f.publicUrl}" alt="${escHtml(f.name)}"${lbFilter}>`;
   }
   document.getElementById('lightbox-counter').textContent = `${lightboxIndex + 1} / ${galleryFiles.length}`;
@@ -4822,49 +4837,77 @@ function lightboxDownload() {
   downloadFile(f.publicUrl, f.name, lightboxIndex);
 }
 
+// Parse edit_settings JSON and apply to ImageData pixel-by-pixel (for baked downloads)
+function bakeEditsToImageData(imageData, editData) {
+  if (!editData) return;
+  const d = imageData.data;
+  const css = editData.css || '';
+  const getVal = (fn, def) => { const m = css.match(new RegExp(fn.replace('(','\\(') + '\\(([^)]+)\\)')); return m ? parseFloat(m[1]) : def; };
+  const bright = getVal('brightness', 1);
+  const cont   = getVal('contrast', 1);
+  const sat    = getVal('saturate', 1);
+  const hDeg   = getVal('hue-rotate', 0);
+  const sep    = getVal('sepia', 0);
+  // Build per-channel curve LUTs
+  let rLut=null, gLut=null, bLut=null;
+  const curves = editData.curves;
+  if (curves?.L && curves?.R && curves?.G && curves?.B) {
+    const L=buildCurveLUT(curves.L), R=buildCurveLUT(curves.R);
+    const G=buildCurveLUT(curves.G), B=buildCurveLUT(curves.B);
+    const mk=(lL,ch)=>{ const lut=new Float32Array(256); for(let i=0;i<256;i++){const v=i/255,lx=v*8,li=Math.min(7,Math.floor(lx)),lf=lx-li,lv=lL[li]+lf*(lL[li+1]-lL[li]),cx=lv*8,ci=Math.min(7,Math.floor(cx)),cf=cx-ci;lut[i]=Math.max(0,Math.min(1,ch[ci]+cf*(ch[ci+1]-ch[ci])));} return lut; };
+    rLut=mk(L,R); gLut=mk(L,G); bLut=mk(L,B);
+  }
+  const hr=hDeg*Math.PI/180, cos=Math.cos(hr), sin=Math.sin(hr);
+  const m00=0.213+cos*0.787-sin*0.213, m01=0.715-cos*0.715-sin*0.715, m02=0.072-cos*0.072+sin*0.928;
+  const m10=0.213-cos*0.213+sin*0.143, m11=0.715+cos*0.285+sin*0.140, m12=0.072-cos*0.072-sin*0.283;
+  const m20=0.213-cos*0.213-sin*0.787, m21=0.715-cos*0.715+sin*0.715, m22=0.072+cos*0.928+sin*0.072;
+  const cl=v=>v<0?0:v>1?1:v;
+  for (let i=0; i<d.length; i+=4) {
+    let r=rLut?rLut[d[i]]:d[i]/255, g=gLut?gLut[d[i+1]]:d[i+1]/255, b=bLut?bLut[d[i+2]]:d[i+2]/255;
+    r=cl(r*bright); g=cl(g*bright); b=cl(b*bright);
+    r=cl((r-0.5)*cont+0.5); g=cl((g-0.5)*cont+0.5); b=cl((b-0.5)*cont+0.5);
+    const lm=0.2126*r+0.7152*g+0.0722*b;
+    r=cl(lm+(r-lm)*sat); g=cl(lm+(g-lm)*sat); b=cl(lm+(b-lm)*sat);
+    let nr=cl(m00*r+m01*g+m02*b), ng=cl(m10*r+m11*g+m12*b), nb=cl(m20*r+m21*g+m22*b);
+    if (sep>0) { const sr=cl(nr*(1-sep*0.607)+ng*(sep*0.769)+nb*(sep*0.189)),sg=cl(nr*(sep*0.349)+ng*(1-sep*0.314)+nb*(sep*0.168)),sbv=cl(nr*(sep*0.272)+ng*(sep*0.534)+nb*(1-sep*0.869)); nr=sr;ng=sg;nb=sbv; }
+    d[i]=Math.round(nr*255); d[i+1]=Math.round(ng*255); d[i+2]=Math.round(nb*255);
+  }
+}
+
 async function downloadFile(url, filename, fileIndexOrFilter) {
-  // Resolve the edit filter for this specific file
-  let editFilter = '';
+  let editData = null;
   if (typeof fileIndexOrFilter === 'number') {
     const gf = galleryFiles[fileIndexOrFilter];
-    editFilter = (gf && gf.edit_settings) || galleryEditFilter || '';
+    const ef = (gf && gf.edit_settings) || galleryEditFilter || '';
+    if (ef) { try { editData = JSON.parse(ef); } catch { editData = { css: ef.replace(/url\([^)]*\)\s*/g,'') }; } }
   } else if (typeof fileIndexOrFilter === 'string') {
-    editFilter = fileIndexOrFilter;
+    try { editData = JSON.parse(fileIndexOrFilter); } catch { editData = { css: fileIndexOrFilter.replace(/url\([^)]*\)\s*/g,'') }; }
   }
-
   try {
-    if (editFilter) {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = url + (url.includes('?') ? '&' : '?') + '_dl=' + Date.now(); });
-      const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth;
-      canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.filter = editFilter;
-      ctx.drawImage(img, 0, 0);
-      canvas.toBlob(blob => {
-        const blobUrl = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = blobUrl;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        URL.revokeObjectURL(blobUrl);
-        a.remove();
-      }, 'image/jpeg', 0.95);
-    } else {
-      const resp = await fetch(url);
-      const blob = await resp.blob();
-      const blobUrl = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = blobUrl;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      URL.revokeObjectURL(blobUrl);
-      a.remove();
+    // Fetch as blob to avoid CORS canvas taint
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error('fetch failed');
+    const blob = await resp.blob();
+    const objUrl = URL.createObjectURL(blob);
+    const img = new Image();
+    await new Promise((res, rej) => { img.onload=res; img.onerror=rej; img.src=objUrl; });
+    URL.revokeObjectURL(objUrl);
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    if (editData) {
+      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      bakeEditsToImageData(imgData, editData);
+      ctx.putImageData(imgData, 0, 0);
     }
+    canvas.toBlob(dlBlob => {
+      const blobUrl = URL.createObjectURL(dlBlob);
+      const a = document.createElement('a');
+      a.href = blobUrl; a.download = filename;
+      document.body.appendChild(a); a.click();
+      URL.revokeObjectURL(blobUrl); a.remove();
+    }, 'image/jpeg', 0.95);
   } catch {
     window.open(url, '_blank');
   }
@@ -5615,7 +5658,22 @@ function applyEditsToSelected() {
 
 function getProjectEditFilter() {
   const { e, c, s, w, h, f } = getSliderValues();
-  return buildEditorFilter(e, c, s, w, h, f) + ' ' + buildCGFilter();
+  // CSS-only filter (no url() reference — portable across gallery/download contexts)
+  const { lift, gamma, gain, temp, tint, contrast, saturation, shadows, highlights, blacks, whites } = CG_STATE;
+  const wheelH = lift.h*lift.s*0.2 + gamma.h*gamma.s*0.4 + gain.h*gain.s*0.2;
+  const wheelS = (lift.s*0.25 + gamma.s*0.5 + gain.s*0.25) * 0.3;
+  const lumAdj = lift.lum*0.002 + gamma.lum*0.005 + gain.lum*0.002;
+  const brightness = Math.max(0.05, 1 + lumAdj + shadows*0.003 + highlights*0.002 + whites*0.003 + blacks*0.002);
+  const cont = Math.max(0.1, 1 + contrast*0.01);
+  const sat = Math.max(0, 1 + saturation*0.015 + wheelS);
+  const hue = wheelH + (-temp*0.18) + (tint*0.08);
+  const sepia = Math.min(temp>0?temp*0.002:0, 0.25);
+  const cgCss = `brightness(${brightness.toFixed(3)}) contrast(${cont.toFixed(3)}) saturate(${sat.toFixed(3)}) hue-rotate(${hue.toFixed(1)}deg) sepia(${sepia.toFixed(3)})`;
+  const editorCss = buildEditorFilter(e, c, s, w, h, f);
+  return JSON.stringify({
+    css: editorCss + ' ' + cgCss,
+    curves: JSON.parse(JSON.stringify(CG_STATE.curves))
+  });
 }
 
 async function saveEditsToFiles(allFiles) {
