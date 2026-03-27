@@ -5812,7 +5812,7 @@ function applyEditsToAll() {
   saveEditsToFiles(true);
 }
 
-function resetEdits() {
+async function resetEdits() {
   document.querySelectorAll('#files-grid .file-thumb img').forEach(img => { img.style.filter = ''; });
   ['exposure','contrast','saturation','warmth','highlights','fade'].forEach(key => {
     const sl = document.getElementById('sl-' + key);
@@ -5821,7 +5821,13 @@ function resetEdits() {
     if (sv) sv.textContent = 0;
   });
   _activePresetName = null;
+  applyCGPreset(null);
   renderPresetChips();
+  // Clear saved edit_settings from DB so they don't reappear on reload
+  if (currentProject?.id) {
+    await dbUpdate('files', { edit_settings: null }, `project_id=eq.${currentProject.id}`);
+    projectFiles.forEach(f => { f.edit_settings = null; });
+  }
 }
 
 // ── Color Grade ────────────────────────────────────────────────
