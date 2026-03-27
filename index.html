@@ -4913,9 +4913,10 @@ async function _toBlobForIndex(idx) {
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
   const rawBlob = await resp.blob();
 
-  // Resolve MIME — Supabase can return application/octet-stream
-  const mime = (rawBlob.type && rawBlob.type !== 'application/octet-stream')
-    ? rawBlob.type : (_mimeFromName(gf.name) || 'image/jpeg');
+  // Resolve MIME — use DB type first (reliable), then blob, then path/name extension
+  const mime = (gf.type && !gf.type.includes('octet-stream')) ? gf.type
+    : (rawBlob.type && rawBlob.type !== 'application/octet-stream') ? rawBlob.type
+    : (_mimeFromName(gf.path) || _mimeFromName(gf.name) || 'image/jpeg');
 
   // No edits → return raw blob immediately, no canvas (saves all memory on mobile)
   const ef = gf.edit_settings || galleryEditFilter || '';
@@ -6870,7 +6871,10 @@ function startInlineRename(e, fileId) {
   input.select();
 
   async function commit() {
-    const newName = input.value.trim() || original;
+    let newName = input.value.trim() || original;
+    // Preserve original extension if user didn't type one
+    const origExt = original.includes('.') ? original.slice(original.lastIndexOf('.')) : '';
+    if (origExt && !newName.toLowerCase().endsWith(origExt.toLowerCase())) newName += origExt;
     nameEl.textContent = newName;
     if (newName !== original) {
       await dbUpdate('files', { name: newName }, `id=eq.${fileId}`);
