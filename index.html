@@ -1981,6 +1981,19 @@
   .esp-body .cg-sl { flex: 1; min-width: 0; }
   .esp-body .cg-sl-track-wrap { flex: 1; min-width: 0; }
   .cg-panel-actions { display: flex; gap: 0.5rem; margin-top: 0.8rem; }
+  /* DaVinci-style per-param reset icon */
+  .param-reset {
+    opacity: 0; cursor: pointer; color: #555; flex-shrink: 0;
+    width: 10px; height: 10px; transition: opacity 0.12s, color 0.12s;
+    background: none; border: none; padding: 0; display: flex; align-items: center;
+  }
+  .cg-sl-row:hover .param-reset,
+  .edit-slider-row:hover .param-reset,
+  .cg-wheel-wrap:hover .param-reset,
+  .cg-curve-channels:hover .param-reset { opacity: 1; }
+  .param-reset:hover { color: #fff; }
+  .cg-wheel-wrap { position: relative; }
+  .cg-wheel-name-row { display: flex; align-items: center; justify-content: center; gap: 4px; }
 
   /* FILES GRID */
   .files-grid {
@@ -3547,31 +3560,37 @@
               <label class="edit-slider-label">Exposure</label>
               <input type="range" class="edit-slider" id="sl-exposure" min="-100" max="100" value="0" oninput="onSliderInput('exposure',this.value)">
               <span class="edit-slider-val" id="sv-exposure">0</span>
+              <button class="param-reset" onclick="resetSl('exposure')" title="Reset">&#8635;</button>
             </div>
             <div class="edit-slider-row">
               <label class="edit-slider-label">Warmth</label>
               <input type="range" class="edit-slider" id="sl-warmth" min="-100" max="100" value="0" oninput="onSliderInput('warmth',this.value)">
               <span class="edit-slider-val" id="sv-warmth">0</span>
+              <button class="param-reset" onclick="resetSl('warmth')" title="Reset">&#8635;</button>
             </div>
             <div class="edit-slider-row">
               <label class="edit-slider-label">Contrast</label>
               <input type="range" class="edit-slider" id="sl-contrast" min="-100" max="100" value="0" oninput="onSliderInput('contrast',this.value)">
               <span class="edit-slider-val" id="sv-contrast">0</span>
+              <button class="param-reset" onclick="resetSl('contrast')" title="Reset">&#8635;</button>
             </div>
             <div class="edit-slider-row">
               <label class="edit-slider-label">Highlights</label>
               <input type="range" class="edit-slider" id="sl-highlights" min="-100" max="100" value="0" oninput="onSliderInput('highlights',this.value)">
               <span class="edit-slider-val" id="sv-highlights">0</span>
+              <button class="param-reset" onclick="resetSl('highlights')" title="Reset">&#8635;</button>
             </div>
             <div class="edit-slider-row">
               <label class="edit-slider-label">Saturation</label>
               <input type="range" class="edit-slider" id="sl-saturation" min="-100" max="100" value="0" oninput="onSliderInput('saturation',this.value)">
               <span class="edit-slider-val" id="sv-saturation">0</span>
+              <button class="param-reset" onclick="resetSl('saturation')" title="Reset">&#8635;</button>
             </div>
             <div class="edit-slider-row">
               <label class="edit-slider-label">Fade</label>
               <input type="range" class="edit-slider" id="sl-fade" min="0" max="100" value="0" oninput="onSliderInput('fade',this.value)">
               <span class="edit-slider-val" id="sv-fade">0</span>
+              <button class="param-reset" onclick="resetSl('fade')" title="Reset">&#8635;</button>
             </div>
           </div>
           <div class="edit-tb-actions">
@@ -3587,7 +3606,7 @@
           <div class="cg-section-label">Color Wheels</div>
           <div class="cg-wheels-row">
             <div class="cg-wheel-wrap">
-              <div class="cg-wheel-name">Lift</div>
+              <div class="cg-wheel-name-row"><div class="cg-wheel-name">Lift</div><button class="param-reset" onclick="resetCGWheel('lift')" title="Reset">&#8635;</button></div>
               <div class="cg-wheel-container" id="cg-wc-lift">
                 <canvas class="cg-wheel" id="cg-wheel-lift" width="90" height="90"></canvas>
                 <div class="cg-wheel-dot" id="cg-dot-lift"></div>
@@ -3596,7 +3615,7 @@
               <span class="cg-lum-val" id="cg-lv-lift">0</span>
             </div>
             <div class="cg-wheel-wrap">
-              <div class="cg-wheel-name">Gamma</div>
+              <div class="cg-wheel-name-row"><div class="cg-wheel-name">Gamma</div><button class="param-reset" onclick="resetCGWheel('gamma')" title="Reset">&#8635;</button></div>
               <div class="cg-wheel-container" id="cg-wc-gamma">
                 <canvas class="cg-wheel" id="cg-wheel-gamma" width="90" height="90"></canvas>
                 <div class="cg-wheel-dot" id="cg-dot-gamma"></div>
@@ -3605,7 +3624,7 @@
               <span class="cg-lum-val" id="cg-lv-gamma">0</span>
             </div>
             <div class="cg-wheel-wrap">
-              <div class="cg-wheel-name">Gain</div>
+              <div class="cg-wheel-name-row"><div class="cg-wheel-name">Gain</div><button class="param-reset" onclick="resetCGWheel('gain')" title="Reset">&#8635;</button></div>
               <div class="cg-wheel-container" id="cg-wc-gain">
                 <canvas class="cg-wheel" id="cg-wheel-gain" width="90" height="90"></canvas>
                 <div class="cg-wheel-dot" id="cg-dot-gain"></div>
@@ -3621,6 +3640,7 @@
               <button class="cg-ch-btn" onclick="setCGChannel(this,'#c0392b','R')" style="color:#c0392b">R</button>
               <button class="cg-ch-btn" onclick="setCGChannel(this,'#27ae60','G')" style="color:#27ae60">G</button>
               <button class="cg-ch-btn" onclick="setCGChannel(this,'#2980b9','B')" style="color:#2980b9">B</button>
+              <button class="param-reset" onclick="resetCGCurveChannel()" title="Reset channel" style="margin-left:4px">&#8635;</button>
             </div>
             <svg id="cg-curve-svg" width="150" height="130" viewBox="0 0 150 130" style="display:block;width:100%;max-width:260px;">
               <rect x="10" y="10" width="130" height="110" fill="#f8f8f6" rx="1"/>
@@ -3646,6 +3666,7 @@
                 <input type="range" class="cg-sl cg-sl-color" id="cg-temp" min="-100" max="100" value="0" oninput="onCGSl('temp',this.value)">
               </div>
               <span class="cg-sl-val" id="cg-sv-temp">0</span>
+              <button class="param-reset" onclick="resetCGSl('temp')" title="Reset">&#8635;</button>
             </div>
             <div class="cg-sl-row">
               <label class="cg-sl-label">Tint</label>
@@ -3653,36 +3674,43 @@
                 <input type="range" class="cg-sl cg-sl-color" id="cg-tint" min="-100" max="100" value="0" oninput="onCGSl('tint',this.value)">
               </div>
               <span class="cg-sl-val" id="cg-sv-tint">0</span>
+              <button class="param-reset" onclick="resetCGSl('tint')" title="Reset">&#8635;</button>
             </div>
             <div class="cg-sl-row">
               <label class="cg-sl-label">Contrast</label>
               <input type="range" class="cg-sl" id="cg-contrast" min="-100" max="100" value="0" oninput="onCGSl('contrast',this.value)">
               <span class="cg-sl-val" id="cg-sv-contrast">0</span>
+              <button class="param-reset" onclick="resetCGSl('contrast')" title="Reset">&#8635;</button>
             </div>
             <div class="cg-sl-row">
               <label class="cg-sl-label">Saturation</label>
               <input type="range" class="cg-sl" id="cg-saturation" min="-100" max="100" value="0" oninput="onCGSl('saturation',this.value)">
               <span class="cg-sl-val" id="cg-sv-saturation">0</span>
+              <button class="param-reset" onclick="resetCGSl('saturation')" title="Reset">&#8635;</button>
             </div>
             <div class="cg-sl-row">
               <label class="cg-sl-label">Shadows</label>
               <input type="range" class="cg-sl" id="cg-shadows" min="-100" max="100" value="0" oninput="onCGSl('shadows',this.value)">
               <span class="cg-sl-val" id="cg-sv-shadows">0</span>
+              <button class="param-reset" onclick="resetCGSl('shadows')" title="Reset">&#8635;</button>
             </div>
             <div class="cg-sl-row">
               <label class="cg-sl-label">Highlights</label>
               <input type="range" class="cg-sl" id="cg-highlights" min="-100" max="100" value="0" oninput="onCGSl('highlights',this.value)">
               <span class="cg-sl-val" id="cg-sv-highlights">0</span>
+              <button class="param-reset" onclick="resetCGSl('highlights')" title="Reset">&#8635;</button>
             </div>
             <div class="cg-sl-row">
               <label class="cg-sl-label">Blacks</label>
               <input type="range" class="cg-sl" id="cg-blacks" min="-100" max="100" value="0" oninput="onCGSl('blacks',this.value)">
               <span class="cg-sl-val" id="cg-sv-blacks">0</span>
+              <button class="param-reset" onclick="resetCGSl('blacks')" title="Reset">&#8635;</button>
             </div>
             <div class="cg-sl-row">
               <label class="cg-sl-label">Whites</label>
               <input type="range" class="cg-sl" id="cg-whites" min="-100" max="100" value="0" oninput="onCGSl('whites',this.value)">
               <span class="cg-sl-val" id="cg-sv-whites">0</span>
+              <button class="param-reset" onclick="resetCGSl('whites')" title="Reset">&#8635;</button>
             </div>
           </div>
           <div class="cg-section-label" style="margin-top:1rem">Histogram</div>
@@ -5902,6 +5930,47 @@ function applyCGToAll() {
   const filter = buildCGFilter();
   document.querySelectorAll('#files-grid .file-thumb img').forEach(img => { img.style.filter = filter; });
   saveEditsToFiles(true);
+}
+
+function resetSl(key) {
+  const sl = document.getElementById('sl-' + key);
+  const sv = document.getElementById('sv-' + key);
+  if (sl) sl.value = 0;
+  if (sv) sv.textContent = 0;
+  previewEditsOnSelected();
+  debouncedSaveEdits();
+  drawCGHistogram();
+}
+
+function resetCGSl(key) {
+  CG_STATE[key] = 0;
+  const sl = document.getElementById('cg-' + key);
+  const sv = document.getElementById('cg-sv-' + key);
+  if (sl) sl.value = 0;
+  if (sv) sv.textContent = 0;
+  onCGChange();
+}
+
+function resetCGWheel(name) {
+  CG_STATE[name] = {h:0, s:0, lum:0};
+  const dot = document.getElementById('cg-dot-' + name);
+  if (dot) { dot.style.left = '40px'; dot.style.top = '40px'; }
+  const sl = document.getElementById('cg-lum-' + name);
+  if (sl) sl.value = 0;
+  const lv = document.getElementById('cg-lv-' + name);
+  if (lv) lv.textContent = 0;
+  onCGChange();
+}
+
+function resetCGCurveChannel() {
+  const ch = CG_STATE.activeChannel;
+  CG_STATE.curves[ch] = {p1:{x:42,y:103}, mid:{x:75,y:65}, p2:{x:108,y:27}};
+  const cp1=document.getElementById('cg-cp1'), cp2=document.getElementById('cg-cp2'), cp3=document.getElementById('cg-cp3');
+  if (cp1) { cp1.setAttribute('cx',75); cp1.setAttribute('cy',65); }
+  if (cp2) { cp2.setAttribute('cx',42); cp2.setAttribute('cy',103); }
+  if (cp3) { cp3.setAttribute('cx',108); cp3.setAttribute('cy',27); }
+  updateCGCurvePath();
+  onCGChange();
 }
 
 function resetCG() {
