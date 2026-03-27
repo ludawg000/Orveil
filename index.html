@@ -2715,10 +2715,16 @@
     color: var(--gal-accent, var(--white)); -webkit-text-fill-color: var(--gal-accent, #fafafa); background: none;
     border: 1px solid; border-color: var(--gal-accent, rgba(255,255,255,0.2)); opacity: 0.8;
     padding: 0.8rem 2.2rem; cursor: pointer;
-    transition: all 0.3s ease;
+    transition: opacity 0.3s ease;
+    -webkit-appearance: none; appearance: none;
   }
-  .gallery-download-all:hover {
-    background: var(--gal-accent, var(--white)); color: var(--gal-bg, var(--black)); opacity: 1;
+  .gallery-download-all:hover { opacity: 1; }
+  .gallery-download-all:disabled {
+    opacity: 0.6; cursor: default;
+    background: none !important;
+    color: var(--gal-accent, var(--white)) !important;
+    -webkit-text-fill-color: var(--gal-accent, #fafafa) !important;
+    border-color: var(--gal-accent, rgba(255,255,255,0.2)) !important;
   }
   .gallery-dl-progress {
     width: 160px; height: 2px; background: rgba(255,255,255,0.15); margin: 0.8rem auto 0; border-radius: 1px; overflow: hidden;
