@@ -5501,6 +5501,7 @@ function onSliderInput(key, val) {
   renderPresetChips();
   previewEditsOnSelected();
   debouncedSaveEdits();
+  drawCGHistogram();
 }
 
 function getSliderValues() {
@@ -6046,7 +6047,7 @@ async function drawCGHistogram() {
     } catch(e) { /* CORS blocked — simulation below */ }
   }
 
-  // Simulation fallback — per-channel offsets from wheel hue/sat
+  // Simulation fallback — per-channel offsets from wheel hue/sat + curves
   ctx.clearRect(0,0,W,H); ctx.fillStyle='#0a0a0a'; ctx.fillRect(0,0,W,H);
   ctx.strokeStyle='#1a1a1a'; ctx.lineWidth=0.7;
   [0.25,0.5,0.75].forEach(t=>{
@@ -6057,18 +6058,28 @@ async function drawCGHistogram() {
   const lumBright = 1 + lift.lum*0.002 + gamma.lum*0.005 + gain.lum*0.002;
   const cont = 1 + CG_STATE.contrast*0.01;
   const spread = Math.max(0.3, Math.min(2.5, cont));
-  // Per-channel shift from wheel hues (hue=0°=right=red, 120°=green, 240°/-120°=blue in color wheel)
-  const chBias = (h, s, w) => ({
-    r: Math.cos((h)*Math.PI/180)*s*w,
-    g: Math.cos((h-120)*Math.PI/180)*s*w,
-    b: Math.cos((h+120)*Math.PI/180)*s*w,
+  // Per-channel shift from wheel hues
+  const chBias = (h, s, wt) => ({
+    r: Math.cos((h)*Math.PI/180)*s*wt,
+    g: Math.cos((h-120)*Math.PI/180)*s*wt,
+    b: Math.cos((h+120)*Math.PI/180)*s*wt,
   });
   const lb=chBias(lift.h,  lift.s,  0.12);
   const mb=chBias(gamma.h, gamma.s, 0.22);
   const gb=chBias(gain.h,  gain.s,  0.12);
-  const rOff=(lumBright-1+lb.r+mb.r+gb.r)*40;
-  const gOff=(lumBright-1+lb.g+mb.g+gb.g)*40;
-  const bOff=(lumBright-1+lb.b+mb.b+gb.b)*40;
+  // Per-channel curve midpoint deviation — sample each composed LUT at x=0.5
+  let rCurve=0, gCurve=0, bCurve=0;
+  try {
+    const lL=buildCurveLUT(CG_STATE.curves.L), lR=buildCurveLUT(CG_STATE.curves.R);
+    const lG=buildCurveLUT(CG_STATE.curves.G), lB=buildCurveLUT(CG_STATE.curves.B);
+    const midAt=(lLut,ch)=>{ const lv=lLut[3]+0.5*(lLut[4]-lLut[3]); const cx=lv*8, ci=Math.min(7,Math.floor(cx)), cf=cx-ci; return ch[ci]+cf*(ch[ci+1]-ch[ci]); };
+    rCurve=(midAt(lL,lR)-0.5)*W*0.8;
+    gCurve=(midAt(lL,lG)-0.5)*W*0.8;
+    bCurve=(midAt(lL,lB)-0.5)*W*0.8;
+  } catch(e) {}
+  const rOff=(lumBright-1+lb.r+mb.r+gb.r)*40 + rCurve;
+  const gOff=(lumBright-1+lb.g+mb.g+gb.g)*40 + gCurve;
+  const bOff=(lumBright-1+lb.b+mb.b+gb.b)*40 + bCurve;
   [{color:'rgba(192,57,43,0.7)',off:rOff},{color:'rgba(39,174,96,0.7)',off:gOff},{color:'rgba(41,128,185,0.7)',off:bOff}]
     .forEach(({color,off})=>{
       ctx.beginPath(); ctx.moveTo(0,H);
