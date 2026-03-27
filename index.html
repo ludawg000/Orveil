@@ -2720,6 +2720,16 @@
   .gallery-download-all:hover {
     background: var(--gal-accent, var(--white)); color: var(--gal-bg, var(--black)); opacity: 1;
   }
+  .gallery-dl-progress {
+    width: 160px; height: 2px; background: rgba(255,255,255,0.15); margin: 0.8rem auto 0; border-radius: 1px; overflow: hidden;
+  }
+  .gallery-dl-progress-bar {
+    height: 100%; width: 0%; background: var(--gal-accent, var(--white)); transition: width 0.3s ease; border-radius: 1px;
+  }
+  .gallery-dl-hint {
+    font-family: var(--sans); font-size: 0.6rem; letter-spacing: 0.06em; opacity: 0.45;
+    color: var(--gal-accent, var(--white)); margin-top: 0.6rem; text-align: center;
+  }
 
   /* GALLERY GRID — masonry (default) */
   .gallery-grid {
@@ -3924,6 +3934,10 @@
     <div class="gallery-meta" id="gallery-meta"></div>
     <div class="gallery-divider"></div>
     <button class="gallery-download-all" id="gallery-download-all" onclick="downloadAllFiles()">Download All</button>
+    <div class="gallery-dl-progress" id="gallery-dl-progress" style="display:none">
+      <div class="gallery-dl-progress-bar" id="gallery-dl-progress-bar"></div>
+    </div>
+    <div class="gallery-dl-hint" id="gallery-dl-hint" style="display:none">Tap "Save&nbsp;Images" in the menu to save to your camera roll</div>
   </div>
   <div class="gallery-grid" id="gallery-grid">
     <div class="loader loader-light"><div class="loader-dot"></div><div class="loader-dot"></div><div class="loader-dot"></div></div>
@@ -4887,25 +4901,33 @@ function bakeEditsToImageData(imageData, editData) {
 
 const _isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-// Returns a blob for gallery file at idx. Falls back to raw blob if baking fails.
-async function _bakeToBlobForIndex(idx) {
+function _mimeFromName(name) {
+  const ext = (name || '').split('.').pop().toLowerCase();
+  return { jpg:'image/jpeg', jpeg:'image/jpeg', png:'image/png', gif:'image/gif', webp:'image/webp', heic:'image/heic', heif:'image/heif', mp4:'video/mp4', mov:'video/quicktime', avi:'video/avi' }[ext] || null;
+}
+
+// Returns a proper image/jpeg blob (or raw blob for videos).
+// Always runs images through canvas so octet-stream files become real JPEGs.
+async function _toBlobForIndex(idx) {
   const gf = galleryFiles[idx];
   const resp = await fetch(gf.publicUrl);
-  if (!resp.ok) throw new Error('fetch failed');
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
   const rawBlob = await resp.blob();
 
-  // Videos and non-images: return raw blob, skip canvas baking
-  const isImage = rawBlob.type.startsWith('image/') || /\.(jpe?g|png|gif|webp|heic)$/i.test(gf.name || '');
-  if (!isImage) return rawBlob;
+  // Resolve actual MIME — Supabase sometimes returns application/octet-stream
+  const mime = (rawBlob.type && rawBlob.type !== 'application/octet-stream')
+    ? rawBlob.type : (_mimeFromName(gf.name) || rawBlob.type);
 
-  const ef = (gf && gf.edit_settings) || galleryEditFilter || '';
+  // Videos: return as-is with correct MIME
+  if (mime.startsWith('video/')) return new Blob([rawBlob], { type: mime });
+
+  // Images: always draw through canvas → proper image/jpeg blob
+  const ef = (gf.edit_settings) || galleryEditFilter || '';
   let editData = null;
   if (ef) { try { editData = JSON.parse(ef); } catch { editData = { css: ef.replace(/url\([^)]*\)\s*/g,'') }; } }
-  if (!editData) return rawBlob;
 
-  // Try baking edits; fall back to raw blob on any failure
   try {
-    const objUrl = URL.createObjectURL(rawBlob);
+    const objUrl = URL.createObjectURL(new Blob([rawBlob], { type: mime }));
     const img = new Image();
     await new Promise((res, rej) => { img.onload=res; img.onerror=rej; img.src=objUrl; });
     URL.revokeObjectURL(objUrl);
@@ -4913,112 +4935,100 @@ async function _bakeToBlobForIndex(idx) {
     canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
     const ctx = canvas.getContext('2d');
     ctx.drawImage(img, 0, 0);
-    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    bakeEditsToImageData(imgData, editData);
-    ctx.putImageData(imgData, 0, 0);
-    const baked = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.95));
-    return baked || rawBlob;
-  } catch { return rawBlob; }
-}
-
-async function downloadFile(url, filename, fileIndexOrFilter) {
-  let editData = null;
-  if (typeof fileIndexOrFilter === 'number') {
-    const gf = galleryFiles[fileIndexOrFilter];
-    const ef = (gf && gf.edit_settings) || galleryEditFilter || '';
-    if (ef) { try { editData = JSON.parse(ef); } catch { editData = { css: ef.replace(/url\([^)]*\)\s*/g,'') }; } }
-  } else if (typeof fileIndexOrFilter === 'string') {
-    try { editData = JSON.parse(fileIndexOrFilter); } catch { editData = { css: fileIndexOrFilter.replace(/url\([^)]*\)\s*/g,'') }; }
-  }
-  try {
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error('fetch failed');
-    const blob = await resp.blob();
-    let dlBlob = blob;
     if (editData) {
-      const objUrl = URL.createObjectURL(blob);
-      const img = new Image();
-      await new Promise((res, rej) => { img.onload=res; img.onerror=rej; img.src=objUrl; });
-      URL.revokeObjectURL(objUrl);
-      const canvas = document.createElement('canvas');
-      canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
       const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       bakeEditsToImageData(imgData, editData);
       ctx.putImageData(imgData, 0, 0);
-      dlBlob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.95));
     }
-    // Mobile: use Web Share API so iOS can save to camera roll
+    const out = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.95));
+    return out || new Blob([rawBlob], { type: mime });
+  } catch { return new Blob([rawBlob], { type: mime }); }
+}
+
+async function downloadFile(url, filename, fileIndexOrFilter) {
+  try {
+    const idx = typeof fileIndexOrFilter === 'number' ? fileIndexOrFilter : null;
+    const blob = idx !== null ? await _toBlobForIndex(idx) : await (async () => {
+      const resp = await fetch(url); if (!resp.ok) throw new Error();
+      return resp.blob();
+    })();
+    const name = filename || `photo.jpg`;
     if (_isMobile && navigator.canShare) {
-      const shareFile = new File([dlBlob], filename, { type: dlBlob.type || 'image/jpeg' });
-      if (navigator.canShare({ files: [shareFile] })) {
-        await navigator.share({ files: [shareFile] });
-        return;
-      }
+      const f = new File([blob], name, { type: blob.type || 'image/jpeg' });
+      if (navigator.canShare({ files: [f] })) { await navigator.share({ files: [f] }); return; }
     }
-    // Desktop fallback
-    const blobUrl = URL.createObjectURL(dlBlob);
+    const blobUrl = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = blobUrl; a.download = filename;
+    a.href = blobUrl; a.download = name;
     document.body.appendChild(a); a.click();
     URL.revokeObjectURL(blobUrl); a.remove();
-  } catch {
-    window.open(url, '_blank');
-  }
+  } catch { window.open(url, '_blank'); }
 }
 
 async function downloadAllFiles() {
   const btn = document.getElementById('gallery-download-all');
-  btn.textContent = 'Preparing...';
+  const bar = document.getElementById('gallery-dl-progress');
+  const fill = document.getElementById('gallery-dl-progress-bar');
+  const hint = document.getElementById('gallery-dl-hint');
+  const total = galleryFiles.length;
+
   btn.disabled = true;
+  bar.style.display = 'block';
+  fill.style.width = '0%';
+  hint.style.display = 'none';
 
+  // Load all files, converting everything to proper blobs
+  const shareFiles = [];
+  for (let i = 0; i < total; i++) {
+    btn.textContent = `Loading ${i + 1} of ${total}…`;
+    fill.style.width = `${((i + 1) / total) * 100}%`;
+    try {
+      const blob = await _toBlobForIndex(i);
+      shareFiles.push(new File([blob], galleryFiles[i].name || `photo-${i+1}.jpg`, { type: blob.type || 'image/jpeg' }));
+    } catch (e) { console.warn('Failed to load file', i, e); }
+  }
+
+  btn.textContent = 'Download All';
+  btn.disabled = false;
+  bar.style.display = 'none';
+  fill.style.width = '0%';
+
+  if (!shareFiles.length) { showToast('No files to download.'); return; }
+
+  // Mobile: Web Share API
   if (_isMobile && navigator.canShare) {
-    // Load all blobs first, always include every file (raw fallback on error)
-    const shareFiles = [];
-    for (let i = 0; i < galleryFiles.length; i++) {
-      btn.textContent = `Loading ${i + 1} of ${galleryFiles.length}…`;
-      try {
-        const blob = await _bakeToBlobForIndex(i);
-        const name = galleryFiles[i].name || `file-${i+1}`;
-        shareFiles.push(new File([blob], name, { type: blob.type || 'image/jpeg' }));
-      } catch (err) {
-        console.warn('Could not load file', i, err);
-      }
+    // Try all at once first
+    if (navigator.canShare({ files: shareFiles })) {
+      hint.style.display = 'block';
+      try { await navigator.share({ files: shareFiles, title: 'Your Photos' }); } catch {}
+      hint.style.display = 'none';
+      return;
     }
-
-    btn.textContent = 'Download All';
-    btn.disabled = false;
-
-    if (!shareFiles.length) { showToast('No files to download.'); return; }
-
-    // Share in batches of 10 — iOS can reject too-large share payloads
-    const BATCH = 10;
-    for (let b = 0; b < shareFiles.length; b += BATCH) {
-      const batch = shareFiles.slice(b, b + BATCH);
-      const label = shareFiles.length > BATCH
-        ? ` (${b + 1}–${Math.min(b + BATCH, shareFiles.length)} of ${shareFiles.length})`
-        : '';
+    // If too large, split into halves and try each
+    const mid = Math.ceil(shareFiles.length / 2);
+    for (const batch of [shareFiles.slice(0, mid), shareFiles.slice(mid)]) {
+      if (!batch.length) continue;
+      hint.style.display = 'block';
       try {
-        if (navigator.canShare({ files: batch })) {
-          await navigator.share({ files: batch, title: `Photos${label}` });
-        } else {
-          // Batch too large for canShare — fall through to individual opens
-          batch.forEach(f => window.open(URL.createObjectURL(f), '_blank'));
-        }
+        if (navigator.canShare({ files: batch })) await navigator.share({ files: batch, title: 'Your Photos' });
+        else batch.forEach(f => window.open(URL.createObjectURL(f), '_blank'));
       } catch {}
     }
+    hint.style.display = 'none';
     return;
   }
 
-  // Desktop: sequential anchor-click downloads
-  for (let i = 0; i < galleryFiles.length; i++) {
-    btn.textContent = `Downloading ${i + 1}/${galleryFiles.length}...`;
-    await downloadFile(galleryFiles[i].publicUrl, galleryFiles[i].name, i);
+  // Desktop: sequential anchor-click
+  for (let i = 0; i < shareFiles.length; i++) {
+    btn.textContent = `Downloading ${i + 1}/${total}...`;
+    const blobUrl = URL.createObjectURL(shareFiles[i]);
+    const a = document.createElement('a');
+    a.href = blobUrl; a.download = shareFiles[i].name;
+    document.body.appendChild(a); a.click();
+    URL.revokeObjectURL(blobUrl); a.remove();
     await new Promise(r => setTimeout(r, 300));
   }
   btn.textContent = 'Download All';
-  btn.disabled = false;
 }
 
 // Touch swipe for lightbox
