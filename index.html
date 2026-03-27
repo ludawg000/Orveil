@@ -4885,6 +4885,32 @@ function bakeEditsToImageData(imageData, editData) {
   }
 }
 
+const _isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+// Returns a baked JPEG blob for the given gallery file index
+async function _bakeToBlobForIndex(idx) {
+  const gf = galleryFiles[idx];
+  const ef = (gf && gf.edit_settings) || galleryEditFilter || '';
+  let editData = null;
+  if (ef) { try { editData = JSON.parse(ef); } catch { editData = { css: ef.replace(/url\([^)]*\)\s*/g,'') }; } }
+  const resp = await fetch(gf.publicUrl);
+  if (!resp.ok) throw new Error('fetch failed');
+  const blob = await resp.blob();
+  if (!editData) return blob;
+  const objUrl = URL.createObjectURL(blob);
+  const img = new Image();
+  await new Promise((res, rej) => { img.onload=res; img.onerror=rej; img.src=objUrl; });
+  URL.revokeObjectURL(objUrl);
+  const canvas = document.createElement('canvas');
+  canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(img, 0, 0);
+  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  bakeEditsToImageData(imgData, editData);
+  ctx.putImageData(imgData, 0, 0);
+  return await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.95));
+}
+
 async function downloadFile(url, filename, fileIndexOrFilter) {
   let editData = null;
   if (typeof fileIndexOrFilter === 'number') {
@@ -4895,30 +4921,38 @@ async function downloadFile(url, filename, fileIndexOrFilter) {
     try { editData = JSON.parse(fileIndexOrFilter); } catch { editData = { css: fileIndexOrFilter.replace(/url\([^)]*\)\s*/g,'') }; }
   }
   try {
-    // Fetch as blob to avoid CORS canvas taint
     const resp = await fetch(url);
     if (!resp.ok) throw new Error('fetch failed');
     const blob = await resp.blob();
-    const objUrl = URL.createObjectURL(blob);
-    const img = new Image();
-    await new Promise((res, rej) => { img.onload=res; img.onerror=rej; img.src=objUrl; });
-    URL.revokeObjectURL(objUrl);
-    const canvas = document.createElement('canvas');
-    canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0);
+    let dlBlob = blob;
     if (editData) {
+      const objUrl = URL.createObjectURL(blob);
+      const img = new Image();
+      await new Promise((res, rej) => { img.onload=res; img.onerror=rej; img.src=objUrl; });
+      URL.revokeObjectURL(objUrl);
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
       const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       bakeEditsToImageData(imgData, editData);
       ctx.putImageData(imgData, 0, 0);
+      dlBlob = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.95));
     }
-    canvas.toBlob(dlBlob => {
-      const blobUrl = URL.createObjectURL(dlBlob);
-      const a = document.createElement('a');
-      a.href = blobUrl; a.download = filename;
-      document.body.appendChild(a); a.click();
-      URL.revokeObjectURL(blobUrl); a.remove();
-    }, 'image/jpeg', 0.95);
+    // Mobile: use Web Share API so iOS can save to camera roll
+    if (_isMobile && navigator.canShare) {
+      const shareFile = new File([dlBlob], filename, { type: dlBlob.type || 'image/jpeg' });
+      if (navigator.canShare({ files: [shareFile] })) {
+        await navigator.share({ files: [shareFile] });
+        return;
+      }
+    }
+    // Desktop fallback
+    const blobUrl = URL.createObjectURL(dlBlob);
+    const a = document.createElement('a');
+    a.href = blobUrl; a.download = filename;
+    document.body.appendChild(a); a.click();
+    URL.revokeObjectURL(blobUrl); a.remove();
   } catch {
     window.open(url, '_blank');
   }
@@ -4928,6 +4962,24 @@ async function downloadAllFiles() {
   const btn = document.getElementById('gallery-download-all');
   btn.textContent = 'Preparing...';
   btn.disabled = true;
+  // Mobile: collect all files then share at once so iOS can save all to camera roll
+  if (_isMobile && navigator.canShare) {
+    const shareFiles = [];
+    for (let i = 0; i < galleryFiles.length; i++) {
+      btn.textContent = `Loading ${i + 1} of ${galleryFiles.length}…`;
+      try {
+        const blob = await _bakeToBlobForIndex(i);
+        shareFiles.push(new File([blob], galleryFiles[i].name || `photo-${i+1}.jpg`, { type: blob.type || 'image/jpeg' }));
+      } catch {}
+    }
+    btn.textContent = 'Download All';
+    btn.disabled = false;
+    if (shareFiles.length && navigator.canShare({ files: shareFiles })) {
+      await navigator.share({ files: shareFiles });
+      return;
+    }
+  }
+  // Desktop: sequential download
   for (let i = 0; i < galleryFiles.length; i++) {
     btn.textContent = `Downloading ${i + 1}/${galleryFiles.length}...`;
     await downloadFile(galleryFiles[i].publicUrl, galleryFiles[i].name, i);
