@@ -5661,20 +5661,27 @@ function applyEditsToSelected() {
 
 function getProjectEditFilter() {
   const { e, c, s, w, h, f } = getSliderValues();
-  // CSS-only filter (no url() reference — portable across gallery/download contexts)
+  // Editor slider contributions
+  const eBright = Math.max(0.05, 1 + e*0.008 + h*0.003 + f*0.001);
+  const eCont   = Math.max(0.1,  1 + c*0.008 - f*0.003);
+  const eSat    = Math.max(0,    1 + s*0.015  - f*0.003);
+  const eHue    = -w * 0.2;
+  const eSepia  = Math.min(w > 0 ? w*0.002 : 0, 0.3);
+  // CG contributions
   const { lift, gamma, gain, temp, tint, contrast, saturation, shadows, highlights, blacks, whites } = CG_STATE;
-  const wheelH = lift.h*lift.s*0.2 + gamma.h*gamma.s*0.4 + gain.h*gain.s*0.2;
-  const wheelS = (lift.s*0.25 + gamma.s*0.5 + gain.s*0.25) * 0.3;
-  const lumAdj = lift.lum*0.002 + gamma.lum*0.005 + gain.lum*0.002;
-  const brightness = Math.max(0.05, 1 + lumAdj + shadows*0.003 + highlights*0.002 + whites*0.003 + blacks*0.002);
-  const cont = Math.max(0.1, 1 + contrast*0.01);
-  const sat = Math.max(0, 1 + saturation*0.015 + wheelS);
-  const hue = wheelH + (-temp*0.18) + (tint*0.08);
-  const sepia = Math.min(temp>0?temp*0.002:0, 0.25);
-  const cgCss = `brightness(${brightness.toFixed(3)}) contrast(${cont.toFixed(3)}) saturate(${sat.toFixed(3)}) hue-rotate(${hue.toFixed(1)}deg) sepia(${sepia.toFixed(3)})`;
-  const editorCss = buildEditorFilter(e, c, s, w, h, f);
+  const wheelH  = lift.h*lift.s*0.2 + gamma.h*gamma.s*0.4 + gain.h*gain.s*0.2;
+  const wheelS  = (lift.s*0.25 + gamma.s*0.5 + gain.s*0.25) * 0.3;
+  const lumAdj  = lift.lum*0.002 + gamma.lum*0.005 + gain.lum*0.002;
+  const cgBright = Math.max(0.05, 1 + lumAdj + shadows*0.003 + highlights*0.002 + whites*0.003 + blacks*0.002);
+  const cgCont  = Math.max(0.1,  1 + contrast*0.01);
+  const cgSat   = Math.max(0,    1 + saturation*0.015 + wheelS);
+  const cgHue   = wheelH + (-temp*0.18) + (tint*0.08);
+  const cgSepia = Math.min(temp > 0 ? temp*0.002 : 0, 0.25);
+  // Combine into single CSS string — multiply brightness/contrast/sat, sum hue/sepia
+  // This ensures bakeEditsToImageData reads one value per function (no duplicate regex issue)
+  const combinedCss = `brightness(${(eBright*cgBright).toFixed(4)}) contrast(${(eCont*cgCont).toFixed(4)}) saturate(${(eSat*cgSat).toFixed(4)}) hue-rotate(${(eHue+cgHue).toFixed(2)}deg) sepia(${Math.min(eSepia+cgSepia,1).toFixed(4)})`;
   return JSON.stringify({
-    css: editorCss + ' ' + cgCss,
+    css: combinedCss,
     curves: JSON.parse(JSON.stringify(CG_STATE.curves))
   });
 }
