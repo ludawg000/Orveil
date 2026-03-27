@@ -4962,12 +4962,11 @@ async function _toBlobForIndex(idx) {
 async function downloadFile(url, filename, fileIndexOrFilter) {
   try {
     const idx = typeof fileIndexOrFilter === 'number' ? fileIndexOrFilter : null;
+    const gf = idx !== null ? galleryFiles[idx] : null;
     const blob = idx !== null ? await _toBlobForIndex(idx) : await (async () => {
       const resp = await fetch(url); if (!resp.ok) throw new Error();
       return resp.blob();
     })();
-    const idx = typeof fileIndexOrFilter === 'number' ? fileIndexOrFilter : null;
-    const gf = idx !== null ? galleryFiles[idx] : null;
     const name = gf ? _safeFileName(gf, idx) : (filename || 'photo.jpg');
     if (_isMobile && navigator.canShare) {
       const f = new File([blob], name, { type: blob.type || 'image/jpeg' });
