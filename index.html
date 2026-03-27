@@ -4980,87 +4980,94 @@ async function downloadFile(url, filename, fileIndexOrFilter) {
   } catch { window.open(url, '_blank'); }
 }
 
-// Cached blobs for mobile two-tap share
 let _pendingShareFiles = null;
 
+async function _loadAllBlobs(onProgress) {
+  const files = [];
+  for (let i = 0; i < galleryFiles.length; i++) {
+    onProgress(i + 1, galleryFiles.length);
+    try {
+      const blob = await _toBlobForIndex(i);
+      files.push(new File([blob], _safeFileName(galleryFiles[i], i), { type: blob.type || 'image/jpeg' }));
+    } catch(e) { console.warn('file', i, 'failed:', e.message); }
+  }
+  return files;
+}
+
 async function downloadAllFiles() {
-  const btn = document.getElementById('gallery-download-all');
-  const bar = document.getElementById('gallery-dl-progress');
+  const btn  = document.getElementById('gallery-download-all');
+  const bar  = document.getElementById('gallery-dl-progress');
   const fill = document.getElementById('gallery-dl-progress-bar');
   const hint = document.getElementById('gallery-dl-hint');
-  const total = galleryFiles.length;
 
-  // ── Mobile two-tap: second tap = share immediately (fresh gesture context) ──
+  function setProgress(i, total) {
+    btn.textContent = `Loading ${i} of ${total}…`;
+    fill.style.width = `${(i / total) * 100}%`;
+  }
+  function reset(label) {
+    btn.textContent = label || 'Download All';
+    btn.disabled = false;
+    bar.style.display = 'none';
+    fill.style.width = '0%';
+  }
+
+  // ── TAP 2 (mobile): files already loaded — call share immediately from this gesture ──
   if (_isMobile && _pendingShareFiles) {
     const files = _pendingShareFiles;
     _pendingShareFiles = null;
     hint.style.display = 'none';
-    btn.textContent = 'Download All';
-    btn.style.opacity = '';
+    reset();
     try {
-      await navigator.share({ files, title: 'Your Photos' });
-    } catch {
-      // navigator.share failed — open each image in a new tab as last resort
-      files.forEach(f => {
-        const u = URL.createObjectURL(f);
-        window.open(u, '_blank');
-      });
+      await navigator.share({ files });
+    } catch(e) {
+      if (e.name !== 'AbortError') showToast('Could not share — try long-pressing photos to save individually.');
     }
     return;
   }
 
-  // Desktop: sequential anchor-click downloads (no share API needed)
-  if (!_isMobile) {
-    btn.disabled = true;
-    bar.style.display = 'block';
-    fill.style.width = '0%';
-    const files = [];
-    for (let i = 0; i < total; i++) {
-      btn.textContent = `Loading ${i + 1} of ${total}…`;
-      fill.style.width = `${((i + 1) / total) * 100}%`;
-      try { files.push({ blob: await _toBlobForIndex(i), name: galleryFiles[i].name || `photo-${i+1}.jpg` }); }
-      catch (e) { console.warn('skip', i, e); }
-    }
-    bar.style.display = 'none'; fill.style.width = '0%';
-    btn.disabled = false; btn.textContent = 'Download All';
-    for (let i = 0; i < files.length; i++) {
-      const blobUrl = URL.createObjectURL(files[i].blob);
-      const a = document.createElement('a');
-      a.href = blobUrl; a.download = files[i].name;
-      document.body.appendChild(a); a.click();
-      URL.revokeObjectURL(blobUrl); a.remove();
-      await new Promise(r => setTimeout(r, 300));
-    }
-    return;
-  }
-
-  // ── Mobile tap 1: load all files, then prompt user to tap again ──
   btn.disabled = true;
   bar.style.display = 'block';
   fill.style.width = '0%';
   hint.style.display = 'none';
 
-  const shareFiles = [];
-  for (let i = 0; i < total; i++) {
-    btn.textContent = `Loading ${i + 1} of ${total}…`;
-    fill.style.width = `${((i + 1) / total) * 100}%`;
-    try {
-      const blob = await _toBlobForIndex(i);
-      shareFiles.push(new File([blob], _safeFileName(galleryFiles[i], i), { type: blob.type || 'image/jpeg' }));
-    } catch (e) { console.warn('skip', i, e); }
+  // ── DESKTOP ──
+  if (!_isMobile) {
+    const files = await _loadAllBlobs(setProgress);
+    reset();
+    if (!files.length) { showToast('No files to download.'); return; }
+    for (const f of files) {
+      const u = URL.createObjectURL(f);
+      const a = document.createElement('a');
+      a.href = u; a.download = f.name;
+      document.body.appendChild(a); a.click();
+      URL.revokeObjectURL(u); a.remove();
+      await new Promise(r => setTimeout(r, 400));
+    }
+    return;
   }
 
-  bar.style.display = 'none';
-  fill.style.width = '0%';
+  // ── MOBILE TAP 1: load files, then wait for second tap ──
+  const files = await _loadAllBlobs(setProgress);
+  if (!files.length) { reset(); showToast('Could not load files.'); return; }
 
-  if (!shareFiles.length) { showToast('No files to download.'); btn.disabled = false; btn.textContent = 'Download All'; return; }
+  // Check if device actually supports file sharing
+  const canShare = !!navigator.share && !!navigator.canShare && navigator.canShare({ files: files.slice(0, 1) });
 
-  // Ready — store blobs and prompt user to tap button again (fresh gesture = iOS allows share)
-  _pendingShareFiles = shareFiles;
-  btn.disabled = false;
-  btn.textContent = `Tap to Save ${shareFiles.length} Photos`;
-  btn.style.opacity = '1';
-  hint.textContent = 'Tap the button again — then tap "Save" in the menu';
+  if (!canShare) {
+    // Fallback: open each image directly so user can long-press save
+    reset();
+    showToast('Opening photos — long-press each to save to your camera roll.');
+    for (const f of files) {
+      const u = URL.createObjectURL(f);
+      window.open(u, '_blank');
+      await new Promise(r => setTimeout(r, 600));
+    }
+    return;
+  }
+
+  _pendingShareFiles = files;
+  reset(`Save ${files.length} Photos →`);
+  hint.textContent = 'Tap the button again → then tap "Save" in the share menu';
   hint.style.display = 'block';
 }
 
