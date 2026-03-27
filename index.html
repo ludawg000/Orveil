@@ -3503,7 +3503,7 @@
 <div id="project-screen" class="screen">
   <nav class="project-nav">
     <button class="back-btn" id="project-back-btn" onclick="showDashboard()">&#8592; Home</button>
-    <div class="project-nav-title" id="project-nav-title"></div>
+    <div class="project-nav-title" id="project-nav-title" ondblclick="startInlineProjectRename(event)" title="Double-click to rename"></div>
     <span class="edit-mode-badge">Edit Mode</span>
     <div class="edit-view-toggle">
       <button class="evt-btn active" id="evt-grid" title="Grid" onclick="setFilesView('grid',this)">
@@ -5344,7 +5344,7 @@ async function loadProjects() {
       return `<div class="project-card" data-pid="${p.id}" onclick="${manageMode ? 'selectManageCard(this)' : `openProject('${p.id}','${escHtml(p.name)}')`}" style="${manageMode ? 'cursor:pointer;position:relative' : 'position:relative'}">
         ${inviteBtn}
         ${manageOverlay}<div class="project-thumb" id="pthumb-${p.id}"><div class="project-thumb-placeholder">${p.file_count ? p.file_count + ' files' : (() => { const q = randomQuip(); return q.emoji + '<br><span style="font-size:0.55rem;letter-spacing:0.05em;opacity:0.7">' + q.text + '</span>'; })()}</div></div>
-        <div class="project-name">${escHtml(p.name)}${p._collab ? '<span style="font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--g400);margin-left:0.5rem;font-weight:400">Shared</span>' : ''}</div>
+        <div class="project-name" ondblclick="event.stopPropagation();startInlineProjectRename(event,'${p.id}')" title="Double-click to rename">${escHtml(p.name)}${p._collab ? '<span style="font-size:0.55rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--g400);margin-left:0.5rem;font-weight:400">Shared</span>' : ''}</div>
         <div class="project-meta">${p.file_count || 0} files · ${timeAgo(p.created_at)}</div>
       </div>`;
     }).join('');
@@ -6694,6 +6694,48 @@ async function deleteSelectedFiles() {
   toggleSelectMode();
   await loadFiles();
   await updateStorage();
+}
+
+// ── Inline project rename (double-click project name) ───────────────────────
+function startInlineProjectRename(e, projectId) {
+  e.stopPropagation();
+  const nameEl = e.currentTarget;
+  // projectId from card; from nav title use currentProject.id
+  const pid = projectId || currentProject?.id;
+  if (!pid) return;
+  // Strip any child spans (e.g. "Shared" badge) — only grab the text node value
+  const original = nameEl.childNodes[0]?.textContent?.trim() || nameEl.textContent.trim();
+  // Save any badge HTML to restore after
+  const badgeHtml = nameEl.querySelector('span') ? nameEl.querySelector('span').outerHTML : '';
+
+  const input = document.createElement('input');
+  input.value = original;
+  input.className = 'file-name-input';
+  input.style.fontSize = 'inherit';
+  input.style.fontFamily = 'inherit';
+  nameEl.innerHTML = '';
+  nameEl.appendChild(input);
+  input.focus();
+  input.select();
+
+  async function commit() {
+    const newName = input.value.trim() || original;
+    nameEl.innerHTML = escHtml(newName) + badgeHtml;
+    if (newName !== original) {
+      await dbUpdate('projects', { name: newName }, `id=eq.${pid}`);
+      // Sync everywhere
+      if (currentProject && currentProject.id === pid) currentProject.name = newName;
+      const navTitle = document.getElementById('project-nav-title');
+      if (navTitle && currentProject?.id === pid) navTitle.childNodes[0] && (navTitle.childNodes[0].textContent = newName);
+      // currentProject.name updated above — delivery reads it live at send time
+    }
+  }
+
+  input.addEventListener('keydown', ev => {
+    if (ev.key === 'Enter') { ev.preventDefault(); input.blur(); }
+    if (ev.key === 'Escape') { ev.preventDefault(); input.removeEventListener('blur', commit); nameEl.innerHTML = escHtml(original) + badgeHtml; }
+  });
+  input.addEventListener('blur', commit, { once: true });
 }
 
 // ── Inline file rename (double-click filename) ──────────────────────────────
