@@ -4965,6 +4965,9 @@ async function downloadFile(url, filename, fileIndexOrFilter) {
   } catch { window.open(url, '_blank'); }
 }
 
+// Cached blobs for mobile two-tap share
+let _pendingShareFiles = null;
+
 async function downloadAllFiles() {
   const btn = document.getElementById('gallery-download-all');
   const bar = document.getElementById('gallery-dl-progress');
@@ -4972,12 +4975,50 @@ async function downloadAllFiles() {
   const hint = document.getElementById('gallery-dl-hint');
   const total = galleryFiles.length;
 
+  // ── Mobile two-tap: second tap = share immediately (fresh gesture context) ──
+  if (_isMobile && _pendingShareFiles) {
+    const files = _pendingShareFiles;
+    _pendingShareFiles = null;
+    hint.style.display = 'none';
+    try {
+      await navigator.share({ files, title: 'Your Photos' });
+    } catch {}
+    btn.textContent = 'Download All';
+    btn.style.opacity = '';
+    return;
+  }
+
+  // Desktop: sequential anchor-click downloads (no share API needed)
+  if (!_isMobile) {
+    btn.disabled = true;
+    bar.style.display = 'block';
+    fill.style.width = '0%';
+    const files = [];
+    for (let i = 0; i < total; i++) {
+      btn.textContent = `Loading ${i + 1} of ${total}…`;
+      fill.style.width = `${((i + 1) / total) * 100}%`;
+      try { files.push({ blob: await _toBlobForIndex(i), name: galleryFiles[i].name || `photo-${i+1}.jpg` }); }
+      catch (e) { console.warn('skip', i, e); }
+    }
+    bar.style.display = 'none'; fill.style.width = '0%';
+    btn.disabled = false; btn.textContent = 'Download All';
+    for (let i = 0; i < files.length; i++) {
+      const blobUrl = URL.createObjectURL(files[i].blob);
+      const a = document.createElement('a');
+      a.href = blobUrl; a.download = files[i].name;
+      document.body.appendChild(a); a.click();
+      URL.revokeObjectURL(blobUrl); a.remove();
+      await new Promise(r => setTimeout(r, 300));
+    }
+    return;
+  }
+
+  // ── Mobile tap 1: load all files, then prompt user to tap again ──
   btn.disabled = true;
   bar.style.display = 'block';
   fill.style.width = '0%';
   hint.style.display = 'none';
 
-  // Load all files, converting everything to proper blobs
   const shareFiles = [];
   for (let i = 0; i < total; i++) {
     btn.textContent = `Loading ${i + 1} of ${total}…`;
@@ -4985,50 +5026,21 @@ async function downloadAllFiles() {
     try {
       const blob = await _toBlobForIndex(i);
       shareFiles.push(new File([blob], galleryFiles[i].name || `photo-${i+1}.jpg`, { type: blob.type || 'image/jpeg' }));
-    } catch (e) { console.warn('Failed to load file', i, e); }
+    } catch (e) { console.warn('skip', i, e); }
   }
 
-  btn.textContent = 'Download All';
-  btn.disabled = false;
   bar.style.display = 'none';
   fill.style.width = '0%';
 
-  if (!shareFiles.length) { showToast('No files to download.'); return; }
+  if (!shareFiles.length) { showToast('No files to download.'); btn.disabled = false; btn.textContent = 'Download All'; return; }
 
-  // Mobile: Web Share API
-  if (_isMobile && navigator.canShare) {
-    // Try all at once first
-    if (navigator.canShare({ files: shareFiles })) {
-      hint.style.display = 'block';
-      try { await navigator.share({ files: shareFiles, title: 'Your Photos' }); } catch {}
-      hint.style.display = 'none';
-      return;
-    }
-    // If too large, split into halves and try each
-    const mid = Math.ceil(shareFiles.length / 2);
-    for (const batch of [shareFiles.slice(0, mid), shareFiles.slice(mid)]) {
-      if (!batch.length) continue;
-      hint.style.display = 'block';
-      try {
-        if (navigator.canShare({ files: batch })) await navigator.share({ files: batch, title: 'Your Photos' });
-        else batch.forEach(f => window.open(URL.createObjectURL(f), '_blank'));
-      } catch {}
-    }
-    hint.style.display = 'none';
-    return;
-  }
-
-  // Desktop: sequential anchor-click
-  for (let i = 0; i < shareFiles.length; i++) {
-    btn.textContent = `Downloading ${i + 1}/${total}...`;
-    const blobUrl = URL.createObjectURL(shareFiles[i]);
-    const a = document.createElement('a');
-    a.href = blobUrl; a.download = shareFiles[i].name;
-    document.body.appendChild(a); a.click();
-    URL.revokeObjectURL(blobUrl); a.remove();
-    await new Promise(r => setTimeout(r, 300));
-  }
-  btn.textContent = 'Download All';
+  // Ready — store blobs and prompt user to tap button again (fresh gesture = iOS allows share)
+  _pendingShareFiles = shareFiles;
+  btn.disabled = false;
+  btn.textContent = `Tap to Save ${shareFiles.length} Photos`;
+  btn.style.opacity = '1';
+  hint.textContent = 'Tap the button again — then tap "Save" in the menu';
+  hint.style.display = 'block';
 }
 
 // Touch swipe for lightbox
