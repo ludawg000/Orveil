@@ -4032,6 +4032,23 @@
   </div>
 </div>
 
+<!-- RENAME FILE MODAL -->
+<div class="modal-overlay" id="rename-file-modal" onclick="if(event.target===this)this.classList.remove('active')">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-title">Rename File</div>
+    <input class="modal-input" id="rename-file-input" type="text" placeholder="File name" autocomplete="off">
+    <div class="modal-actions">
+      <button class="modal-confirm" onclick="confirmRenameFile()">Rename</button>
+      <button class="modal-cancel" onclick="document.getElementById('rename-file-modal').classList.remove('active')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- FILE CONTEXT MENU -->
+<div id="file-ctx-menu" style="display:none;position:fixed;z-index:9999;background:var(--white);border:1px solid var(--g200);border-radius:2px;box-shadow:0 4px 16px rgba(0,0,0,0.12);min-width:140px;overflow:hidden;">
+  <button onclick="openRenameFileModal()" style="display:block;width:100%;text-align:left;padding:9px 14px;background:none;border:none;cursor:pointer;font-family:var(--sans);font-size:0.78rem;letter-spacing:0.04em;">Rename</button>
+</div>
+
 <!-- DELIVERY MODAL -->
 <div class="modal-overlay" id="delivery-modal">
   <div class="modal" style="max-width:500px">
@@ -6397,7 +6414,7 @@ async function loadFiles() {
     } else if (isVideo) {
       thumb = `<div class="file-thumb-placeholder" id="fthumb-${i}">Generating...</div>`;
     }
-    return `<div class="file-card" data-file-id="${f.id}" onclick="handleFileCardClick(event,'${f.id}',${i})" ondblclick="openProjectFile(${i})">
+    return `<div class="file-card" data-file-id="${f.id}" onclick="handleFileCardClick(event,'${f.id}',${i})" ondblclick="openProjectFile(${i})" oncontextmenu="showFileContextMenu(event,'${f.id}')">
       <div class="select-check">&#10003;</div>
       <div class="file-thumb">${thumb}</div>
       <div class="file-info">
@@ -6694,6 +6711,61 @@ async function deleteSelectedFiles() {
   await loadFiles();
   await updateStorage();
 }
+
+// ── File context menu & rename ──────────────────────────────────────────────
+let _ctxFileId = null;
+
+function showFileContextMenu(e, fileId) {
+  e.preventDefault();
+  e.stopPropagation();
+  _ctxFileId = fileId;
+  const menu = document.getElementById('file-ctx-menu');
+  menu.style.display = 'block';
+  menu.style.left = e.clientX + 'px';
+  menu.style.top = e.clientY + 'px';
+  requestAnimationFrame(() => {
+    const r = menu.getBoundingClientRect();
+    if (r.right > window.innerWidth) menu.style.left = (e.clientX - r.width) + 'px';
+    if (r.bottom > window.innerHeight) menu.style.top = (e.clientY - r.height) + 'px';
+  });
+}
+
+function hideFileContextMenu() {
+  const menu = document.getElementById('file-ctx-menu');
+  if (menu) menu.style.display = 'none';
+}
+
+document.addEventListener('click', () => hideFileContextMenu());
+document.addEventListener('keydown', e => { if (e.key === 'Escape') hideFileContextMenu(); });
+
+function openRenameFileModal() {
+  hideFileContextMenu();
+  const file = projectFiles.find(f => f.id === _ctxFileId);
+  if (!file) return;
+  const input = document.getElementById('rename-file-input');
+  input.value = file.name;
+  document.getElementById('rename-file-modal').classList.add('active');
+  setTimeout(() => { input.select(); }, 50);
+}
+
+async function confirmRenameFile() {
+  const newName = document.getElementById('rename-file-input').value.trim();
+  if (!newName) return;
+  const file = projectFiles.find(f => f.id === _ctxFileId);
+  if (!file || newName === file.name) { document.getElementById('rename-file-modal').classList.remove('active'); return; }
+  await dbUpdate('files', { name: newName }, `id=eq.${_ctxFileId}`);
+  file.name = newName;
+  const card = document.querySelector(`.file-card[data-file-id="${_ctxFileId}"]`);
+  const nameEl = card?.querySelector('.file-name');
+  if (nameEl) nameEl.textContent = newName;
+  document.getElementById('rename-file-modal').classList.remove('active');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('rename-file-input')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter') confirmRenameFile();
+  });
+});
 
 async function deleteFile(fileId, path, size, e) {
   e.stopPropagation();
