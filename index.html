@@ -4855,7 +4855,7 @@ function bakeEditsToImageData(imageData, editData) {
   if (curves?.L && curves?.R && curves?.G && curves?.B) {
     const L=buildCurveLUT(curves.L), R=buildCurveLUT(curves.R);
     const G=buildCurveLUT(curves.G), B=buildCurveLUT(curves.B);
-    const mk=(lL,ch)=>{ const lut=new Float32Array(256); for(let i=0;i<256;i++){const v=i/255,lx=v*8,li=Math.min(7,Math.floor(lx)),lf=lx-li,lv=lL[li]+lf*(lL[li+1]-lL[li]),cx=lv*8,ci=Math.min(7,Math.floor(cx)),cf=cx-ci;lut[i]=Math.max(0,Math.min(1,ch[ci]+cf*(ch[ci+1]-ch[ci])));} return lut; };
+    const mk=(lL,ch)=>{ const lut=new Float32Array(256); for(let i=0;i<256;i++){const v=i/255,lx=v*255,li=Math.min(254,Math.floor(lx)),lf=lx-li,lv=lL[li]+lf*(lL[li+1]-lL[li]),cx=lv*255,ci=Math.min(254,Math.floor(cx)),cf=cx-ci;lut[i]=Math.max(0,Math.min(1,ch[ci]+cf*(ch[ci+1]-ch[ci])));} return lut; };
     rLut=mk(L,R); gLut=mk(L,G); bLut=mk(L,B);
   }
   const hr=hDeg*Math.PI/180, cos=Math.cos(hr), sin=Math.sin(hr);
@@ -6049,8 +6049,8 @@ function buildCurveLUT(c) {
   });
   pts.sort((a,b)=>a.nx-b.nx);
   const cl=v=>Math.max(0,Math.min(1,v));
-  return Array.from({length:9},(_,i)=>{
-    const tx=i/8; let lo=0,hi=pts.length-1;
+  return Array.from({length:256},(_,i)=>{
+    const tx=i/255; let lo=0,hi=pts.length-1;
     while(lo<hi-1){const m=(lo+hi)>>1;if(pts[m].nx<=tx)lo=m;else hi=m;}
     const range=pts[hi].nx-pts[lo].nx;
     const t=range>0?(tx-pts[lo].nx)/range:0;
@@ -6068,7 +6068,7 @@ function updateChannelFilter() {
   const L=buildCurveLUT(CG_STATE.curves.L), R=buildCurveLUT(CG_STATE.curves.R);
   const G=buildCurveLUT(CG_STATE.curves.G), B=buildCurveLUT(CG_STATE.curves.B);
   const compose=(lLut,chLut)=>lLut.map(v=>{
-    const x=v*8, i=Math.min(7,Math.floor(x)), f=x-i;
+    const x=v*255, i=Math.min(254,Math.floor(x)), f=x-i;
     return Math.max(0,Math.min(1,chLut[i]+f*(chLut[i+1]-chLut[i])));
   });
   const fmt=arr=>arr.map(v=>v.toFixed(4)).join(' ');
@@ -6197,9 +6197,9 @@ function _applyGradeToHistogram(rawData, w, h) {
   const makeLut=(lLut,chLut)=>{
     const lut=new Float32Array(256);
     for(let i=0;i<256;i++){
-      const v=i/255, lx=v*8, li=Math.min(7,Math.floor(lx)), lf=lx-li;
+      const v=i/255, lx=v*255, li=Math.min(254,Math.floor(lx)), lf=lx-li;
       const lv=lLut[li]+lf*(lLut[li+1]-lLut[li]);
-      const cx=lv*8, ci=Math.min(7,Math.floor(cx)), cf=cx-ci;
+      const cx=lv*255, ci=Math.min(254,Math.floor(cx)), cf=cx-ci;
       lut[i]=Math.max(0,Math.min(1,chLut[ci]+cf*(chLut[ci+1]-chLut[ci])));
     }
     return lut;
