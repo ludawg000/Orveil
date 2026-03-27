@@ -4887,28 +4887,38 @@ function bakeEditsToImageData(imageData, editData) {
 
 const _isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-// Returns a baked JPEG blob for the given gallery file index
+// Returns a blob for gallery file at idx. Falls back to raw blob if baking fails.
 async function _bakeToBlobForIndex(idx) {
   const gf = galleryFiles[idx];
+  const resp = await fetch(gf.publicUrl);
+  if (!resp.ok) throw new Error('fetch failed');
+  const rawBlob = await resp.blob();
+
+  // Videos and non-images: return raw blob, skip canvas baking
+  const isImage = rawBlob.type.startsWith('image/') || /\.(jpe?g|png|gif|webp|heic)$/i.test(gf.name || '');
+  if (!isImage) return rawBlob;
+
   const ef = (gf && gf.edit_settings) || galleryEditFilter || '';
   let editData = null;
   if (ef) { try { editData = JSON.parse(ef); } catch { editData = { css: ef.replace(/url\([^)]*\)\s*/g,'') }; } }
-  const resp = await fetch(gf.publicUrl);
-  if (!resp.ok) throw new Error('fetch failed');
-  const blob = await resp.blob();
-  if (!editData) return blob;
-  const objUrl = URL.createObjectURL(blob);
-  const img = new Image();
-  await new Promise((res, rej) => { img.onload=res; img.onerror=rej; img.src=objUrl; });
-  URL.revokeObjectURL(objUrl);
-  const canvas = document.createElement('canvas');
-  canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(img, 0, 0);
-  const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  bakeEditsToImageData(imgData, editData);
-  ctx.putImageData(imgData, 0, 0);
-  return await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.95));
+  if (!editData) return rawBlob;
+
+  // Try baking edits; fall back to raw blob on any failure
+  try {
+    const objUrl = URL.createObjectURL(rawBlob);
+    const img = new Image();
+    await new Promise((res, rej) => { img.onload=res; img.onerror=rej; img.src=objUrl; });
+    URL.revokeObjectURL(objUrl);
+    const canvas = document.createElement('canvas');
+    canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    bakeEditsToImageData(imgData, editData);
+    ctx.putImageData(imgData, 0, 0);
+    const baked = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.95));
+    return baked || rawBlob;
+  } catch { return rawBlob; }
 }
 
 async function downloadFile(url, filename, fileIndexOrFilter) {
@@ -4962,24 +4972,46 @@ async function downloadAllFiles() {
   const btn = document.getElementById('gallery-download-all');
   btn.textContent = 'Preparing...';
   btn.disabled = true;
-  // Mobile: collect all files then share at once so iOS can save all to camera roll
+
   if (_isMobile && navigator.canShare) {
+    // Load all blobs first, always include every file (raw fallback on error)
     const shareFiles = [];
     for (let i = 0; i < galleryFiles.length; i++) {
       btn.textContent = `Loading ${i + 1} of ${galleryFiles.length}…`;
       try {
         const blob = await _bakeToBlobForIndex(i);
-        shareFiles.push(new File([blob], galleryFiles[i].name || `photo-${i+1}.jpg`, { type: blob.type || 'image/jpeg' }));
-      } catch {}
+        const name = galleryFiles[i].name || `file-${i+1}`;
+        shareFiles.push(new File([blob], name, { type: blob.type || 'image/jpeg' }));
+      } catch (err) {
+        console.warn('Could not load file', i, err);
+      }
     }
+
     btn.textContent = 'Download All';
     btn.disabled = false;
-    if (shareFiles.length && navigator.canShare({ files: shareFiles })) {
-      await navigator.share({ files: shareFiles });
-      return;
+
+    if (!shareFiles.length) { showToast('No files to download.'); return; }
+
+    // Share in batches of 10 — iOS can reject too-large share payloads
+    const BATCH = 10;
+    for (let b = 0; b < shareFiles.length; b += BATCH) {
+      const batch = shareFiles.slice(b, b + BATCH);
+      const label = shareFiles.length > BATCH
+        ? ` (${b + 1}–${Math.min(b + BATCH, shareFiles.length)} of ${shareFiles.length})`
+        : '';
+      try {
+        if (navigator.canShare({ files: batch })) {
+          await navigator.share({ files: batch, title: `Photos${label}` });
+        } else {
+          // Batch too large for canShare — fall through to individual opens
+          batch.forEach(f => window.open(URL.createObjectURL(f), '_blank'));
+        }
+      } catch {}
     }
+    return;
   }
-  // Desktop: sequential download
+
+  // Desktop: sequential anchor-click downloads
   for (let i = 0; i < galleryFiles.length; i++) {
     btn.textContent = `Downloading ${i + 1}/${galleryFiles.length}...`;
     await downloadFile(galleryFiles[i].publicUrl, galleryFiles[i].name, i);
