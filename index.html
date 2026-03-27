@@ -5493,34 +5493,72 @@ function toggleEspSection(btn) {
 // ── Photo Presets & Color Grading ──────────────────────────────
 const EDIT_PRESETS = {
   wedding: [
-    { name: 'Airy Film',     e:20,  c:-25, s:-10, w:12,  h:-28, f:40 },
-    { name: 'Dark Romance',  e:-14, c:20,  s:10,  w:28,  h:-32, f:5  },
-    { name: 'Blush & Ivory', e:24,  c:-18, s:-18, w:20,  h:-22, f:18 },
-    { name: 'True Color',    e:8,   c:5,   s:8,   w:8,   h:-8,  f:3  },
+    { name: 'Airy Film',     e:18, c:-18, s:-5,  w:8,  h:-18, f:30,
+      cg: { temp:12, tint:2, contrast:-8, saturation:-5, shadows:8, highlights:-12, blacks:12, whites:0,
+            lift:{h:30,s:0.08,lum:6}, L:{p1:{x:42,y:87},mid:{x:75,y:70},p2:{x:108,y:34}} } },
+    { name: 'Dark Romance',  e:-16, c:15, s:5,   w:14, h:-20, f:5,
+      cg: { temp:18, tint:-2, contrast:5, saturation:5, shadows:-8, highlights:-18, blacks:-5, whites:-8,
+            lift:{h:30,s:0.2,lum:-3}, gain:{h:20,s:0.1,lum:0}, L:{p1:{x:42,y:110},mid:{x:75,y:63},p2:{x:108,y:22}} } },
+    { name: 'Blush & Ivory', e:16, c:-15, s:-15, w:12, h:-15, f:18,
+      cg: { temp:8, tint:4, contrast:-8, saturation:-12, shadows:5, highlights:-10, blacks:8, whites:0,
+            lift:{h:30,s:0.06,lum:4}, L:{p1:{x:42,y:90},mid:{x:75,y:71},p2:{x:108,y:36}} } },
+    { name: 'True Color',    e:5,  c:0,   s:3,   w:5,  h:-5,  f:2,
+      cg: { temp:4, tint:0, contrast:0, saturation:0, shadows:0, highlights:-5, blacks:0, whites:0 } },
   ],
   portrait: [
-    { name: 'Skin Glow',     e:15,  c:-8,  s:10,  w:30,  h:-14, f:8  },
-    { name: 'Matte Cool',    e:5,   c:-12, s:-22, w:-28, h:0,   f:28 },
-    { name: 'Editorial',     e:-5,  c:32,  s:-12, w:-18, h:-12, f:0  },
-    { name: 'Soft Haze',     e:28,  c:-28, s:-8,  w:8,   h:-32, f:22 },
+    { name: 'Skin Glow',     e:10, c:-5,  s:5,   w:22, h:-12, f:8,
+      cg: { temp:22, tint:4, contrast:-5, saturation:5, shadows:5, highlights:-10, blacks:5, whites:0,
+            gamma:{h:25,s:0.12,lum:2}, L:{p1:{x:42,y:95},mid:{x:75,y:68},p2:{x:108,y:32}} } },
+    { name: 'Matte Cool',    e:5,  c:-12, s:-18, w:-18, h:0,  f:22,
+      cg: { temp:-18, tint:3, contrast:-5, saturation:-12, shadows:8, highlights:-8, blacks:10, whites:-5,
+            lift:{h:-90,s:0.15,lum:5}, L:{p1:{x:42,y:88},mid:{x:75,y:72},p2:{x:108,y:38}} } },
+    { name: 'Editorial',     e:-3, c:15,  s:0,   w:-8, h:-8,  f:0,
+      cg: { temp:-10, tint:0, contrast:8, saturation:-5, shadows:-5, highlights:-5, blacks:-2, whites:5,
+            L:{p1:{x:42,y:108},mid:{x:75,y:62},p2:{x:108,y:22}} } },
+    { name: 'Soft Haze',     e:22, c:-15, s:-8,  w:6,  h:-25, f:20,
+      cg: { temp:6, tint:0, contrast:-10, saturation:-8, shadows:12, highlights:-22, blacks:15, whites:-8,
+            L:{p1:{x:42,y:83},mid:{x:75,y:72},p2:{x:108,y:40}} } },
   ],
   street: [
-    { name: 'Silver Grain',  e:-5,  c:28,  s:-82, w:0,   h:-10, f:18 },
-    { name: 'Tokyo Night',   e:0,   c:40,  s:-15, w:-32, h:-20, f:0  },
-    { name: 'Faded Ink',     e:5,   c:-18, s:-12, w:12,  h:-5,  f:50 },
-    { name: 'Neon Drift',    e:-5,  c:22,  s:32,  w:-22, h:-15, f:0  },
+    { name: 'Silver Grain',  e:-5, c:12,  s:-70, w:0,  h:-8,  f:14,
+      cg: { temp:0, tint:0, contrast:12, saturation:-35, shadows:-6, highlights:-5, blacks:-5, whites:5,
+            L:{p1:{x:42,y:115},mid:{x:75,y:62},p2:{x:108,y:18}} } },
+    { name: 'Tokyo Night',   e:0,  c:15,  s:-10, w:-22, h:-15, f:0,
+      cg: { temp:-28, tint:5, contrast:10, saturation:-5, shadows:-8, highlights:-10, blacks:-6, whites:0,
+            lift:{h:-90,s:0.2,lum:-4}, L:{p1:{x:42,y:112},mid:{x:75,y:63},p2:{x:108,y:22}} } },
+    { name: 'Faded Ink',     e:5,  c:-15, s:-10, w:10, h:-5,  f:42,
+      cg: { temp:14, tint:2, contrast:-8, saturation:-8, shadows:10, highlights:-10, blacks:12, whites:-5,
+            L:{p1:{x:42,y:88},mid:{x:75,y:72},p2:{x:108,y:38}} } },
+    { name: 'Neon Drift',    e:-5, c:12,  s:22,  w:-14, h:-10, f:0,
+      cg: { temp:-14, tint:0, contrast:8, saturation:12, shadows:-4, highlights:-8, blacks:-2, whites:0,
+            lift:{h:180,s:0.12,lum:-2} } },
   ],
   landscape: [
-    { name: 'Fuji Vivid',    e:0,   c:30,  s:52,  w:12,  h:-16, f:0  },
-    { name: 'Nordic Cool',   e:-5,  c:24,  s:14,  w:-48, h:-20, f:0  },
-    { name: 'Golden Hour',   e:5,   c:12,  s:32,  w:58,  h:-12, f:5  },
-    { name: 'Moody Mist',    e:-8,  c:15,  s:-18, w:-12, h:-28, f:14 },
+    { name: 'Fuji Vivid',    e:0,  c:15,  s:40,  w:8,  h:-14, f:0,
+      cg: { temp:5, tint:0, contrast:8, saturation:28, shadows:-2, highlights:-10, blacks:0, whites:3,
+            L:{p1:{x:42,y:110},mid:{x:75,y:63},p2:{x:108,y:22}} } },
+    { name: 'Nordic Cool',   e:-5, c:12,  s:8,   w:-38, h:-18, f:0,
+      cg: { temp:-38, tint:5, contrast:8, saturation:5, shadows:-4, highlights:-8, blacks:0, whites:0,
+            lift:{h:180,s:0.18,lum:-2}, L:{p1:{x:42,y:110},mid:{x:75,y:64},p2:{x:108,y:24}} } },
+    { name: 'Golden Hour',   e:5,  c:8,   s:22,  w:45, h:-10, f:5,
+      cg: { temp:40, tint:-4, contrast:5, saturation:12, shadows:0, highlights:-10, blacks:0, whites:0,
+            gain:{h:25,s:0.18,lum:0}, L:{p1:{x:42,y:104},mid:{x:75,y:63},p2:{x:108,y:24}} } },
+    { name: 'Moody Mist',    e:-8, c:8,   s:-14, w:-8, h:-22, f:12,
+      cg: { temp:-14, tint:5, contrast:6, saturation:-10, shadows:-4, highlights:-16, blacks:-2, whites:-5,
+            L:{p1:{x:42,y:110},mid:{x:75,y:66},p2:{x:108,y:28}} } },
   ],
   realestate: [
-    { name: 'MLS Bright',    e:28,  c:8,   s:-12, w:-8,  h:-12, f:0  },
-    { name: 'Luxury Warm',   e:15,  c:12,  s:-5,  w:18,  h:-5,  f:5  },
-    { name: 'Sony Crisp',    e:18,  c:25,  s:-18, w:-22, h:-8,  f:0  },
-    { name: 'Natural',       e:10,  c:0,   s:0,   w:5,   h:-5,  f:2  },
+    { name: 'MLS Bright',    e:25, c:5,   s:-8,  w:-5, h:-10, f:0,
+      cg: { temp:-5, tint:0, contrast:3, saturation:-8, shadows:5, highlights:-8, blacks:3, whites:5,
+            L:{p1:{x:42,y:98},mid:{x:75,y:63},p2:{x:108,y:22}} } },
+    { name: 'Luxury Warm',   e:14, c:3,   s:-3,  w:14, h:-5,  f:5,
+      cg: { temp:16, tint:2, contrast:3, saturation:-5, shadows:5, highlights:-8, blacks:3, whites:3,
+            gain:{h:25,s:0.08,lum:0}, L:{p1:{x:42,y:100},mid:{x:75,y:64},p2:{x:108,y:24}} } },
+    { name: 'Sony Crisp',    e:18, c:5,   s:-12, w:-16, h:-8, f:0,
+      cg: { temp:-18, tint:0, contrast:6, saturation:-10, shadows:3, highlights:-5, blacks:0, whites:5,
+            L:{p1:{x:42,y:106},mid:{x:75,y:64},p2:{x:108,y:23}} } },
+    { name: 'Natural',       e:5,  c:0,   s:0,   w:3,  h:-5,  f:0,
+      cg: { temp:3, tint:0, contrast:0, saturation:0, shadows:0, highlights:-3, blacks:0, whites:0 } },
   ],
 };
 let _activeEditGenre = 'wedding';
@@ -5543,6 +5581,52 @@ function renderPresetChips() {
   ).join('');
 }
 
+function applyCGPreset(cg) {
+  const defWheel = {h:0, s:0, lum:0};
+  const defCurve = {p1:{x:42,y:103}, mid:{x:75,y:65}, p2:{x:108,y:27}};
+  // CG sliders
+  ['temp','tint','contrast','saturation','shadows','highlights','blacks','whites'].forEach(key => {
+    const val = (cg && cg[key] != null) ? cg[key] : 0;
+    CG_STATE[key] = val;
+    const sl = document.getElementById('cg-' + key);
+    const sv = document.getElementById('cg-sv-' + key);
+    if (sl) sl.value = val;
+    if (sv) sv.textContent = Math.round(val);
+  });
+  // Color wheels
+  ['lift','gamma','gain'].forEach(name => {
+    const w = (cg && cg[name]) || defWheel;
+    CG_STATE[name] = {h: w.h||0, s: w.s||0, lum: w.lum||0};
+    const dot = document.getElementById('cg-dot-' + name);
+    if (dot) {
+      const r=44, cx=45, cy=45, hRad=(w.h||0)*Math.PI/180, sat=w.s||0;
+      dot.style.left = (cx + Math.cos(hRad)*sat*r - 5) + 'px';
+      dot.style.top  = (cy + Math.sin(hRad)*sat*r - 5) + 'px';
+    }
+    const lumSl = document.getElementById('cg-lum-' + name);
+    const lumLv = document.getElementById('cg-lv-' + name);
+    if (lumSl) lumSl.value = w.lum||0;
+    if (lumLv) lumLv.textContent = Math.round(w.lum||0);
+  });
+  // Curves: apply L from preset, R/G/B reset to default
+  const lCurve = (cg && cg.L) || defCurve;
+  ['L','R','G','B'].forEach(ch => {
+    CG_STATE.curves[ch] = JSON.parse(JSON.stringify(ch === 'L' ? lCurve : defCurve));
+  });
+  // Reset to L channel view and update SVG
+  CG_STATE.activeChannel = 'L'; CG_STATE.curveColor = '#0a0a0a';
+  document.querySelectorAll('.cg-ch-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+  const curvePath = document.getElementById('cg-curve-path');
+  if (curvePath) curvePath.setAttribute('stroke','#0a0a0a');
+  const ac = CG_STATE.curves['L'];
+  const cp1=document.getElementById('cg-cp1'), cp2=document.getElementById('cg-cp2'), cp3=document.getElementById('cg-cp3');
+  if (cp1) { cp1.setAttribute('cx',ac.mid.x.toFixed(1)); cp1.setAttribute('cy',ac.mid.y.toFixed(1)); }
+  if (cp2) { cp2.setAttribute('cx',ac.p1.x.toFixed(1));  cp2.setAttribute('cy',ac.p1.y.toFixed(1)); }
+  if (cp3) { cp3.setAttribute('cx',ac.p2.x.toFixed(1));  cp3.setAttribute('cy',ac.p2.y.toFixed(1)); }
+  updateCGCurvePath();
+  updateChannelFilter();
+}
+
 function applyPresetByName(name) {
   const p = (EDIT_PRESETS[_activeEditGenre] || []).find(x => x.name === name);
   if (!p) return;
@@ -5556,6 +5640,7 @@ function applyPresetByName(name) {
       if (sl) sl.value = 0;
       if (sv) sv.textContent = 0;
     });
+    applyCGPreset(null);
     document.querySelectorAll('.file-card.selected .file-thumb img').forEach(img => { img.style.filter = ''; });
     return;
   }
@@ -5566,8 +5651,10 @@ function applyPresetByName(name) {
     if (sl) sl.value = val;
     if (sv) sv.textContent = val;
   });
+  applyCGPreset(p.cg || null);
   renderPresetChips();
   previewEditsOnSelected();
+  debouncedSaveEdits();
 }
 
 let _editSaveTimer = null;
@@ -5598,12 +5685,16 @@ function getSliderValues() {
 }
 
 function buildEditorFilter(e, c, s, w, h, f) {
-  const brightness = Math.max(0.05, 1 + e * 0.008 + h * 0.003 + f * 0.001);
-  const contrast   = Math.max(0.1,  1 + c * 0.008 - f * 0.003);
-  const saturate   = Math.max(0,    1 + s * 0.015 - f * 0.003);
-  const hueRot     = (-w * 0.2).toFixed(1);
-  const sepia      = Math.min(w > 0 ? w * 0.002 : 0, 0.3).toFixed(3);
-  return `brightness(${brightness.toFixed(3)}) contrast(${contrast.toFixed(3)}) saturate(${saturate.toFixed(3)}) hue-rotate(${hueRot}deg) sepia(${sepia})`;
+  // Exposure: exponential EV response — 2 stops at ±100, highlights/fade as small modifiers
+  const brightness = Math.max(0.05, Math.pow(2, e/50 + h*0.002 + f*0.002));
+  // Contrast: exponential — 2x at ±100, fade softens it naturally
+  const contrast   = Math.max(0.1,  Math.pow(2, c/100 - f*0.005));
+  // Saturation: linear, fade desaturates slightly for matte look
+  const saturate   = Math.max(0,    1 + s*0.012 - f*0.005);
+  // Warmth: wider hue rotation + sepia for warm direction
+  const hueRot     = (-w * 0.3).toFixed(1);
+  const sepia      = Math.min(w > 0 ? w*0.003 : 0, 0.35).toFixed(3);
+  return `brightness(${brightness.toFixed(4)}) contrast(${contrast.toFixed(4)}) saturate(${saturate.toFixed(4)}) hue-rotate(${hueRot}deg) sepia(${sepia})`;
 }
 
 // IntersectionObserver: track cards ≥75% visible in full-view mode
@@ -5672,12 +5763,12 @@ function applyEditsToSelected() {
 
 function getProjectEditFilter() {
   const { e, c, s, w, h, f } = getSliderValues();
-  // Editor slider contributions
-  const eBright = Math.max(0.05, 1 + e*0.008 + h*0.003 + f*0.001);
-  const eCont   = Math.max(0.1,  1 + c*0.008 - f*0.003);
-  const eSat    = Math.max(0,    1 + s*0.015  - f*0.003);
-  const eHue    = -w * 0.2;
-  const eSepia  = Math.min(w > 0 ? w*0.002 : 0, 0.3);
+  // Editor slider contributions — must match buildEditorFilter exactly
+  const eBright = Math.max(0.05, Math.pow(2, e/50 + h*0.002 + f*0.002));
+  const eCont   = Math.max(0.1,  Math.pow(2, c/100 - f*0.005));
+  const eSat    = Math.max(0,    1 + s*0.012 - f*0.005);
+  const eHue    = -w * 0.3;
+  const eSepia  = Math.min(w > 0 ? w*0.003 : 0, 0.35);
   // CG contributions
   const { lift, gamma, gain, temp, tint, contrast, saturation, shadows, highlights, blacks, whites } = CG_STATE;
   const wheelH  = lift.h*lift.s*0.2 + gamma.h*gamma.s*0.4 + gain.h*gain.s*0.2;
