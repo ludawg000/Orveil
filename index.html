@@ -3617,10 +3617,10 @@
           <div class="cg-section-label" style="margin-top:1rem">Tone Curve</div>
           <div class="cg-curve-wrap">
             <div class="cg-curve-channels">
-              <button class="cg-ch-btn active" onclick="setCGChannel(this,'#0a0a0a')">L</button>
-              <button class="cg-ch-btn" onclick="setCGChannel(this,'#c0392b')" style="color:#c0392b">R</button>
-              <button class="cg-ch-btn" onclick="setCGChannel(this,'#27ae60')" style="color:#27ae60">G</button>
-              <button class="cg-ch-btn" onclick="setCGChannel(this,'#2980b9')" style="color:#2980b9">B</button>
+              <button class="cg-ch-btn active" onclick="setCGChannel(this,'#0a0a0a','L')">L</button>
+              <button class="cg-ch-btn" onclick="setCGChannel(this,'#c0392b','R')" style="color:#c0392b">R</button>
+              <button class="cg-ch-btn" onclick="setCGChannel(this,'#27ae60','G')" style="color:#27ae60">G</button>
+              <button class="cg-ch-btn" onclick="setCGChannel(this,'#2980b9','B')" style="color:#2980b9">B</button>
             </div>
             <svg id="cg-curve-svg" width="150" height="130" viewBox="0 0 150 130" style="display:block;width:100%;max-width:260px;">
               <rect x="10" y="10" width="130" height="110" fill="#f8f8f6" rx="1"/>
@@ -5629,7 +5629,13 @@ const CG_STATE = {
   gain:  { h: 0, s: 0, lum: 0 },
   temp: 0, tint: 0, contrast: 0, saturation: 0,
   shadows: 0, highlights: 0, blacks: 0, whites: 0,
-  curve: { p1: {x:42, y:103}, mid: {x:75, y:65}, p2: {x:108, y:27} },
+  curves: {
+    L: { p1: {x:42,y:103}, mid: {x:75,y:65}, p2: {x:108,y:27} },
+    R: { p1: {x:42,y:103}, mid: {x:75,y:65}, p2: {x:108,y:27} },
+    G: { p1: {x:42,y:103}, mid: {x:75,y:65}, p2: {x:108,y:27} },
+    B: { p1: {x:42,y:103}, mid: {x:75,y:65}, p2: {x:108,y:27} },
+  },
+  activeChannel: 'L',
   curveColor: '#0a0a0a',
 };
 let _cgInited = false;
@@ -5760,9 +5766,10 @@ function moveCGCurvePoint(e) {
   const y=Math.max(10,Math.min(120,(e.clientY-rect.top)*scaleY));
   const el=document.getElementById(_cgCurveDragging);
   if (el){ el.setAttribute('cx',x.toFixed(1)); el.setAttribute('cy',y.toFixed(1)); }
-  if (_cgCurveDragging==='cg-cp2') { CG_STATE.curve.p1={x,y}; }
-  else if (_cgCurveDragging==='cg-cp3') { CG_STATE.curve.p2={x,y}; }
-  else if (_cgCurveDragging==='cg-cp1') { CG_STATE.curve.mid={x,y}; }
+  const ac = CG_STATE.curves[CG_STATE.activeChannel];
+  if (_cgCurveDragging==='cg-cp2') { ac.p1={x,y}; }
+  else if (_cgCurveDragging==='cg-cp3') { ac.p2={x,y}; }
+  else if (_cgCurveDragging==='cg-cp1') { ac.mid={x,y}; }
   updateCGCurvePath();
   onCGChange();
 }
@@ -5772,9 +5779,10 @@ function updateCGCurvePath() {
   if (!p) return;
   // 5 anchor points the curve must pass through
   const A = {x:10,  y:120};              // black anchor
-  const S = CG_STATE.curve.p1;           // shadow (cp2)
-  const M = CG_STATE.curve.mid;          // midtone (cp1)
-  const H = CG_STATE.curve.p2;           // highlight (cp3)
+  const c = CG_STATE.curves[CG_STATE.activeChannel];
+  const S = c.p1;           // shadow (cp2)
+  const M = c.mid;          // midtone (cp1)
+  const H = c.p2;           // highlight (cp3)
   const B = {x:140, y:10};               // white anchor
   // Catmull-Rom → cubic bezier (phantom endpoints duplicate A and B)
   const cr = (P0,P1,P2,P3) => ({
@@ -5792,38 +5800,85 @@ function updateCGCurvePath() {
   );
 }
 
-function setCGChannel(btn, color) {
+function setCGChannel(btn, color, channel) {
   document.querySelectorAll('.cg-ch-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  CG_STATE.activeChannel = channel;
   CG_STATE.curveColor = color;
+  // Load this channel's saved curve into the SVG control points
+  const c = CG_STATE.curves[channel];
+  const cp1=document.getElementById('cg-cp1'), cp2=document.getElementById('cg-cp2'), cp3=document.getElementById('cg-cp3');
+  if (cp1) { cp1.setAttribute('cx', c.mid.x.toFixed(1)); cp1.setAttribute('cy', c.mid.y.toFixed(1)); }
+  if (cp2) { cp2.setAttribute('cx', c.p1.x.toFixed(1));  cp2.setAttribute('cy', c.p1.y.toFixed(1)); }
+  if (cp3) { cp3.setAttribute('cx', c.p2.x.toFixed(1));  cp3.setAttribute('cy', c.p2.y.toFixed(1)); }
   const path = document.getElementById('cg-curve-path');
   if (path) path.setAttribute('stroke', color);
   ['cg-cp1','cg-cp2','cg-cp3'].forEach(id => {
     const el=document.getElementById(id);
     if(el) { const isFilled=id==='cg-cp1'; el.setAttribute(isFilled?'fill':'stroke',color); }
   });
+  updateCGCurvePath();
+}
+
+// Sample the Catmull-Rom curve at 9 evenly spaced input values (0..1), return array of 9 output values
+function buildCurveLUT(c) {
+  const A={x:10,y:120}, S=c.p1, M=c.mid, H=c.p2, B={x:140,y:10};
+  const cr=(P0,P1,P2,P3)=>({
+    b1:{x:P1.x+(P2.x-P0.x)/6, y:P1.y+(P2.y-P0.y)/6},
+    b2:{x:P2.x-(P3.x-P1.x)/6, y:P2.y-(P3.y-P1.y)/6}
+  });
+  const s0=cr(A,A,S,M),s1=cr(A,S,M,H),s2=cr(S,M,H,B),s3=cr(M,H,B,B);
+  const segs=[[A,S,s0.b1,s0.b2],[S,M,s1.b1,s1.b2],[M,H,s2.b1,s2.b2],[H,B,s3.b1,s3.b2]];
+  const pts=[];
+  segs.forEach(([p0,p1,b1,b2])=>{
+    for(let i=0;i<=50;i++){
+      const t=i/50,mt=1-t;
+      pts.push({
+        nx:(mt*mt*mt*p0.x+3*mt*mt*t*b1.x+3*mt*t*t*b2.x+t*t*t*p1.x-10)/130,
+        ny:1-(mt*mt*mt*p0.y+3*mt*mt*t*b1.y+3*mt*t*t*b2.y+t*t*t*p1.y-10)/110
+      });
+    }
+  });
+  pts.sort((a,b)=>a.nx-b.nx);
+  const cl=v=>Math.max(0,Math.min(1,v));
+  return Array.from({length:9},(_,i)=>{
+    const tx=i/8; let lo=0,hi=pts.length-1;
+    while(lo<hi-1){const m=(lo+hi)>>1;if(pts[m].nx<=tx)lo=m;else hi=m;}
+    const range=pts[hi].nx-pts[lo].nx;
+    const t=range>0?(tx-pts[lo].nx)/range:0;
+    return cl(pts[lo].ny+t*(pts[hi].ny-pts[lo].ny));
+  });
+}
+
+// Update the SVG feComponentTransfer with composite per-channel curves (L applied first, then R/G/B)
+function updateChannelFilter() {
+  const fR=document.getElementById('cg-fR'), fG=document.getElementById('cg-fG'), fB=document.getElementById('cg-fB');
+  if (!fR) return;
+  const L=buildCurveLUT(CG_STATE.curves.L), R=buildCurveLUT(CG_STATE.curves.R);
+  const G=buildCurveLUT(CG_STATE.curves.G), B=buildCurveLUT(CG_STATE.curves.B);
+  // Compose: for each of 9 input steps, run through L then channel curve
+  const compose=(lLut,chLut)=>lLut.map(v=>{
+    const x=v*8, i=Math.min(7,Math.floor(x)), f=x-i;
+    return Math.max(0,Math.min(1,chLut[i]+f*(chLut[i+1]-chLut[i])));
+  });
+  const fmt=arr=>arr.map(v=>v.toFixed(4)).join(' ');
+  fR.setAttribute('tableValues', fmt(compose(L,R)));
+  fG.setAttribute('tableValues', fmt(compose(L,G)));
+  fB.setAttribute('tableValues', fmt(compose(L,B)));
 }
 
 function buildCGFilter() {
-  const { lift, gamma, gain, temp, tint, contrast, saturation, shadows, highlights, blacks, whites, curve } = CG_STATE;
+  const { lift, gamma, gain, temp, tint, contrast, saturation, shadows, highlights, blacks, whites } = CG_STATE;
   const wheelH = lift.h*lift.s*0.2 + gamma.h*gamma.s*0.4 + gain.h*gain.s*0.2;
   const wheelS = (lift.s*0.25 + gamma.s*0.5 + gain.s*0.25) * 0.3;
   const lumAdj = lift.lum*0.002 + gamma.lum*0.005 + gain.lum*0.002;
-  // Curve: deviation of each control point from the identity diagonal
-  // SVG: input=(x-10)/130, output=1-(y-10)/110; identity: output=input
-  const toIn=x=>(x-10)/130, toOut=y=>1-(y-10)/110;
-  const shadowDev = toOut(curve.p1.y)  - toIn(curve.p1.x);   // negative = shadow crush
-  const midDev    = toOut(curve.mid.y) - toIn(curve.mid.x);  // positive = lift mids
-  const highDev   = toOut(curve.p2.y)  - toIn(curve.p2.x);   // positive = boost highlights
-  const curveBias = shadowDev*0.25 + midDev*0.5 + highDev*0.25;
-  // S-curve effect: highlight lift + shadow crush → more contrast
-  const curveContrast = (highDev - shadowDev) * 0.35;
-  const brightness = Math.max(0.05, 1 + lumAdj + shadows*0.003 + highlights*0.002 + whites*0.003 + blacks*0.002 + curveBias);
-  const cont = Math.max(0.1, 1 + contrast*0.01 + curveContrast);
+  const brightness = Math.max(0.05, 1 + lumAdj + shadows*0.003 + highlights*0.002 + whites*0.003 + blacks*0.002);
+  const cont = Math.max(0.1, 1 + contrast*0.01);
   const sat = Math.max(0, 1 + saturation*0.015 + wheelS);
   const hue = wheelH + (-temp*0.18) + (tint*0.08);
   const sepia = Math.min(temp>0?temp*0.002:0, 0.25);
-  return `brightness(${brightness.toFixed(3)}) contrast(${cont.toFixed(3)}) saturate(${sat.toFixed(3)}) hue-rotate(${hue.toFixed(1)}deg) sepia(${sepia.toFixed(3)})`;
+  updateChannelFilter();
+  return `url(#cg-ch-filter) brightness(${brightness.toFixed(3)}) contrast(${cont.toFixed(3)}) saturate(${sat.toFixed(3)}) hue-rotate(${hue.toFixed(1)}deg) sepia(${sepia.toFixed(3)})`;
 }
 
 function onCGChange() {
@@ -5859,7 +5914,11 @@ function resetCG() {
     const sv=document.getElementById('cg-sv-'+k);
     if(sv) sv.textContent=0;
   });
-  CG_STATE.curve={p1:{x:42,y:103},mid:{x:75,y:65},p2:{x:108,y:27}};
+  ['L','R','G','B'].forEach(ch => { CG_STATE.curves[ch]={p1:{x:42,y:103},mid:{x:75,y:65},p2:{x:108,y:27}}; });
+  CG_STATE.activeChannel = 'L'; CG_STATE.curveColor = '#0a0a0a';
+  document.querySelectorAll('.cg-ch-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
+  const path=document.getElementById('cg-curve-path'); if(path) path.setAttribute('stroke','#0a0a0a');
+  ['cg-cp1','cg-cp2','cg-cp3'].forEach(id=>{const el=document.getElementById(id);if(el){el.setAttribute(id==='cg-cp1'?'fill':'stroke','#0a0a0a');}});
   const cp1=document.getElementById('cg-cp1'); if(cp1){cp1.setAttribute('cx',75);cp1.setAttribute('cy',65);}
   const cp2=document.getElementById('cg-cp2'); if(cp2){cp2.setAttribute('cx',42);cp2.setAttribute('cy',103);}
   const cp3=document.getElementById('cg-cp3'); if(cp3){cp3.setAttribute('cx',108);cp3.setAttribute('cy',27);}
@@ -5873,16 +5932,24 @@ function resetCG() {
 let _cgHistCache = null;
 
 function _applyGradeToHistogram(rawData, w, h) {
-  const { lift, gamma, gain, temp, tint, contrast, saturation, shadows, highlights, blacks, whites, curve } = CG_STATE;
+  const { lift, gamma, gain, temp, tint, contrast, saturation, shadows, highlights, blacks, whites } = CG_STATE;
   const lumAdj = lift.lum*0.002 + gamma.lum*0.005 + gain.lum*0.002;
-  const toIn=x=>(x-10)/130, toOut=y=>1-(y-10)/110;
-  const shadowDev = toOut(curve.p1.y)  - toIn(curve.p1.x);
-  const midDev    = toOut(curve.mid.y) - toIn(curve.mid.x);
-  const highDev   = toOut(curve.p2.y)  - toIn(curve.p2.x);
-  const curveBias = shadowDev*0.25 + midDev*0.5 + highDev*0.25;
-  const curveContrast = (highDev - shadowDev) * 0.35;
-  const bright = Math.max(0.05, 1 + lumAdj + shadows*0.003 + highlights*0.002 + whites*0.003 + blacks*0.002 + curveBias);
-  const cont   = Math.max(0.1,  1 + contrast*0.01 + curveContrast);
+  const bright = Math.max(0.05, 1 + lumAdj + shadows*0.003 + highlights*0.002 + whites*0.003 + blacks*0.002);
+  const cont   = Math.max(0.1,  1 + contrast*0.01);
+  // Build per-channel 256-entry LUTs from tone curves (L composed with each channel)
+  const L=buildCurveLUT(CG_STATE.curves.L), R=buildCurveLUT(CG_STATE.curves.R);
+  const G=buildCurveLUT(CG_STATE.curves.G), B=buildCurveLUT(CG_STATE.curves.B);
+  const makeLut=(lLut,chLut)=>{
+    const lut=new Float32Array(256);
+    for(let i=0;i<256;i++){
+      const v=i/255, lx=v*8, li=Math.min(7,Math.floor(lx)), lf=lx-li;
+      const lv=lLut[li]+lf*(lLut[li+1]-lLut[li]);
+      const cx=lv*8, ci=Math.min(7,Math.floor(cx)), cf=cx-ci;
+      lut[i]=Math.max(0,Math.min(1,chLut[ci]+cf*(chLut[ci+1]-chLut[ci])));
+    }
+    return lut;
+  };
+  const rLut=makeLut(L,R), gLut=makeLut(L,G), bLut=makeLut(L,B);
   const sat    = Math.max(0,    1 + saturation*0.015 + (lift.s*0.25 + gamma.s*0.5 + gain.s*0.25)*0.3);
   const sepia  = Math.min(temp > 0 ? temp*0.002 : 0, 0.25); // mirrors buildCGFilter exactly
   // Hue from wheels + temp/tint — CSS hue-rotate matrix
@@ -5897,7 +5964,8 @@ function _applyGradeToHistogram(rawData, w, h) {
   const rH=new Uint32Array(256), gH=new Uint32Array(256), bH=new Uint32Array(256);
   const cl = v => v < 0 ? 0 : v > 1 ? 1 : v;
   for (let i = 0; i < rawData.length; i += 4) {
-    let r=rawData[i]/255, g=rawData[i+1]/255, b=rawData[i+2]/255;
+    // Apply per-channel tone curve LUTs first (matches feComponentTransfer order)
+    let r=rLut[rawData[i]], g=gLut[rawData[i+1]], b=bLut[rawData[i+2]];
     // Brightness
     r=cl(r*bright); g=cl(g*bright); b=cl(b*bright);
     // Contrast
@@ -5925,7 +5993,9 @@ async function drawCGHistogram() {
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
 
-  const imgEl = document.querySelector('.file-card.selected .file-thumb img')
+  const visibleCard = _visibleCards?.size ? [..._visibleCards][0] : null;
+  const imgEl = visibleCard?.querySelector('.file-thumb img')
+              || document.querySelector('.file-card.selected .file-thumb img')
               || document.querySelector('#files-grid .file-card .file-thumb img');
 
   if (imgEl?.src) {
@@ -8589,6 +8659,15 @@ document.addEventListener('keyup', e => {
   });
 })();
 </script>
+<svg style="display:none" id="cg-filter-svg"><defs>
+  <filter id="cg-ch-filter" color-interpolation-filters="sRGB" x="0%" y="0%" width="100%" height="100%">
+    <feComponentTransfer>
+      <feFuncR type="table" id="cg-fR" tableValues="0 0.125 0.25 0.375 0.5 0.625 0.75 0.875 1"/>
+      <feFuncG type="table" id="cg-fG" tableValues="0 0.125 0.25 0.375 0.5 0.625 0.75 0.875 1"/>
+      <feFuncB type="table" id="cg-fB" tableValues="0 0.125 0.25 0.375 0.5 0.625 0.75 0.875 1"/>
+    </feComponentTransfer>
+  </filter>
+</defs></svg>
 </body>
 </html>
 
