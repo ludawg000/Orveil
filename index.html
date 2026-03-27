@@ -5784,7 +5784,7 @@ function getProjectEditFilter() {
   const eSepia  = Math.min(w > 0 ? w*0.003 : 0, 0.35);
   // CG contributions
   const { dark, shadow, light, global: glob, temp, tint, contrast, saturation, shadows, highlights, blacks, whites } = CG_STATE;
-  const wheelH  = dark.h*dark.s*0.1 + shadow.h*shadow.s*0.2 + light.h*light.s*0.2 + glob.h*glob.s*0.5;
+  const wheelH  = dark.h*dark.s*0.02 + shadow.h*shadow.s*0.04 + light.h*light.s*0.04 + glob.h*glob.s*0.10;
   const wheelS  = (dark.s*0.1 + shadow.s*0.2 + light.s*0.2 + glob.s*0.4) * 0.35;
   const lumAdj  = dark.lum*0.002 + shadow.lum*0.003 + light.lum*0.003 + glob.lum*0.005;
   const cgBright = Math.max(0.05, 1 + lumAdj + shadows*0.003 + highlights*0.002 + whites*0.003 + blacks*0.002);
@@ -5848,10 +5848,10 @@ const CG_STATE = {
   temp: 0, tint: 0, contrast: 0, saturation: 0,
   shadows: 0, highlights: 0, blacks: 0, whites: 0,
   curves: {
-    L: { p1: {x:42,y:103}, mid: {x:75,y:65}, p2: {x:108,y:27} },
-    R: { p1: {x:42,y:103}, mid: {x:75,y:65}, p2: {x:108,y:27} },
-    G: { p1: {x:42,y:103}, mid: {x:75,y:65}, p2: {x:108,y:27} },
-    B: { p1: {x:42,y:103}, mid: {x:75,y:65}, p2: {x:108,y:27} },
+    L: { p1: {x:42,y:93}, mid: {x:75,y:65}, p2: {x:108,y:37} },
+    R: { p1: {x:42,y:93}, mid: {x:75,y:65}, p2: {x:108,y:37} },
+    G: { p1: {x:42,y:93}, mid: {x:75,y:65}, p2: {x:108,y:37} },
+    B: { p1: {x:42,y:93}, mid: {x:75,y:65}, p2: {x:108,y:37} },
   },
   activeChannel: 'L',
   curveColor: '#0a0a0a',
@@ -6090,7 +6090,7 @@ function updateChannelFilter() {
 
 function buildCGFilter() {
   const { dark, shadow, light, global: glob, temp, tint, contrast, saturation, shadows, highlights, blacks, whites } = CG_STATE;
-  const wheelH = dark.h*dark.s*0.1 + shadow.h*shadow.s*0.2 + light.h*light.s*0.2 + glob.h*glob.s*0.5;
+  const wheelH = dark.h*dark.s*0.02 + shadow.h*shadow.s*0.04 + light.h*light.s*0.04 + glob.h*glob.s*0.10;
   const wheelS = (dark.s*0.1 + shadow.s*0.2 + light.s*0.2 + glob.s*0.4) * 0.35;
   const lumAdj = dark.lum*0.002 + shadow.lum*0.003 + light.lum*0.003 + glob.lum*0.005;
   const brightness = Math.max(0.05, 1 + lumAdj + shadows*0.003 + highlights*0.002 + whites*0.003 + blacks*0.002);
@@ -6218,7 +6218,7 @@ function _applyGradeToHistogram(rawData, w, h) {
   const sat    = Math.max(0,    1 + saturation*0.015 + (dark.s*0.1 + shadow.s*0.2 + light.s*0.2 + glob.s*0.4)*0.35);
   const sepia  = Math.min(temp > 0 ? temp*0.002 : 0, 0.25); // mirrors buildCGFilter exactly
   // Hue from wheels + temp/tint — CSS hue-rotate matrix
-  const wheelH = dark.h*dark.s*0.1 + shadow.h*shadow.s*0.2 + light.h*light.s*0.2 + glob.h*glob.s*0.5;
+  const wheelH = dark.h*dark.s*0.02 + shadow.h*shadow.s*0.04 + light.h*light.s*0.04 + glob.h*glob.s*0.10;
   const hDeg = wheelH + (-temp*0.18) + (tint*0.08);
   const hr = hDeg * Math.PI / 180;
   const cos = Math.cos(hr), sin = Math.sin(hr);
