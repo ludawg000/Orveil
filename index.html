@@ -4906,26 +4906,29 @@ function _mimeFromName(name) {
   return { jpg:'image/jpeg', jpeg:'image/jpeg', png:'image/png', gif:'image/gif', webp:'image/webp', heic:'image/heic', heif:'image/heif', mp4:'video/mp4', mov:'video/quicktime', avi:'video/avi' }[ext] || null;
 }
 
-// Returns a proper image/jpeg blob (or raw blob for videos).
-// Always runs images through canvas so octet-stream files become real JPEGs.
+// Returns a blob for a gallery file. Only uses canvas when edits need baking.
 async function _toBlobForIndex(idx) {
   const gf = galleryFiles[idx];
   const resp = await fetch(gf.publicUrl);
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
   const rawBlob = await resp.blob();
 
-  // Resolve actual MIME — Supabase sometimes returns application/octet-stream
+  // Resolve MIME — Supabase can return application/octet-stream
   const mime = (rawBlob.type && rawBlob.type !== 'application/octet-stream')
-    ? rawBlob.type : (_mimeFromName(gf.name) || rawBlob.type);
+    ? rawBlob.type : (_mimeFromName(gf.name) || 'image/jpeg');
 
-  // Videos: return as-is with correct MIME
+  // No edits → return raw blob immediately, no canvas (saves all memory on mobile)
+  const ef = gf.edit_settings || galleryEditFilter || '';
+  if (!ef) return new Blob([rawBlob], { type: mime });
+
+  let editData = null;
+  try { editData = JSON.parse(ef); } catch { editData = { css: ef.replace(/url\([^)]*\)\s*/g,'') }; }
+  if (!editData) return new Blob([rawBlob], { type: mime });
+
+  // Videos: no canvas baking
   if (mime.startsWith('video/')) return new Blob([rawBlob], { type: mime });
 
-  // Images: always draw through canvas → proper image/jpeg blob
-  const ef = (gf.edit_settings) || galleryEditFilter || '';
-  let editData = null;
-  if (ef) { try { editData = JSON.parse(ef); } catch { editData = { css: ef.replace(/url\([^)]*\)\s*/g,'') }; } }
-
+  // Only reach here if there are actual edits to bake
   try {
     const objUrl = URL.createObjectURL(new Blob([rawBlob], { type: mime }));
     const img = new Image();
@@ -4935,12 +4938,12 @@ async function _toBlobForIndex(idx) {
     canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
     const ctx = canvas.getContext('2d');
     ctx.drawImage(img, 0, 0);
-    if (editData) {
-      const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      bakeEditsToImageData(imgData, editData);
-      ctx.putImageData(imgData, 0, 0);
-    }
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    bakeEditsToImageData(imgData, editData);
+    ctx.putImageData(imgData, 0, 0);
     const out = await new Promise(res => canvas.toBlob(res, 'image/jpeg', 0.95));
+    // Free canvas memory immediately
+    canvas.width = 0; canvas.height = 0;
     return out || new Blob([rawBlob], { type: mime });
   } catch { return new Blob([rawBlob], { type: mime }); }
 }
@@ -4980,11 +4983,17 @@ async function downloadAllFiles() {
     const files = _pendingShareFiles;
     _pendingShareFiles = null;
     hint.style.display = 'none';
-    try {
-      await navigator.share({ files, title: 'Your Photos' });
-    } catch {}
     btn.textContent = 'Download All';
     btn.style.opacity = '';
+    try {
+      await navigator.share({ files, title: 'Your Photos' });
+    } catch {
+      // navigator.share failed — open each image in a new tab as last resort
+      files.forEach(f => {
+        const u = URL.createObjectURL(f);
+        window.open(u, '_blank');
+      });
+    }
     return;
   }
 
