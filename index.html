@@ -4906,6 +4906,16 @@ function _mimeFromName(name) {
   return { jpg:'image/jpeg', jpeg:'image/jpeg', png:'image/png', gif:'image/gif', webp:'image/webp', heic:'image/heic', heif:'image/heif', mp4:'video/mp4', mov:'video/quicktime', avi:'video/avi' }[ext] || null;
 }
 
+// Returns a filename guaranteed to have an extension iOS recognises
+function _safeFileName(gf, fallbackIdx) {
+  const mime = (gf.type && !gf.type.includes('octet-stream')) ? gf.type
+    : _mimeFromName(gf.path) || _mimeFromName(gf.name) || 'image/jpeg';
+  const extMap = { 'image/jpeg':'jpg','image/png':'png','image/gif':'gif','image/webp':'webp','image/heic':'heic','video/mp4':'mp4','video/quicktime':'mov' };
+  const ext = extMap[mime] || 'jpg';
+  const base = (gf.name || `photo-${fallbackIdx+1}`).replace(/\.[^.]+$/, ''); // strip any existing ext
+  return `${base}.${ext}`;
+}
+
 // Returns a blob for a gallery file. Only uses canvas when edits need baking.
 async function _toBlobForIndex(idx) {
   const gf = galleryFiles[idx];
@@ -4956,7 +4966,9 @@ async function downloadFile(url, filename, fileIndexOrFilter) {
       const resp = await fetch(url); if (!resp.ok) throw new Error();
       return resp.blob();
     })();
-    const name = filename || `photo.jpg`;
+    const idx = typeof fileIndexOrFilter === 'number' ? fileIndexOrFilter : null;
+    const gf = idx !== null ? galleryFiles[idx] : null;
+    const name = gf ? _safeFileName(gf, idx) : (filename || 'photo.jpg');
     if (_isMobile && navigator.canShare) {
       const f = new File([blob], name, { type: blob.type || 'image/jpeg' });
       if (navigator.canShare({ files: [f] })) { await navigator.share({ files: [f] }); return; }
@@ -5035,7 +5047,7 @@ async function downloadAllFiles() {
     fill.style.width = `${((i + 1) / total) * 100}%`;
     try {
       const blob = await _toBlobForIndex(i);
-      shareFiles.push(new File([blob], galleryFiles[i].name || `photo-${i+1}.jpg`, { type: blob.type || 'image/jpeg' }));
+      shareFiles.push(new File([blob], _safeFileName(galleryFiles[i], i), { type: blob.type || 'image/jpeg' }));
     } catch (e) { console.warn('skip', i, e); }
   }
 
