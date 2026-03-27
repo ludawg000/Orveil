@@ -6008,17 +6008,22 @@ async function drawCGHistogram() {
   if (imgEl?.src) {
     try {
       // Load raw pixels once, cache by src
+      // Fetch as blob → object URL to avoid canvas CORS taint on Supabase images
       if (_cgHistCache?.src !== imgEl.src) {
+        const resp = await fetch(imgEl.src);
+        if (!resp.ok) throw new Error('fetch failed');
+        const blob = await resp.blob();
+        const objUrl = URL.createObjectURL(blob);
         const img = new Image();
-        img.crossOrigin = 'anonymous';
-        await new Promise((res, rej) => { img.onload=res; img.onerror=rej; img.src=imgEl.src; });
+        await new Promise((res, rej) => { img.onload=res; img.onerror=rej; img.src=objUrl; });
+        URL.revokeObjectURL(objUrl);
         const iw=img.naturalWidth||img.width, ih=img.naturalHeight||img.height;
         if (iw <= 0 || ih <= 0) throw new Error('bad dims');
         const scale=Math.min(1, 200/Math.max(iw,ih));
         const w=Math.max(1,Math.round(iw*scale)), h=Math.max(1,Math.round(ih*scale));
         const tmp=document.createElement('canvas'); tmp.width=w; tmp.height=h;
         tmp.getContext('2d').drawImage(img,0,0,w,h);
-        const raw=tmp.getContext('2d').getImageData(0,0,w,h).data; // SecurityError if CORS blocked
+        const raw=tmp.getContext('2d').getImageData(0,0,w,h).data;
         _cgHistCache = { src: imgEl.src, rawData: raw, w, h };
       }
 
